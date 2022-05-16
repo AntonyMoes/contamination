@@ -1,3 +1,4 @@
 [submodule "Assets/_Game/Scripts/GeneralUtils"]
 	path = Assets/_Game/Scripts/GeneralUtils
 	url = git@github.com:AntonyMoes/GeneralUtils.git
+	branch=main

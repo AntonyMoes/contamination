@@ -11,7 +11,8 @@ namespace _Game.Scripts {
         private NetManager _server;
         private Coroutine _pollingCoro;
 
-        private readonly Dictionary<NetPeer, Peer> _peers = new Dictionary<NetPeer, Peer>();
+        // private readonly Dictionary<NetPeer, Peer> _peers = new Dictionary<NetPeer, Peer>();
+        private PeerCollection _peerCollection;
 
         private void OnEnable() {
             Debug.Log("Starting server");
@@ -25,35 +26,30 @@ namespace _Game.Scripts {
 
         private NetManager CreateServer() {
             var listener = new EventBasedNetListener();
-
-            var deliveryEvent = new Event<NetPeer, object>(out var deliveryInvoker);
-            listener.DeliveryEvent += (peer, data) => deliveryInvoker(peer, data);
-
-            var networkReceiveEvent = new Event<NetPeer, NetDataReader>(out var networkReceiveInvoker);
-            listener.NetworkReceiveEvent += (peer, reader, channel, method) => networkReceiveInvoker(peer, reader);
+            var peerInitializer = Peer.CreateInitializerForEventListener(listener);
+            _peerCollection = new PeerCollection();
+            _peerCollection.GetReceiveEvent<ChatMessage>().Subscribe(OnChatMessageReceive);
+            _peerCollection.GetReceiveEvent<InitialInfoRequestMessage>().Subscribe(OnInitialInfoRequestMessageReceived);
 
             listener.ConnectionRequestEvent += request => {
                 Debug.Log($"Connection request: {request.RemoteEndPoint}");
-                
+
                 request.AcceptIfKey(Constants.AuthKey);
             };
             listener.PeerConnectedEvent += netPeer => {
                 Debug.Log($"Peer connected: {netPeer.Id}, {netPeer.EndPoint}");
 
-                var peer = new Peer(netPeer, deliveryEvent, networkReceiveEvent);
-                peer.GetReceiveEvent<ChatMessage>().Subscribe(OnChatMessageReceive);
-                peer.GetReceiveEvent<InitialInfoRequestMessage>().Subscribe(OnInitialInfoRequestMessageReceived);
+                var peer = peerInitializer(netPeer);
+                _peerCollection.Add(peer);
                 peer.Send(new ChatMessage {
                     Text = "WELL HELLO THERE"
                 }, () => Debug.Log("Server chat message sent"));
-                _peers.Add(netPeer, peer);
             };
             listener.PeerDisconnectedEvent += (netPeer, info) => {
                 Debug.Log($"Peer disconnected: {netPeer.Id} {netPeer.EndPoint}, info: {info}");
-                if (_peers.TryGetValue(netPeer, out var peer)) {
-                    peer.Dispose();
-                    _peers.Remove(netPeer);
-                }
+
+                if (_peerCollection.GetByNetPeer(netPeer) is {} peer)
+                    _peerCollection.Remove(peer);
             };
 
             return new NetManager(listener);
@@ -69,6 +65,7 @@ namespace _Game.Scripts {
         private void OnDisable() {
             StopCoroutine(_pollingCoro);
             _server.PollEvents();
+            _peerCollection.Dispose();
             _server.Stop();
         }
 
@@ -79,7 +76,8 @@ namespace _Game.Scripts {
         private void OnInitialInfoRequestMessageReceived(InitialInfoRequestMessage message, Peer peer) {
             Debug.Log("Got initial info request");
             peer.Send(new InitialInfoMessage {
-                Seed = 42
+                Seed = 42,
+                List = new List<int> {1, 2}
             });
         }
     }
