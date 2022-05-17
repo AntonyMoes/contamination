@@ -1,48 +1,35 @@
-﻿using System.Collections;
-using _Game.Scripts.Network;
-using LiteNetLib;
+﻿using _Game.Scripts.Network;
 using UnityEngine;
 
 namespace _Game.Scripts {
     public class ClientApp : MonoBehaviour{
-        private NetManager _client;
-        private Coroutine _pollingCoro;
-        private Peer _serverPeer;
+        private Client _client;
 
         private void OnEnable() {
-            Debug.Log("Starting client");
-            var listener = new EventBasedNetListener();
-            var peerInitializer = Peer.CreateInitializerForEventListener(listener);
-
-            listener.PeerConnectedEvent += netPeer => {
-                Debug.Log($"Connected to server: {netPeer.Id}, {netPeer.EndPoint}");
-
-                _serverPeer = peerInitializer(netPeer);
-                _serverPeer.GetReceiveEvent<ChatMessage>().Subscribe(OnChatMessageReceive);
-                _serverPeer.GetReceiveEvent<InitialInfoMessage>().Subscribe(OnInitialInfoMessageReceived);
-                _serverPeer.Send(new InitialInfoRequestMessage());
-            };
-            
-
-            _client = new NetManager(listener);
+            _client = new Client(Constants.Host, Constants.Port, Constants.AuthKey);
             _client.Start();
-            _client.Connect(Constants.Host, Constants.Port, Constants.AuthKey);
-
-            _pollingCoro = StartCoroutine(PollEvents(_client));
+            _client.OnConnected.Subscribe(OnConnected);
         }
 
-        private static IEnumerator PollEvents(NetManager pollingTarget) {
-            while (true) {
-                pollingTarget.PollEvents();
-                yield return new WaitForSecondsRealtime(0.02f);
-            }
+        private void Update() {
+            _client?.PollEvents();
         }
 
         private void OnDisable() {
-            StopCoroutine(_pollingCoro);
-            _client.PollEvents();
-            _serverPeer.Dispose();
-            _client.Stop();
+            _client.Dispose();
+            _client = null;
+        }
+
+        private void OnConnected(bool connected) {
+            if (!connected) {
+                Debug.Log("Server disconnected, shutting down");
+                gameObject.SetActive(false);
+                return;
+            }
+
+            _client.ServerConnection.GetReceiveEvent<ChatMessage>().Subscribe(OnChatMessageReceive);
+            _client.ServerConnection.GetReceiveEvent<InitialInfoMessage>().Subscribe(OnInitialInfoMessageReceived);
+            _client.ServerConnection.Send(new InitialInfoRequestMessage());
         }
 
         private void OnChatMessageReceive(ChatMessage message, Peer peer) {

@@ -5,7 +5,7 @@ using LiteNetLib;
 using LiteNetLib.Utils;
 
 namespace _Game.Scripts.Network {
-    public class Peer : IDisposable {
+    public class Peer : IDisposable, IPeer {
         public readonly NetPeer NetPeer;
 
         private readonly NetPacketProcessor _processor;

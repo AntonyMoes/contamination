@@ -7,10 +7,10 @@ using LiteNetLib;
 using LiteNetLib.Utils;
 
 namespace _Game.Scripts.Network {
-    public class PeerCollection : IDisposable {
+    public class PeerCollection : IDisposable, IPeerCollection {
         private readonly bool _owner;
         private readonly List<Peer> _peers = new List<Peer>();
-        public IReadOnlyList<Peer> Peers => _peers;
+        public IReadOnlyList<IPeer> Peers => _peers;
 
         private readonly Dictionary<Type, object> _receiveEvents = new Dictionary<Type, object>();
         private readonly List<Action<Peer>> _receiveSubscribers = new List<Action<Peer>>();
@@ -44,7 +44,7 @@ namespace _Game.Scripts.Network {
             return _peers.FirstOrDefault(peer => peer.NetPeer == netPeer);
         }
 
-        public void Send<T>(T data, Peer except = null, Action onDone = null) where T : INetSerializable, new() {
+        public void Send<T>(T data, INetworkSender except = null, Action onDone = null) where T : INetSerializable, new() {
             var sendProcess = new ParallelProcess();
             foreach (var peer in _peers) {
                 if (peer == except)
