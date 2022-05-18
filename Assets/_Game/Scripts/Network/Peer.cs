@@ -25,7 +25,7 @@ namespace _Game.Scripts.Network {
             _networkReceiveEvent.Subscribe(OnNetworkReceive);
         }
 
-        public void Send<T>(T data, Action onDone = null) where T : INetSerializable, new() {
+        public void Send<T>(T data, Action onDone = null) where T : INetSerializable, new() { // TODO: add timeouts?
             const DeliveryMethod deliveryMethod = DeliveryMethod.ReliableOrdered;
 
             _cachedWriter.Reset();

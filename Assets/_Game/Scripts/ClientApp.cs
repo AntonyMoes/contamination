@@ -2,7 +2,7 @@
 using UnityEngine;
 
 namespace _Game.Scripts {
-    public class ClientApp : MonoBehaviour{
+    public class ClientApp : MonoBehaviour {
         private Client _client;
 
         private void OnEnable() {
@@ -27,6 +27,7 @@ namespace _Game.Scripts {
                 return;
             }
 
+            // TODO: subscribing only after connecting? hmmmmmmm
             _client.ServerConnection.GetReceiveEvent<ChatMessage>().Subscribe(OnChatMessageReceive);
             _client.ServerConnection.GetReceiveEvent<InitialInfoMessage>().Subscribe(OnInitialInfoMessageReceived);
             _client.ServerConnection.Send(new InitialInfoRequestMessage());

@@ -29,14 +29,14 @@ namespace _Game.Scripts.Network {
                 subscriber(peer);
         }
 
-        public void Remove(Peer peer, bool dispose = true) {
+        public void Remove(Peer peer) {
             if (!_peers.Remove(peer))
                 return;
 
             foreach (var unsubscriber in _receiveUnsubscribers)
                 unsubscriber(peer);
 
-            if (dispose)
+            if (_owner)
                 peer.Dispose();
         }
 
