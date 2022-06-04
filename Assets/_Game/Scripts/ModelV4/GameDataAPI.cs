@@ -5,10 +5,13 @@ using _Game.Scripts.ModelV4.ECS;
 namespace _Game.Scripts.ModelV4 {
     public class GameDataAPI {
         private readonly ECS.ECS _ecs;
+        private readonly TurnController _turnController;
+
         public IReadOnlyCollection<IEntity> Entities => _ecs.Entities;
 
-        public GameDataAPI(ECS.ECS ecs) {
+        public GameDataAPI(ECS.ECS ecs, TurnController turnController) {
             _ecs = ecs;
+            _turnController = turnController;
         }
 
         public void AddEntity(Func<int, Entity> entityCreator) {
@@ -17,6 +20,14 @@ namespace _Game.Scripts.ModelV4 {
 
         public void RemoveEntity(int id) {
             _ecs.RemoveEntity(id);
+        }
+
+        public void EndTurn() {
+            _turnController.EndTurn();
+        }
+
+        public void UndoEndTurn() {
+            _turnController.UndoEndTurn();
         }
     }
 }
