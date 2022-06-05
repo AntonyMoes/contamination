@@ -1,4 +1,4 @@
-﻿namespace _Game.Scripts.Network {
+﻿namespace _Game.Scripts.NetworkingExample {
     public static class Constants {
         public const string Host = "localhost";
         public const int Port = 55555;

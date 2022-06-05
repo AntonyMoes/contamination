@@ -2,7 +2,7 @@
 using _Game.Scripts.Network;
 using UnityEngine;
 
-namespace _Game.Scripts {
+namespace _Game.Scripts.NetworkingExample {
     public class ServerApp : MonoBehaviour {
         private Server _server;
 
@@ -42,11 +42,11 @@ namespace _Game.Scripts {
             }, () => Debug.Log("Server chat message sent"));
         }
 
-        private void OnChatMessageReceive(ChatMessage message, Peer peer) {
+        private void OnChatMessageReceive(ChatMessage message, IPeer peer) {
             Debug.Log($"Chat message from client: {message.Text}");
         }
 
-        private void OnInitialInfoRequestMessageReceived(InitialInfoRequestMessage message, Peer peer) {
+        private void OnInitialInfoRequestMessageReceived(InitialInfoRequestMessage message, IPeer peer) {
             Debug.Log("Got initial info request");
             peer.Send(new InitialInfoMessage {
                 Seed = 42,

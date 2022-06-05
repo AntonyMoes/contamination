@@ -1,8 +1,9 @@
 ﻿using System;
+using _Game.Scripts.Utils;
 using GeneralUtils.Command;
 
 namespace _Game.Scripts.ModelV4 {
-    public abstract class GameCommand : ReversibleCommand {
+    public abstract class GameCommand : ReversibleCommand, ISerializable {
         private GameDataAPI _api;
 
         public void ProvideDataApi(GameDataAPI api) {
@@ -15,5 +16,8 @@ namespace _Game.Scripts.ModelV4 {
         }
 
         protected abstract Action<GameDataAPI> PerformReversibleDoOnData(GameDataAPI api);
+
+        public abstract string SerializeContents();
+        public abstract void DeserializeContents(string contents);
     }
 }

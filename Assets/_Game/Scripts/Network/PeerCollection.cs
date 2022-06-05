@@ -9,18 +9,18 @@ using LiteNetLib.Utils;
 namespace _Game.Scripts.Network {
     public class PeerCollection : IDisposable, IPeerCollection {
         private readonly bool _owner;
-        private readonly List<Peer> _peers = new List<Peer>();
+        private readonly List<IPeer> _peers = new List<IPeer>();
         public IReadOnlyList<IPeer> Peers => _peers;
 
         private readonly Dictionary<Type, object> _receiveEvents = new Dictionary<Type, object>();
-        private readonly List<Action<Peer>> _receiveSubscribers = new List<Action<Peer>>();
-        private readonly List<Action<Peer>> _receiveUnsubscribers = new List<Action<Peer>>();
+        private readonly List<Action<IPeer>> _receiveSubscribers = new List<Action<IPeer>>();
+        private readonly List<Action<IPeer>> _receiveUnsubscribers = new List<Action<IPeer>>();
 
         public PeerCollection(bool owner = true) {
             _owner = owner;
         }
 
-        public void Add(Peer peer) {
+        public void Add(IPeer peer) {
             if (_peers.Contains(peer))
                 return;
 
@@ -29,7 +29,7 @@ namespace _Game.Scripts.Network {
                 subscriber(peer);
         }
 
-        public void Remove(Peer peer) {
+        public void Remove(IPeer peer) {
             if (!_peers.Remove(peer))
                 return;
 
@@ -40,8 +40,8 @@ namespace _Game.Scripts.Network {
                 peer.Dispose();
         }
 
-        public Peer GetByNetPeer(NetPeer netPeer) {
-            return _peers.FirstOrDefault(peer => peer.NetPeer == netPeer);
+        public IPeer GetByNetPeer(NetPeer netPeer) {
+            return _peers.FirstOrDefault(peer => peer.CorrespondsTo(netPeer));
         }
 
         public void Send<T>(T data, INetworkSender except = null, Action onDone = null) where T : INetSerializable, new() {
@@ -56,21 +56,21 @@ namespace _Game.Scripts.Network {
             sendProcess.Run(onDone);
         }
 
-        public Event<T, Peer> GetReceiveEvent<T>() where T : INetSerializable, new() {
-            if (_receiveEvents.TryGetValue(typeof(T), out var eventObject))
-                return (Event<T, Peer>) eventObject;
+        public Event<T, IPeer> GetReceiveEvent<T>() where T : INetSerializable, new() {
+            return (Event<T, IPeer>) _receiveEvents.GetValue(typeof(T), Initializer);
 
-            var newEvent = new Event<T, Peer>(out var invoker);
-            _receiveEvents[typeof(T)] = newEvent;
-            Action<Peer> subscriber = peer => peer.GetReceiveEvent<T>().Subscribe(invoker);
-            _receiveSubscribers.Add(subscriber);
-            Action<Peer> unsubscriber = peer => peer.GetReceiveEvent<T>().Unsubscribe(invoker);
-            _receiveUnsubscribers.Add(unsubscriber);
+            Event<T, IPeer> Initializer() {
+                var newEvent = new Event<T, IPeer>(out var invoker);
+                Action<IPeer> subscriber = peer => peer.GetReceiveEvent<T>().Subscribe(invoker);
+                _receiveSubscribers.Add(subscriber);
+                Action<IPeer> unsubscriber = peer => peer.GetReceiveEvent<T>().Unsubscribe(invoker);
+                _receiveUnsubscribers.Add(unsubscriber);
 
-            foreach (var peer in _peers)
-                subscriber(peer);
+                foreach (var peer in _peers)
+                    subscriber(peer);
 
-            return newEvent;
+                return newEvent;
+            }
         }
 
         public void Dispose() {

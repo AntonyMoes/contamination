@@ -11,7 +11,7 @@ namespace _Game.Scripts.Network {
         private readonly int _port;
         private readonly string _authKey;
         private readonly NetManager _client;
-        private Peer _serverConnection;
+        private readonly PeerContainer _serverConnection  = new PeerContainer();
         public IPeer ServerConnection => _serverConnection;
 
         private readonly Action<NetPeer, NetDataReader> _onNetworkReceiveInvoker;
@@ -53,17 +53,18 @@ namespace _Game.Scripts.Network {
         }
 
         public void OnPeerConnected(NetPeer peer) {
-            _serverConnection = new Peer(peer, _onMessageDelivered, _onNetworkReceive);
+            var previousPeer = _serverConnection.SetPeer(new Peer(peer, _onMessageDelivered, _onNetworkReceive));
+            previousPeer?.Dispose();
             _onConnectedInvoker(true);
         }
 
         public void OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo) {
             // TODO handle initial connection errors
-            if (peer != _serverConnection.NetPeer)
+            if (!_serverConnection.CorrespondsTo(peer))
                 throw new ArgumentException("WTF");
 
-            _serverConnection.Dispose();
-            _serverConnection = null;
+            var previousPeer = _serverConnection.SetPeer();
+            previousPeer?.Dispose();
             _onConnectedInvoker(false);
         }
 

@@ -22,12 +22,12 @@ namespace _Game.Scripts.ModelV4 {
             _ecs.RemoveEntity(id);
         }
 
-        public void EndTurn() {
-            _turnController.EndTurn();
+        public void EndTurn(bool endGame = false) {
+            _turnController.EndTurn(endGame);
         }
 
-        public void UndoEndTurn() {
-            _turnController.UndoEndTurn();
+        public void UndoEndTurn(bool gameEnded = false) {
+            _turnController.UndoEndTurn(gameEnded);
         }
     }
 }

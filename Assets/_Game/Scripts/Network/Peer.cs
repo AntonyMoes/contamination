@@ -5,8 +5,8 @@ using LiteNetLib;
 using LiteNetLib.Utils;
 
 namespace _Game.Scripts.Network {
-    public class Peer : IDisposable, IPeer {
-        public readonly NetPeer NetPeer;
+    public class Peer : IPeer {
+        private readonly NetPeer _netPeer;
 
         private readonly NetPacketProcessor _processor;
         private readonly Event<NetPeer, object> _deliveryEvent;
@@ -17,7 +17,7 @@ namespace _Game.Scripts.Network {
         private readonly NetDataWriter _cachedWriter = new NetDataWriter();
 
         public Peer(NetPeer peer, Event<NetPeer, object> deliveryEvent, Event<NetPeer, NetDataReader> networkReceiveEvent) {
-            NetPeer = peer;
+            _netPeer = peer;
             _processor = new NetPacketProcessor();
             _deliveryEvent = deliveryEvent;
             _deliveryEvent.Subscribe(OnDelivery);
@@ -32,39 +32,44 @@ namespace _Game.Scripts.Network {
             _processor.WriteNetSerializable(_cachedWriter, ref data);
 
             if (onDone == null) {
-                NetPeer.Send(_cachedWriter, deliveryMethod);
+                _netPeer.Send(_cachedWriter, deliveryMethod);
                 return;
             }
 
             var guid = Guid.NewGuid(); 
             _deliveryCallbacks.Add(guid, onDone);
-            NetPeer.SendWithDeliveryEvent(_cachedWriter, 0, deliveryMethod, guid);
+            _netPeer.SendWithDeliveryEvent(_cachedWriter, 0, deliveryMethod, guid);
+        }
+
+        public bool CorrespondsTo(NetPeer netPeer) {
+            return _netPeer == netPeer;
         }
 
         private void OnDelivery(NetPeer peer, object data) {
-            if (peer != NetPeer)
+            if (peer != _netPeer)
                 return;
 
             var guid = (Guid) data;
             if (_deliveryCallbacks.TryGetValue(guid, out var callback))
                 callback();
+            _deliveryCallbacks.Remove(guid);
         }
 
         private void OnNetworkReceive(NetPeer peer, NetDataReader reader) {
-            if (peer != NetPeer)
+            if (peer != _netPeer)
                 return;
 
             _processor.ReadAllPackets(reader, this);
         }
 
-        public Event<T, Peer> GetReceiveEvent<T>() where T : INetSerializable, new() {
-            if (_receiveEvents.TryGetValue(typeof(T), out var eventObject))
-                return (Event<T, Peer>) eventObject;
+        public Event<T, IPeer> GetReceiveEvent<T>() where T : INetSerializable, new() {
+            return (Event<T, IPeer>) _receiveEvents.GetValue(typeof(T), Initializer);
 
-            var newEvent = new Event<T, Peer>(out var invoker);
-            _processor.SubscribeNetSerializable(invoker, () => new T());
-            _receiveEvents[typeof(T)] = newEvent;
-            return newEvent;
+            Event<T, IPeer> Initializer() {
+                var newEvent = new Event<T, IPeer>(out var invoker);
+                _processor.SubscribeNetSerializable(invoker, () => new T());
+                return newEvent;
+            }
         }
 
         public void Dispose() {

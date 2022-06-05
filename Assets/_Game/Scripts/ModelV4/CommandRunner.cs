@@ -5,10 +5,11 @@ using GeneralUtils;
 using GeneralUtils.Processes;
 
 namespace _Game.Scripts.ModelV4 {
-    public class CommandRunner : IDisposable {
+    public class CommandRunner : ICommandSynchronizer, IDisposable {
         private readonly List<ICommandGenerator> _generators = new List<ICommandGenerator>();
         private readonly List<ICommandPresenter> _presenters = new List<ICommandPresenter>();
         private readonly Queue<GameCommand> _commandQueue = new Queue<GameCommand>();
+        private readonly ValueWaiter<int> _queueSizeWaiter = new ValueWaiter<int>();
         private readonly GameDataAPI _api;
         private readonly GameDataReadAPI _readAPI;
 
@@ -33,13 +34,14 @@ namespace _Game.Scripts.ModelV4 {
         private void OnCommandGenerated(GameCommand command) {
             if (_isCommandRunning) {
                 _commandQueue.Enqueue(command);
+                _queueSizeWaiter.Value++;
                 return;
             }
 
             RunCommand(command);
         }
 
-        private void RunCommand(GameCommand command) {
+        private void RunCommand(GameCommand command, bool fromQueue = false) {
             _isCommandRunning = true;
             var presentProcess = new SerialProcess();
             _presenters
@@ -52,6 +54,10 @@ namespace _Game.Scripts.ModelV4 {
                 command.Do();
                 _isCommandRunning = false;
 
+                if (fromQueue) {
+                    _queueSizeWaiter.Value--;
+                }
+
                 TryRunNextCommand();
             });
 
@@ -61,8 +67,12 @@ namespace _Game.Scripts.ModelV4 {
                 }
 
                 var newCommand = _commandQueue.Dequeue();
-                RunCommand(newCommand);
+                RunCommand(newCommand, true);
             }
+        }
+
+        public void WaitForAllCommandsFinished(Action onDone) {
+            _queueSizeWaiter.WaitFor(0, onDone);
         }
 
         public void Dispose() {
