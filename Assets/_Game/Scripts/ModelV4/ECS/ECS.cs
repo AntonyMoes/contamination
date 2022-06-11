@@ -28,7 +28,7 @@ namespace _Game.Scripts.ModelV4.ECS {
             OnEntityDestroyed = new Event<Entity>(out _onEntityDestroyed);
         }
 
-        public void AddEntity(Func<int, Entity> entityCreator) {
+        public int AddEntity(Func<int, Entity> entityCreator) {
             var entity = entityCreator(_idCreator());
             foreach (var component in entity.Components) {
                 component.SubscribeProxy(this);
@@ -36,6 +36,8 @@ namespace _Game.Scripts.ModelV4.ECS {
 
             _entities.Add(entity.Id, entity);
             _onEntityCreated(entity);
+
+            return entity.Id;
         }
 
         public void RemoveEntity(int id) {

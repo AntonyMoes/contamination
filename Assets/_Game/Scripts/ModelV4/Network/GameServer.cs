@@ -57,7 +57,7 @@ namespace _Game.Scripts.ModelV4.Network {
             }, null, () => {
                 _notSynchronizedMessages.Value--;
             });
-            return new AsyncProcess(onDone => _notSynchronizedMessages.WaitFor(0, onDone));
+            return AsyncProcess.From(_notSynchronizedMessages.WaitFor, 0);
         }
 
         public Event<GameCommand, int> OnUserCommandReceived { get; }

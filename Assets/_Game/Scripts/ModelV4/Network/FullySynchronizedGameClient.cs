@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using _Game.Scripts.ModelV4.User;
 using _Game.Scripts.Network;
-using _Game.Scripts.Utils;
 using GeneralUtils;
 using GeneralUtils.Processes;
 using Guid = _Game.Scripts.Utils.Guid;
@@ -11,14 +10,14 @@ namespace _Game.Scripts.ModelV4.Network {
     // A client that waits for all other clients to receive its updates.
     // I will write the corresponding server if this will actually be used.
     public class FullySynchronizedGameClient : INetworkCommandSender, INetworkCommandReceiver {
-        private readonly Peer _serverPeer;
+        private readonly IPeer _serverPeer;
         private readonly ValueWaiter<int> _notSynchronizedMessages = new ValueWaiter<int>();
         private readonly List<string> _notSynchronizedGuids = new List<string>();
         private readonly Action<GameCommand, int> _onUserCommandReceived;
         private readonly Dictionary<int, ValueWaiter<string>> _synchronizationFinishers =
             new Dictionary<int, ValueWaiter<string>>();
 
-        public FullySynchronizedGameClient(Peer serverPeer) {
+        public FullySynchronizedGameClient(IPeer serverPeer) {
             _serverPeer = serverPeer;
             _serverPeer.GetReceiveEvent<SynchronizeMessage>().Subscribe(OnMessageSynchronized);
             _serverPeer.GetReceiveEvent<GameCommandMessage>().Subscribe(OnGameCommandReceived);
@@ -68,7 +67,7 @@ namespace _Game.Scripts.ModelV4.Network {
                 Guid = guid,
                 UserId = userId
             });
-            return new AsyncProcess(onDone => _notSynchronizedMessages.WaitFor(0, onDone));
+            return AsyncProcess.From(_notSynchronizedMessages.WaitFor, 0);
         }
 
         public Event<GameCommand, int> OnUserCommandReceived { get; }

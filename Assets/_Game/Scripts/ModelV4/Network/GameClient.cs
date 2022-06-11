@@ -8,13 +8,13 @@ using Guid = _Game.Scripts.Utils.Guid;
 
 namespace _Game.Scripts.ModelV4.Network {
     public class GameClient : INetworkCommandSender, INetworkCommandReceiver {
-        private readonly Peer _serverPeer;
+        private readonly IPeer _serverPeer;
         private readonly ValueWaiter<int> _notSynchronizedMessages = new ValueWaiter<int>();
         private readonly Action<GameCommand, int> _onUserCommandReceived;
         private readonly Dictionary<int, ValueWaiter<string>> _synchronizationFinishers =
             new Dictionary<int, ValueWaiter<string>>();
 
-        public GameClient(Peer serverPeer) {
+        public GameClient(IPeer serverPeer) {
             _serverPeer = serverPeer;
             _serverPeer.GetReceiveEvent<GameCommandMessage>().Subscribe(OnGameCommandReceived);
             _serverPeer.GetReceiveEvent<FinishSynchronizationMessage>().Subscribe(OnSynchronizationFinished);
@@ -52,7 +52,7 @@ namespace _Game.Scripts.ModelV4.Network {
             }, () => {
                 _notSynchronizedMessages.Value--;
             });
-            return new AsyncProcess(onDone => _notSynchronizedMessages.WaitFor(0, onDone));
+            return AsyncProcess.From(_notSynchronizedMessages.WaitFor, 0);
         }
 
         public Event<GameCommand, int> OnUserCommandReceived { get; }

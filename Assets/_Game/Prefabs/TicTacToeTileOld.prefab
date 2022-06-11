@@ -146,9 +146,9 @@ GameObject:
   - component: {fileID: 6056889209359279736}
   - component: {fileID: 6056889209359279737}
   - component: {fileID: 6056889209359279738}
-  - component: {fileID: -5701329519156130444}
+  - component: {fileID: 583486886}
   m_Layer: 5
-  m_Name: TicTacToeTile
+  m_Name: TicTacToeTileOld
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -256,7 +256,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &-5701329519156130444
+--- !u!114 &583486886
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -265,7 +265,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6056889209359279740}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 00200cb02b484b9d8dae74e046720e69, type: 3}
+  m_Script: {fileID: 11500000, guid: 727e085fb1f0408d90251c83f1b5a0e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _button: {fileID: 6056889209359279738}

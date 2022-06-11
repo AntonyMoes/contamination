@@ -14,8 +14,8 @@ namespace _Game.Scripts.ModelV4 {
             _turnController = turnController;
         }
 
-        public void AddEntity(Func<int, Entity> entityCreator) {
-            _ecs.AddEntity(entityCreator);
+        public int AddEntity(Func<int, Entity> entityCreator) {
+            return _ecs.AddEntity(entityCreator);
         }
 
         public void RemoveEntity(int id) {

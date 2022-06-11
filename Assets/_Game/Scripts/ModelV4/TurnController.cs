@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using _Game.Scripts.ModelV4.User;
 using GeneralUtils;
 using GeneralUtils.Processes;
+using UnityEngine;
 
 namespace _Game.Scripts.ModelV4 {
     public class TurnController : ICommandGenerator {
@@ -25,7 +26,11 @@ namespace _Game.Scripts.ModelV4 {
 
             OnTurnChanged = new Event<IReadOnlyUser, IReadOnlyUser>(out _onTurnChanged);
             OnCommandGenerated = new Event<GameCommand>(out _onCommandGenerated);
-            CurrentModifiableUser?.OnCommandGenerated.Subscribe(_onCommandGenerated);
+            CurrentModifiableUser?.OnCommandGenerated.Subscribe(OnUserCommandGenerated);
+        }
+
+        private void OnUserCommandGenerated(GameCommand command) {
+            _onCommandGenerated(command);
         }
 
         public void SetCommandSynchronizer(ICommandSynchronizer synchronizer) {
@@ -40,20 +45,26 @@ namespace _Game.Scripts.ModelV4 {
         }
 
         // Kinda hacky: synchronously switch current user, but continue to listen for their commands until sync ends.
+        // TODO: stop processing local commands in user on end turn but continue processing network commands until synced???
         public void EndTurn(bool endGame = false) {
             var currentUser = CurrentModifiableUser;
-            _currentUserIndex = endGame ? GetNextUserIndex(_currentUserIndex, _userSequence.Count) : -1;
+            _currentUserIndex = !endGame ? GetNextUserIndex(_currentUserIndex, _userSequence.Count) : -1;
             var newCurrentUser = CurrentModifiableUser;
 
             var endTurnProcess = new SerialProcess();
+            endTurnProcess.Add(new SyncProcess(() => Debug.Log($"Ending turn for {currentUser?.Id}")));
             endTurnProcess.Add(currentUser?.EndTurn() ?? new DummyProcess());
+            endTurnProcess.Add(new SyncProcess(() => Debug.Log($"Ended turn for {currentUser?.Id}")));
             endTurnProcess.Add(new AsyncProcess(_commandSynchronizer.WaitForAllCommandsFinished));
+            endTurnProcess.Add(new SyncProcess(() => Debug.Log("Synchronized commands")));
             endTurnProcess.Add(new SyncProcess(() => {
-                currentUser?.OnCommandGenerated.Unsubscribe(_onCommandGenerated);
-                newCurrentUser?.OnCommandGenerated.Subscribe(_onCommandGenerated);
+                // TODO: account for possible different synchronization times; command can already start pouring into the system
+                currentUser?.OnCommandGenerated.Unsubscribe(OnUserCommandGenerated);
+                newCurrentUser?.OnCommandGenerated.Subscribe(OnUserCommandGenerated);
                 _onTurnChanged.Invoke(currentUser, newCurrentUser);
                 newCurrentUser?.StartTurn();
             }));
+            endTurnProcess.Run();
         }
 
         public void UndoEndTurn(bool gameEnded = false) {

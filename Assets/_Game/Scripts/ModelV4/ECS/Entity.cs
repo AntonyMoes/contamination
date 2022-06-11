@@ -8,9 +8,10 @@ namespace _Game.Scripts.ModelV4.ECS {
         public int Id { get; }
         public IReadOnlyCollection<IComponent> Components => _components.Values;
 
-        public Entity(int id, params IComponent[] components) {
+        public Entity(int id, params Func<Entity, IComponent>[] componentInstantiators) {
             Id = id;
-            foreach (var component in components) {
+            foreach (var componentInstantiator in componentInstantiators) {
+                var component = componentInstantiator(this);
                 var componentType = component.GetType();
                 if (_components.ContainsKey(componentType)) {
                     throw new Exception($"Trying to add component of type \"{componentType}\" " +
