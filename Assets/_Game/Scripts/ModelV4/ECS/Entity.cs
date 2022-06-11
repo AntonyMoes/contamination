@@ -22,24 +22,28 @@ namespace _Game.Scripts.ModelV4.ECS {
             }
         }
 
-        public Component<TComponentData> GetComponent<TComponent, TComponentData>()
-            where TComponent : Component<TComponentData>
+        public static Func<Entity, IComponent> Add<TComponentData>(TComponentData data)
             where TComponentData : struct, ISame<TComponentData> {
-            return _components.TryGetValue(typeof(TComponent), out var component)
+            return entity => new Component<TComponentData>(entity) {
+                Data = data
+            };
+        }
+
+        private Component<TComponentData> GetComponent<TComponentData>()
+            where TComponentData : struct, ISame<TComponentData> {
+            return _components.TryGetValue(typeof(TComponentData), out var component)
                 ? (Component<TComponentData>) component
                 : null;
         }
 
-        public IComponent<TComponentData> GetModifiableComponent<TComponent, TComponentData>()
-            where TComponent : Component<TComponentData>
+        public IComponent<TComponentData> GetModifiableComponent<TComponentData>()
             where TComponentData : struct, ISame<TComponentData> {
-            return GetComponent<TComponent, TComponentData>();
+            return GetComponent<TComponentData>();
         }
 
-        public IReadOnlyComponent<TComponentData> GetReadOnlyComponent<TComponent, TComponentData>()
-            where TComponent : Component<TComponentData>
+        public IReadOnlyComponent<TComponentData> GetReadOnlyComponent<TComponentData>()
             where TComponentData : struct, ISame<TComponentData> {
-            return GetComponent<TComponent, TComponentData>();
+            return GetComponent<TComponentData>();
         }
     }
 }

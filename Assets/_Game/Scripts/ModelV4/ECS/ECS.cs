@@ -53,34 +53,33 @@ namespace _Game.Scripts.ModelV4.ECS {
             _onEntityDestroyed(entity);
         }
 
-        public Event<TComponentData, IReadOnlyComponent<TComponentData>> GetComponentUpdateEvent<TComponent, TComponentData>()
-            where TComponent : Component<TComponentData>
+        public Event<TComponentData, IReadOnlyComponent<TComponentData>> GetComponentUpdateEvent<TComponentData>()
             where TComponentData : struct, ISame<TComponentData> {
-            return GetEventPair<TComponentData>(typeof(TComponent)).updateEvent;
+            return GetEventPair<TComponentData>(typeof(TComponentData)).updateEvent;
         }
 
-        public void RegisterComponent<TComponentData>(Type componentType, Event<TComponentData, IReadOnlyComponent<TComponentData>> updateEvent)
+        public void RegisterComponent<TComponentData>(Event<TComponentData, IReadOnlyComponent<TComponentData>> updateEvent)
             where TComponentData : struct, ISame<TComponentData> {
-            updateEvent.Subscribe(GetEventPair<TComponentData>(componentType).invoker);
+            updateEvent.Subscribe(GetEventPair<TComponentData>(typeof(TComponentData)).invoker);
         }
 
-        public void UnregisterComponent<TComponentData>(Type componentType, Event<TComponentData, IReadOnlyComponent<TComponentData>> updateEvent)
+        public void UnregisterComponent<TComponentData>(Event<TComponentData, IReadOnlyComponent<TComponentData>> updateEvent)
             where TComponentData : struct, ISame<TComponentData> {
-            updateEvent.Unsubscribe(GetEventPair<TComponentData>(componentType).invoker);
+            updateEvent.Unsubscribe(GetEventPair<TComponentData>(typeof(TComponentData)).invoker);
         }
 
         private (Event<TComponentData, IReadOnlyComponent<TComponentData>> updateEvent, Action<TComponentData, IReadOnlyComponent<TComponentData>> invoker)
-            GetEventPair<TComponentData>(Type componentType)
+            GetEventPair<TComponentData>(Type dataType)
             where TComponentData : struct, ISame<TComponentData> {
-            if (_componentUpdateEvents.TryGetValue(componentType, out var updateEventObject)) {
-                var invokerObject = _componentUpdateInvokers[componentType];
+            if (_componentUpdateEvents.TryGetValue(dataType, out var updateEventObject)) {
+                var invokerObject = _componentUpdateInvokers[dataType];
                 return ((Event<TComponentData, IReadOnlyComponent<TComponentData>>) updateEventObject,
                     (Action<TComponentData, IReadOnlyComponent<TComponentData>>) invokerObject);
             }
 
             var updateEvent = new Event<TComponentData, IReadOnlyComponent<TComponentData>>(out var invoker);
-            _componentUpdateEvents[componentType] = updateEvent;
-            _componentUpdateInvokers[componentType] = invoker;
+            _componentUpdateEvents[dataType] = updateEvent;
+            _componentUpdateInvokers[dataType] = invoker;
             return (updateEvent, invoker);
         }
     }

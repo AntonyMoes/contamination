@@ -1,12 +1,9 @@
-﻿using System;
-
-namespace _Game.Scripts.ModelV4.NetTicTacToeExample {
+﻿namespace _Game.Scripts.ModelV4.NetTicTacToeExample.Commands {
     public class WinCommand : GameCommand {
         public int Winner;
         
-        protected override Action<GameDataAPI> PerformReversibleDoOnData(GameDataAPI api) {
+        protected override void PerformDoOnData(GameDataAPI api) {
             api.EndTurn(true);
-            return api => api.UndoEndTurn(true);
         }
 
         public override string SerializeContents() {

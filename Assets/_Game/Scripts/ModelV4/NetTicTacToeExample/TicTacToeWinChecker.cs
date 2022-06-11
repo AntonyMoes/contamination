@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using _Game.Scripts.ModelV4.ECS;
+using _Game.Scripts.ModelV4.NetTicTacToeExample.Commands;
+using _Game.Scripts.ModelV4.NetTicTacToeExample.Data;
 using GeneralUtils;
 using GeneralUtils.Processes;
 using UnityEngine;
@@ -12,13 +14,13 @@ namespace _Game.Scripts.ModelV4.NetTicTacToeExample {
 
         public TicTacToeWinChecker(GameDataEventsAPI api) {
             OnCommandGenerated = new Event<GameCommand>(out _onCommandGenerated);
-            api.GetComponentUpdateEvent<MarkComponent, MarkComponent.MarkData>().Subscribe(OnMarkUpdated);
+            api.GetComponentUpdateEvent<MarkData>().Subscribe(OnMarkUpdated);
         }
 
-        private void OnMarkUpdated(MarkComponent.MarkData oldData, IReadOnlyComponent<MarkComponent.MarkData> component) {
+        private void OnMarkUpdated(MarkData oldData, IReadOnlyComponent<MarkData> component) {
             var data = component.Data;
             var settings = _readApi.Entities.GetSettings();
-            var position = component.Entity.GetReadOnlyComponent<PositionComponent, PositionComponent.PositionData>().Data;
+            var position = component.Entity.GetReadOnlyComponent<PositionData>().Data;
             if (CheckRow(data.Mark, position.Row, settings.Size)
                 || CheckColumn(data.Mark, position.Column, settings.Size)
                 || CheckDiagonal(data.Mark, position.Row, position.Column, settings.Size)) {
@@ -26,16 +28,16 @@ namespace _Game.Scripts.ModelV4.NetTicTacToeExample {
                     Winner = settings.PlayerPerMark[data.Mark]
                 });
             } else if (_readApi.Entities
-                .Select(e => e.GetReadOnlyComponent<MarkComponent, MarkComponent.MarkData>())
+                .Select(e => e.GetReadOnlyComponent<MarkData>())
                 .Where(c => c != null)
-                .All(c => c.Data.Mark != MarkComponent.EMark.None)) {
+                .All(c => c.Data.Mark != MarkData.EMark.None)) {
                 _onCommandGenerated(new WinCommand {
                     Winner = -1
                 });
             }
         }
 
-        private bool CheckRow(MarkComponent.EMark mark, int row, int size) {
+        private bool CheckRow(MarkData.EMark mark, int row, int size) {
             for (var i = 0; i < size; i++) {
                 if (_readApi.Entities.AtCoordinates(row, i).Data.Mark != mark) {
                     return false;
@@ -45,7 +47,7 @@ namespace _Game.Scripts.ModelV4.NetTicTacToeExample {
             return true;
         }
 
-        private bool CheckColumn(MarkComponent.EMark mark, int column, int size) {
+        private bool CheckColumn(MarkData.EMark mark, int column, int size) {
             for (var i = 0; i < size; i++) {
                 if (_readApi.Entities.AtCoordinates(i, column).Data.Mark != mark) {
                     return false;
@@ -55,7 +57,7 @@ namespace _Game.Scripts.ModelV4.NetTicTacToeExample {
             return true;
         }
 
-        private bool CheckDiagonal(MarkComponent.EMark mark, int row, int column, int size) {
+        private bool CheckDiagonal(MarkData.EMark mark, int row, int column, int size) {
             var columnSelectors = new Func<int, int>[] {
                 r => r,
                 r => size - r - 1

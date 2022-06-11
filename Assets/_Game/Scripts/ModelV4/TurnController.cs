@@ -67,10 +67,6 @@ namespace _Game.Scripts.ModelV4 {
             endTurnProcess.Run();
         }
 
-        public void UndoEndTurn(bool gameEnded = false) {
-            // TODO ??????????
-        }
-
         private static int GetNextUserIndex(int currentUserIndex, int userCount) {
             return (currentUserIndex + 1) % userCount;
         }

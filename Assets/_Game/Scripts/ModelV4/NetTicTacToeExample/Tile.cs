@@ -1,4 +1,5 @@
 ﻿using System;
+using _Game.Scripts.ModelV4.NetTicTacToeExample.Data;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,11 +11,11 @@ namespace _Game.Scripts.ModelV4.NetTicTacToeExample {
 
         public Button.ButtonClickedEvent OnClick => _button.onClick;
 
-        public void SetMark(MarkComponent.EMark mark) {
+        public void SetMark(MarkData.EMark mark) {
             _label.text = mark switch {
-                MarkComponent.EMark.None => "-",
-                MarkComponent.EMark.X => "X",
-                MarkComponent.EMark.O => "O",
+                MarkData.EMark.None => "-",
+                MarkData.EMark.X => "X",
+                MarkData.EMark.O => "O",
                 _ => throw new ArgumentOutOfRangeException(nameof(mark), mark, null)
             };
         }

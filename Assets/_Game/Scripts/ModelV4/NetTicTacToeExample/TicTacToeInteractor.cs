@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using _Game.Scripts.ModelV4.NetTicTacToeExample.Commands;
+using _Game.Scripts.ModelV4.NetTicTacToeExample.Data;
 using GeneralUtils;
 using GeneralUtils.Processes;
 using UnityEngine;
@@ -34,7 +36,7 @@ namespace _Game.Scripts.ModelV4.NetTicTacToeExample {
             for (var i = 0; i < initCommand.Size; i++) {
                 for (var j = 0; j < initCommand.Size; j++) {
                     var tile = Instantiate(_tilePrefab, _layout.transform);
-                    tile.SetMark(MarkComponent.EMark.None);
+                    tile.SetMark(MarkData.EMark.None);
                     tile.OnClick.AddListener(() => OnTileClick(tile));
                     _tiles.Add(tile);
                 }
@@ -43,7 +45,7 @@ namespace _Game.Scripts.ModelV4.NetTicTacToeExample {
 
         private void MarkTile(MarkCommand markCommand) {
             var entity = _readApi.Entities.First(e => e.Id == markCommand.EntityId);
-            var position = entity.GetReadOnlyComponent<PositionComponent, PositionComponent.PositionData>().Data;
+            var position = entity.GetReadOnlyComponent<PositionData>().Data;
             var settings = _readApi.Entities.GetSettings();
             _tiles[position.Row * settings.Size + position.Column].SetMark(markCommand.Mark);
         }
@@ -60,7 +62,7 @@ namespace _Game.Scripts.ModelV4.NetTicTacToeExample {
             var tileIndex = _tiles.IndexOf(tile);
             var (row, column) = TileIndexToRowAndColumn(_readApi.Entities.GetSettings().Size, tileIndex);
             var markComponent = _readApi.Entities.AtCoordinates(row, column);
-            if (markComponent.Data.Mark == MarkComponent.EMark.None) {
+            if (markComponent.Data.Mark == MarkData.EMark.None) {
                 var settings = _readApi.Entities.GetSettings();
                 _onCommandGenerated(new MarkCommand {
                     EntityId = markComponent.Entity.Id,

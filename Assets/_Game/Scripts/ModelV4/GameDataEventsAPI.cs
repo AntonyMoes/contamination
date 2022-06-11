@@ -24,10 +24,9 @@ namespace _Game.Scripts.ModelV4 {
             });
         }
 
-        public Event<TComponentData, IReadOnlyComponent<TComponentData>> GetComponentUpdateEvent<TComponent, TComponentData>()
-            where TComponent : Component<TComponentData>
+        public Event<TComponentData, IReadOnlyComponent<TComponentData>> GetComponentUpdateEvent<TComponentData>()
             where TComponentData : struct, ISame<TComponentData> {
-            return _ecs.GetComponentUpdateEvent<TComponent, TComponentData>();
+            return _ecs.GetComponentUpdateEvent<TComponentData>();
         }
     }
 }

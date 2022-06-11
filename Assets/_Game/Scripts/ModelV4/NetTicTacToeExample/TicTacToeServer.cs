@@ -1,4 +1,6 @@
-﻿using _Game.Scripts.ModelV4.Network;
+﻿using _Game.Scripts.ModelV4.NetTicTacToeExample.Commands;
+using _Game.Scripts.ModelV4.NetTicTacToeExample.Data;
+using _Game.Scripts.ModelV4.Network;
 using UnityEngine;
 using _Game.Scripts.Network;
 
@@ -57,7 +59,7 @@ namespace _Game.Scripts.ModelV4.NetTicTacToeExample {
                     InitialCommand = new TicTacToeInitialCommand {
                         Size = _size,
                         Players = users,
-                        Marks = new [] {MarkComponent.EMark.X, MarkComponent.EMark.O}
+                        Marks = new [] {MarkData.EMark.X, MarkData.EMark.O}
                     },
                     CurrenUser = id,
                     UserSequence = users,

@@ -2,14 +2,12 @@
     public interface IReadOnlyEntity {
         public int Id { get; }
 
-        public IReadOnlyComponent<TComponentData> GetReadOnlyComponent<TComponent, TComponentData>()
-            where TComponent : Component<TComponentData>
+        public IReadOnlyComponent<TComponentData> GetReadOnlyComponent<TComponentData>()
             where TComponentData : struct, ISame<TComponentData>;
     }
 
     public interface IEntity : IReadOnlyEntity {
-        public IComponent<TComponentData> GetModifiableComponent<TComponent, TComponentData>()
-            where TComponent : Component<TComponentData>
+        public IComponent<TComponentData> GetModifiableComponent<TComponentData>()
             where TComponentData : struct, ISame<TComponentData>;
     }
 }

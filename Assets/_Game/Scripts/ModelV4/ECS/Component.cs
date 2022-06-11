@@ -29,11 +29,11 @@ namespace _Game.Scripts.ModelV4.ECS {
         }
 
         public void SubscribeProxy(IComponentUpdateProxy updateProxy) {
-            updateProxy.RegisterComponent(GetType(), _onDataUpdate);
+            updateProxy.RegisterComponent(_onDataUpdate);
         }
 
         public void UnsubscribeProxy(IComponentUpdateProxy updateProxy) {
-            updateProxy.UnregisterComponent(GetType(), _onDataUpdate);
+            updateProxy.UnregisterComponent(_onDataUpdate);
         }
     }
 }

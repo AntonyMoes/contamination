@@ -25,9 +25,5 @@ namespace _Game.Scripts.ModelV4 {
         public void EndTurn(bool endGame = false) {
             _turnController.EndTurn(endGame);
         }
-
-        public void UndoEndTurn(bool gameEnded = false) {
-            _turnController.UndoEndTurn(gameEnded);
-        }
     }
 }
