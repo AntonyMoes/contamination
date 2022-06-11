@@ -31,7 +31,7 @@ namespace _Game.Scripts.ModelV4.ECS {
 
         private Component<TComponentData> GetComponent<TComponentData>()
             where TComponentData : struct, ISame<TComponentData> {
-            return _components.TryGetValue(typeof(TComponentData), out var component)
+            return _components.TryGetValue(typeof(Component<TComponentData>), out var component)
                 ? (Component<TComponentData>) component
                 : null;
         }
