@@ -15,11 +15,11 @@ namespace _Game.Scripts.ModelV4.NetTicTacToeExample.Commands {
             api.EndTurn();
         }
 
-        public override string SerializeContents() {
+        protected override string SerializeContents() {
             return $"{Mark};{EntityId}";
         }
 
-        public override void DeserializeContents(string contents) {
+        protected override void DeserializeContents(string contents) {
             var args = contents.Split(';');
             Enum.TryParse(args[0], out Mark);
             EntityId = int.Parse(args[1]);

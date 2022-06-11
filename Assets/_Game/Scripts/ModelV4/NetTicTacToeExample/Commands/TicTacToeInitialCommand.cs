@@ -34,13 +34,13 @@ namespace _Game.Scripts.ModelV4.NetTicTacToeExample.Commands {
             }
         }
 
-        public override string SerializeContents() {
+        protected override string SerializeContents() {
             return $"{Size};{Players.Length};"
                              + Players.Select(id => $"{id};").Aggregate((str1, str2) => str1 + str2)
                              + Marks.Select(mark => $"{mark};").Aggregate((str1, str2) => str1 + str2);
         }
 
-        public override void DeserializeContents(string contents) {
+        protected override void DeserializeContents(string contents) {
             var args = contents.Split(';');
             Size = int.Parse(args[0]);
             var arraySize = int.Parse(args[1]);

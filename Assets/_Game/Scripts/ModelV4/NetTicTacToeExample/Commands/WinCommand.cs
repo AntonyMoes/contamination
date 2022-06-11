@@ -6,11 +6,11 @@
             api.EndTurn(true);
         }
 
-        public override string SerializeContents() {
+        protected override string SerializeContents() {
             return Winner.ToString();
         }
 
-        public override void DeserializeContents(string contents) {
+        protected override void DeserializeContents(string contents) {
             Winner = int.Parse(contents);
         }
     }

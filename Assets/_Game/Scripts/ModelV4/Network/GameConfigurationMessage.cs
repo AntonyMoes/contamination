@@ -9,14 +9,14 @@ namespace _Game.Scripts.ModelV4.Network {
         public int CurrenUser;
         
         public override void Serialize(NetDataWriter writer) {
-            writer.Put(InitialCommand);
+            writer.Put(InitialCommand.Serialize());
             writer.PutArray(UserSequence);
             writer.PutArray(UserNames);
             writer.Put(CurrenUser);
         }
 
         public override void Deserialize(NetDataReader reader) {
-            InitialCommand = reader.GetCommand();
+            InitialCommand = GameCommand.Deserialize(reader.GetString());
             UserSequence = reader.GetIntArray();
             UserNames = reader.GetStringArray();
             CurrenUser = reader.GetInt();

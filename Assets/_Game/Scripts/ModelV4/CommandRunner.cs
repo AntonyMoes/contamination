@@ -43,7 +43,7 @@ namespace _Game.Scripts.ModelV4 {
         }
 
         private void RunCommand(GameCommand command, bool fromQueue = false) {
-            Debug.Log($"Running command {command.GetType()}, {command.SerializeContents()}");
+            Debug.Log($"Running command {command.Serialize()}");
             _isCommandRunning = true;
             var presentProcess = new SerialProcess();
             _presenters
@@ -55,7 +55,7 @@ namespace _Game.Scripts.ModelV4 {
                 command.ProvideDataApi(_api);
                 command.Do();
                 _isCommandRunning = false;
-                Debug.Log($"Finished command {command.GetType()}, {command.SerializeContents()}");
+                Debug.Log($"Finished command {command.Serialize()}");
 
                 if (fromQueue) {
                     _queueSizeWaiter.Value--;

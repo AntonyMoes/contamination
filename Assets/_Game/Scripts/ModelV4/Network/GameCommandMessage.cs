@@ -10,12 +10,12 @@ namespace _Game.Scripts.ModelV4.Network {
 
         public override void Serialize(NetDataWriter writer) {
             writer.Put(UserId);
-            writer.Put(Command);
+            writer.Put(Command.Serialize());
         }
 
         public override void Deserialize(NetDataReader reader) {
             UserId = reader.GetInt();
-            Command = reader.GetCommand();
+            Command = GameCommand.Deserialize(reader.GetString());
         }
     }
 }
