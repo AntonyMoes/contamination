@@ -8,12 +8,12 @@ namespace _Game.Scripts.ModelV4.Network {
         public int UserId;
         public GameCommand Command;
 
-        public override void Serialize(NetDataWriter writer) {
+        public override void SerializeContents(NetDataWriter writer) {
             writer.Put(UserId);
             writer.Put(Command.Serialize());
         }
 
-        public override void Deserialize(NetDataReader reader) {
+        public override void DeserializeContents(NetDataReader reader) {
             UserId = reader.GetInt();
             Command = GameCommand.Deserialize(reader.GetString());
         }

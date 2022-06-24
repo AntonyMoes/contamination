@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace LiteNetLib.Utils
 {
@@ -46,6 +47,8 @@ namespace LiteNetLib.Utils
         protected virtual SubscribeDelegate GetCallbackFromData(NetDataReader reader)
         {
             ulong hash = reader.GetULong();
+            Debug.Log($"|NPP|: Receiving hash: {hash}");
+
             if (!_callbacks.TryGetValue(hash, out var action))
             {
                 throw new ParseException("Undefined packet in NetDataReader");
@@ -55,6 +58,7 @@ namespace LiteNetLib.Utils
 
         protected virtual void WriteHash<T>(NetDataWriter writer)
         {
+            Debug.Log($"|NPP|: Sending hash of {typeof(T)}: {GetHash<T>()}");
             writer.Put(GetHash<T>());
         }
 

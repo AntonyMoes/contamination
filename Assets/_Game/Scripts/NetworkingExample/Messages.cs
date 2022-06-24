@@ -7,11 +7,11 @@ namespace _Game.Scripts.NetworkingExample {
     public class ChatMessage : Message {
         public string Text;
 
-        public override void Serialize(NetDataWriter writer) {
+        public override void SerializeContents(NetDataWriter writer) {
             writer.Put(Text);
         }
 
-        public override void Deserialize(NetDataReader reader) {
+        public override void DeserializeContents(NetDataReader reader) {
             Text = reader.GetString();
         }
     }
@@ -22,12 +22,12 @@ namespace _Game.Scripts.NetworkingExample {
         public int Seed;
         public List<int> List;
 
-        public override void Serialize(NetDataWriter writer) {
+        public override void SerializeContents(NetDataWriter writer) {
             writer.Put(Seed);
             writer.PutArray(List.ToArray());
         }
 
-        public override void Deserialize(NetDataReader reader) {
+        public override void DeserializeContents(NetDataReader reader) {
             Seed = reader.GetInt();
             List = reader.GetIntArray().ToList();
         }

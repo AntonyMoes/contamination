@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using GeneralUtils;
+using GeneralUtils.Processes;
 using LiteNetLib;
 using LiteNetLib.Utils;
+using UnityEngine;
 
 namespace _Game.Scripts.Network {
     public class Peer : IPeer {
@@ -41,6 +43,42 @@ namespace _Game.Scripts.Network {
             _netPeer.SendWithDeliveryEvent(_cachedWriter, 0, deliveryMethod, guid);
         }
 
+        public void SendMessage<TMessage>(TMessage message, Message respondsTo = null, Action onDone = null)
+            where TMessage : Message, new() {
+            message.SetRespondsToId(respondsTo?.Id);
+            Send(message, onDone);
+        }
+
+        public Process SendWithResponse<TMessage, TResponse>(TMessage message, Message respondsTo = null, Action<TResponse, IPeer> onDone = null)
+            where TMessage : Message, new()
+            where TResponse : Message, new() {
+            var responseWaiter = new ValueWaiter<TResponse>();
+            GetReceiveEvent<TResponse>().Subscribe(Subscriber);
+
+            var trace = Environment.StackTrace;
+            
+            var sendProcess = new SerialProcess();
+            Debug.Log($"Sending message of type {typeof(TMessage)} and awaiting response of type {typeof(TResponse)}");
+            sendProcess.Add(SyncProcess.From(SendMessage, message, respondsTo, (Action) null));
+            sendProcess.Add(new AsyncProcess(responseWaiter.WaitForChange));
+            sendProcess.Add(new SyncProcess(() => {
+                var a = trace;
+                Debug.Log($"Invoking response handler of type {typeof(TResponse)} for message of type {typeof(TMessage)}");
+                onDone?.Invoke(responseWaiter.Value, this);
+            }));
+            sendProcess.Run();
+
+            return sendProcess;
+
+            void Subscriber(TResponse response, IPeer _) {
+                Debug.Log("Subscriber got response");
+                if (response.RespondsToId == message.Id) {
+                    GetReceiveEvent<TResponse>().Unsubscribe(Subscriber);
+                    responseWaiter.Value = response;
+                }
+            }
+        }
+
         public bool CorrespondsTo(NetPeer netPeer) {
             return _netPeer == netPeer;
         }
@@ -75,18 +113,6 @@ namespace _Game.Scripts.Network {
         public void Dispose() {
             _deliveryEvent.Unsubscribe(OnDelivery);
             _networkReceiveEvent.Unsubscribe(OnNetworkReceive);
-        }
-
-        public static Func<NetPeer, Peer> CreateInitializerForEventListener(EventBasedNetListener listener) {
-            var deliveryEvent = new Event<NetPeer, object>(out var deliveryInvoker);
-            listener.DeliveryEvent += (peer, data) => deliveryInvoker(peer, data);
-
-            var networkReceiveEvent = new Event<NetPeer, NetDataReader>(out var networkReceiveInvoker);
-            listener.NetworkReceiveEvent += (peer, reader, channel, method) => {
-                networkReceiveInvoker(peer, reader);
-            };
-
-            return netPeer => new Peer(netPeer, deliveryEvent, networkReceiveEvent);
         }
     }
 }

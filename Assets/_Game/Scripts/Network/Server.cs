@@ -6,7 +6,7 @@ using LiteNetLib;
 using LiteNetLib.Utils;
 
 namespace _Game.Scripts.Network {
-    public class Server  : IDisposable, INetEventListener, IDeliveryEventListener {
+    public class Server : IDisposable, INetEventListener, IDeliveryEventListener {
         private readonly int _port;
         private readonly string _authKey;
         private readonly NetManager _server;

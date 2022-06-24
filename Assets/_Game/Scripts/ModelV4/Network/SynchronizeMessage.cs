@@ -5,11 +5,11 @@ namespace _Game.Scripts.ModelV4.Network {
     public class SynchronizeMessage : Message {
         public string Guid;
 
-        public override void Serialize(NetDataWriter writer) {
+        public override void SerializeContents(NetDataWriter writer) {
             writer.Put(Guid);
         }
 
-        public override void Deserialize(NetDataReader reader) {
+        public override void DeserializeContents(NetDataReader reader) {
             Guid = reader.GetString();
         }
     }
