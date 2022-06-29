@@ -14,6 +14,8 @@ namespace _Game.Scripts.Lobby {
 
         private Action _onLobbyUpdate;
         public Event OnLobbyUpdate { get; }
+        private Action _onServerGameStart;
+        public Event OnServerGameStart { get; }
 
         public EState State => _stateSwitcher.State;
         public bool RequestInProcess => _sendProcesses.Count != 0;
@@ -21,9 +23,11 @@ namespace _Game.Scripts.Lobby {
         public string Id { get; private set; }
         public string RoomId { get; private set; }
 
+
         public LobbyClient(IPeer serverPeer) {
             _serverPeer = serverPeer;
             OnLobbyUpdate = new Event(out _onLobbyUpdate);
+            OnServerGameStart = new Event(out _onServerGameStart);
         }
 
         public void TryJoinLobby(string name, Action<bool> onDone) {
@@ -64,12 +68,24 @@ namespace _Game.Scripts.Lobby {
 
         public void TryJoinRoom(string id, string password, Action<bool> onDone) {
             _stateSwitcher.CheckState(EState.Connected, EState.InRoom);
-            TryTransitRoom(id, password, true, onDone);
+            TryTransitRoom(id, password, true, joined => {
+                if (joined) {
+                    EnableGameStartSubscription(true);
+                }
+
+                onDone?.Invoke(joined);
+            });
         }
 
         public void TryLeaveRoom(Action<bool> onDone) {
             _stateSwitcher.CheckState(EState.InRoom);
-            TryTransitRoom(RoomId, null, true, onDone);
+            TryTransitRoom(RoomId, null, false, left => {
+                if (left) {
+                    EnableGameStartSubscription(false);
+                }
+
+                onDone?.Invoke(left);
+            });
         }
 
         private void TryTransitRoom(string id, string password, bool join, Action<bool> onDone) {
@@ -82,7 +98,7 @@ namespace _Game.Scripts.Lobby {
             void RoomTransitResponseHandler(RoomTransitResponseMessage<TRoomSettings> message, IPeer _) {
                 if (message.RefuseReason == RoomTransitResponseMessage<TRoomSettings>.ERefuseReason.None) {
                     if (join) {
-                        _stateSwitcher.CheckAndSwitchState(EState.InRoom, EState.Connected);
+                        _stateSwitcher.CheckAndSwitchState(EState.InRoom, EState.Connected, EState.InRoom);
                         RoomId = id;
                     } else {
                         _stateSwitcher.CheckAndSwitchState(EState.Connected, EState.InRoom);
@@ -126,6 +142,11 @@ namespace _Game.Scripts.Lobby {
             }
         }
 
+        private void OnServerGameStartMessage(ServerGameStartMessage _, IPeer __) {
+            HandleDisconnect(EState.InRoom);
+            _onServerGameStart();
+        }
+
         public void TryStartGame(Action<bool> onDone) {
             _stateSwitcher.CheckState(EState.InRoom);
             Send<GameStartMessage, GameStartResponseMessage>(new GameStartMessage(), GameStartResponseHandler);
@@ -141,6 +162,10 @@ namespace _Game.Scripts.Lobby {
         }
 
         private void HandleDisconnect(params EState[] expected) {
+            if (State == EState.InRoom) {
+                EnableGameStartSubscription(false);
+            }
+
             _stateSwitcher.CheckAndSwitchState(EState.NotConnected, expected);
 
             LobbyData = null;
@@ -148,6 +173,15 @@ namespace _Game.Scripts.Lobby {
             RoomId = null;
 
             EnableUpdatesSubscription(false);
+        }
+
+        private void EnableGameStartSubscription(bool enabled) {
+            var @event = _serverPeer.GetReceiveEvent<ServerGameStartMessage>();
+            if (enabled) {
+                @event.Subscribe(OnServerGameStartMessage);
+            } else {
+                @event.Unsubscribe(OnServerGameStartMessage);
+            }
         }
 
         private void EnableUpdatesSubscription(bool enabled) {

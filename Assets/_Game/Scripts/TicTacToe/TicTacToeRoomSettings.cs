@@ -40,8 +40,8 @@ namespace _Game.Scripts.TicTacToe {
             }
         }
 
-        public bool CanMakeUpdate(string userId, TicTacToeRoomSettings update) {
-            return userId == HostId;
+        public bool CanMakeUpdate(LobbyUser.Data user, TicTacToeRoomSettings update) {
+            return user.Id == HostId;
         }
 
         public void MakeUpdate(TicTacToeRoomSettings update) {
@@ -54,8 +54,8 @@ namespace _Game.Scripts.TicTacToe {
             }
         }
 
-        public bool CanStartGame(string userId) {
-            return userId == HostId && Users.Count == MaxUsers;
+        public bool CanStartGame(LobbyUser.Data user) {
+            return user.Id == HostId && Users.Count == MaxUsers;
         }
 
         public void Serialize(NetDataWriter writer) {

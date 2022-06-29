@@ -43,7 +43,7 @@ namespace _Game.Scripts.Lobby {
         }
 
         public bool CanMakeUpdate(LobbyUser user, TRoomSettings update) {
-            return _users.Contains(user) && _roomSettings.CanMakeUpdate(user.Id, update);
+            return _users.Contains(user) && _roomSettings.CanMakeUpdate(user.GetData(), update);
         }
 
         public void MakeUpdate(TRoomSettings update) {
@@ -51,7 +51,7 @@ namespace _Game.Scripts.Lobby {
         }
 
         public bool CanStartGame(LobbyUser user) {
-            return _users.Contains(user) && _roomSettings.CanStartGame(user.Id);
+            return _users.Contains(user) && _roomSettings.CanStartGame(user.GetData());
         }
 
         public Data GetData() {

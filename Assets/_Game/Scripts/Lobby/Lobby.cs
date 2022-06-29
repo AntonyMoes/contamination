@@ -90,28 +90,36 @@ namespace _Game.Scripts.Lobby {
             if (room != null) {
                 SendLobbyUpdate(LobbyUpdateMessage<TRoomSettings>.EActionType.Delete, room: room, except: peer);
             }
+
             SendLobbyUpdate(LobbyUpdateMessage<TRoomSettings>.EActionType.Delete, user, except: peer);
         }
 
         private void OnRoomTransit(RoomTransitMessage message, IPeer peer) {
             var user = _users.FirstOrDefault(u => u.Peer == peer);
-            var oldRoom = _rooms.FirstOrDefault(r => r.Users.Contains(user));
             var room = _rooms.FirstOrDefault(r => r.Id == message.RoomId);
+            var oldRoom = message.Join
+                ? _rooms.FirstOrDefault(r => r.Users.Contains(user))
+                : room;
+            var newRoom = message.Join ? room : null;
 
             var oldRoomStillExists = true;
             RoomTransitResponseMessage<TRoomSettings>.ERefuseReason reason;
             if (user == null) {
                 reason = RoomTransitResponseMessage<TRoomSettings>.ERefuseReason.NotAuthorized;
-            } else if (message.Join && room == null || !message.Join && oldRoom == null) {
+            } else if (message.Join && newRoom == null || !message.Join && oldRoom == null) {
                 reason = RoomTransitResponseMessage<TRoomSettings>.ERefuseReason.NoRoom;
-            } else if (message.Join && !room!.CheckPassword(message.Password)) {
+            } else if (message.Join && !newRoom.CheckPassword(message.Password)) {
                 reason = RoomTransitResponseMessage<TRoomSettings>.ERefuseReason.WrongPassword;
-            } else if (message.Join && !room!.TryAddUser(user)) {
+            } else if (message.Join && !newRoom.TryAddUser(user)) {
                 reason = RoomTransitResponseMessage<TRoomSettings>.ERefuseReason.NotAllowed;
             } else {
                 if (oldRoom != null) {
                     oldRoomStillExists = oldRoom.RemoveUser(user);
+                    if (!oldRoomStillExists) {
+                        _rooms.Remove(oldRoom);
+                    }
                 }
+
                 reason = RoomTransitResponseMessage<TRoomSettings>.ERefuseReason.None;
             }
 
@@ -121,13 +129,20 @@ namespace _Game.Scripts.Lobby {
             }, message);
 
             var accepted = reason == RoomTransitResponseMessage<TRoomSettings>.ERefuseReason.None;
-            if (accepted) {
-                SendLobbyUpdate(LobbyUpdateMessage<TRoomSettings>.EActionType.CreateOrUpdate, room: room, except: peer);
+            if (!accepted) {
+                return;
+            }
+
+            if (oldRoom != null) {
                 SendLobbyUpdate(
                     !oldRoomStillExists
                         ? LobbyUpdateMessage<TRoomSettings>.EActionType.Delete
                         : LobbyUpdateMessage<TRoomSettings>.EActionType.CreateOrUpdate,
                     room: oldRoom, except: peer);
+            }
+
+            if (newRoom != null) {
+                SendLobbyUpdate(LobbyUpdateMessage<TRoomSettings>.EActionType.CreateOrUpdate, room: newRoom, except: peer);
             }
         }
 
@@ -181,7 +196,7 @@ namespace _Game.Scripts.Lobby {
         private void OnGameStart(GameStartMessage message, IPeer peer) {
             var user = _users.FirstOrDefault(u => u.Peer == peer);
 
-            Action gameStarter = null;
+            Room<TRoomSettings> roomToRemove = null;
             GameStartResponseMessage.ERefuseReason reason;
             if (user == null) {
                 reason = GameStartResponseMessage.ERefuseReason.NotAuthorized;
@@ -190,15 +205,7 @@ namespace _Game.Scripts.Lobby {
             } else if (!room.CanStartGame(user)) {
                 reason = GameStartResponseMessage.ERefuseReason.NotAllowed;
             } else {
-                _rooms.Remove(room);
-                SendLobbyUpdate(LobbyUpdateMessage<TRoomSettings>.EActionType.Delete, room: room /*TODO multiple except*/);
-
-                foreach (var lobbyUser in room.Users) {
-                    _users.Remove(user);
-                    SendLobbyUpdate(LobbyUpdateMessage<TRoomSettings>.EActionType.Delete, lobbyUser /*TODO multiple except*/);
-                }
-
-                gameStarter = () => _gameStarter(room.GetData().Settings, room.Users);
+                roomToRemove = room;
                 reason = GameStartResponseMessage.ERefuseReason.None;
             }
 
@@ -206,10 +213,26 @@ namespace _Game.Scripts.Lobby {
                 RefuseReason = reason
             }, message);
 
-            gameStarter?.Invoke();
+            if (reason == GameStartResponseMessage.ERefuseReason.None) {
+                var roomPeers = roomToRemove.Users.Select(u => u.Peer).ToArray();
+                foreach (var roomPeer in roomPeers.Where(p => p != peer)) {
+                    roomPeer.SendMessage(new ServerGameStartMessage());
+                }
+
+                _rooms.Remove(roomToRemove);
+                SendLobbyUpdate(LobbyUpdateMessage<TRoomSettings>.EActionType.Delete, room: roomToRemove, except: roomPeers);
+
+                foreach (var lobbyUser in roomToRemove.Users) {
+                    _users.Remove(lobbyUser);
+                    SendLobbyUpdate(LobbyUpdateMessage<TRoomSettings>.EActionType.Delete, lobbyUser, except: roomPeers);
+                }
+
+                _gameStarter(roomToRemove.GetData().Settings, roomToRemove.Users);
+            }
         }
 
-        private void SendLobbyUpdate(LobbyUpdateMessage<TRoomSettings>.EActionType actionType, LobbyUser user = null, Room<TRoomSettings> room = null, IPeer except = null) {
+        private void SendLobbyUpdate(LobbyUpdateMessage<TRoomSettings>.EActionType actionType, LobbyUser user = null,
+            Room<TRoomSettings> room = null, params IPeer[] except) {
             if (!((user == null) ^ (room == null))) {
                 throw new ArgumentException("Either user or room should be null, but not both");
             }
@@ -218,7 +241,7 @@ namespace _Game.Scripts.Lobby {
                 ? LobbyUpdateMessage<TRoomSettings>.EContentType.User
                 : LobbyUpdateMessage<TRoomSettings>.EContentType.Room;
 
-            foreach (var lobbyUser in _users.Where(lobbyUser => lobbyUser.Peer != except)) {
+            foreach (var lobbyUser in _users.Where(lobbyUser => !except.Contains(lobbyUser.Peer))) {
                 lobbyUser.Peer.SendMessage(new LobbyUpdateMessage<TRoomSettings> {
                     ActionType = actionType,
                     ContentType = contentType,

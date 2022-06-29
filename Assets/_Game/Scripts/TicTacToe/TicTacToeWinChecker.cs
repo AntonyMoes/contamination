@@ -11,11 +11,13 @@ using UnityEngine;
 namespace _Game.Scripts.TicTacToe {
     public class TicTacToeWinChecker : ICommandPresenter, ICommandGenerator {
         private readonly Action<GameCommand> _onCommandGenerated;
+        private readonly Action<int> _onWin;
         private GameDataReadAPI _readApi;
 
-        public TicTacToeWinChecker(GameDataEventsAPI api) {
+        public TicTacToeWinChecker(GameDataEventsAPI api, Action<int> onWin = null) {
             OnCommandGenerated = new Event<GameCommand>(out _onCommandGenerated);
             api.GetComponentUpdateEvent<MarkData>().Subscribe(OnMarkUpdated);
+            _onWin = onWin;
         }
 
         private void OnMarkUpdated(MarkData oldData, IReadOnlyComponent<MarkData> component) {
@@ -93,6 +95,8 @@ namespace _Game.Scripts.TicTacToe {
                     ? winner.Name + " WON!!!"
                     : "NOBODY WON THIS TIME";
                 Debug.LogWarning(message);
+
+                _onWin?.Invoke(winCommand.Winner);
             });
         }
 

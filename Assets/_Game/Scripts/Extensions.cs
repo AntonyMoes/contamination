@@ -1,8 +1,18 @@
 ﻿using System;
 using LiteNetLib.Utils;
+using UnityEngine.Events;
 
 namespace _Game.Scripts {
     public static class Extensions {
+        #region UnityEvent
+
+        public static void SetOnlyListener(this UnityEvent @event, Action listener) {
+            @event.RemoveAllListeners();
+            @event.AddListener(() => listener());
+        }
+
+        #endregion
+
         #region INetSerializable
 
         public static TNetSerializable Copy<TNetSerializable>(this TNetSerializable netSerializable)

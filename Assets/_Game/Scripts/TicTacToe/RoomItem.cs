@@ -3,14 +3,13 @@ using System.Linq;
 using _Game.Scripts.Lobby;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace _Game.Scripts.TicTacToe {
     public class RoomItem : MonoBehaviour {
         [SerializeField] private Slot[] _slots;
         [SerializeField] private Button _joinButton;
-        [FormerlySerializedAs("_passwordField")] [SerializeField] private TMP_InputField _passwordInput; 
+        [SerializeField] private TMP_InputField _passwordInput;
         [SerializeField] private Button _leaveButton;
         [SerializeField] private Button _switchMarksButton;
         [SerializeField] private Button _startGameButton;
@@ -18,7 +17,8 @@ namespace _Game.Scripts.TicTacToe {
         private Room<TicTacToeRoomSettings>.Data _roomData;
         public string Id => _roomData.Id;
 
-        public void SetData(Room<TicTacToeRoomSettings>.Data roomData, string currentUserId, Action<string, string> onJoinRoom, Action onLeaveRoom) {
+        public void SetData(Room<TicTacToeRoomSettings>.Data roomData, LobbyUser.Data currentUser,
+            Action<string, string> onJoinRoom, Action onLeaveRoom, Action<string> onSwitchMarks, Action onStartGame) {
             _roomData = roomData;
 
             for (var i = 0; i < _roomData.Settings.Marks.Length; i++) {
@@ -29,28 +29,30 @@ namespace _Game.Scripts.TicTacToe {
                     userItem.gameObject.SetActive(true);
 
                     var userData = _roomData.Users[i];
-                    userItem.SetData(userData, currentUserId == userData.Id);
+                    userItem.SetData(userData, currentUser.Id == userData.Id);
                 } else {
                     userItem.gameObject.SetActive(false);
                 }
 
-                var containsCurrent = _roomData.Users.Any(u => u.Id == currentUserId);
-                _joinButton.gameObject.SetActive(!containsCurrent);
-                _joinButton.onClick.RemoveAllListeners();
-                _joinButton.onClick.AddListener(() => onJoinRoom(_roomData.Id, _passwordInput.text));
-                _passwordInput.gameObject.SetActive(!containsCurrent && _roomData.HasPassword);
+                var containsCurrent = _roomData.Users.Any(u => u.Id == currentUser.Id);
+                var canJoin = !containsCurrent && roomData.Settings.CanJoin(currentUser);
+                _joinButton.gameObject.SetActive(canJoin);
+                _joinButton.onClick.SetOnlyListener(() => {
+                    onJoinRoom(_roomData.Id, _passwordInput.text);
+                    _passwordInput.text = string.Empty;
+                });
+                _passwordInput.gameObject.SetActive(canJoin && roomData.HasPassword);
                 _leaveButton.gameObject.SetActive(containsCurrent);
-                _leaveButton.onClick.RemoveAllListeners();
-                _leaveButton.onClick.AddListener(() => onLeaveRoom());
+                _leaveButton.onClick.SetOnlyListener(onLeaveRoom);
 
-                var canSwitchMarks = containsCurrent && _roomData.Settings.CanMakeUpdate(currentUserId,
-                    new TicTacToeRoomSettings {UpdateType = TicTacToeRoomSettings.EUpdateType.SwitchMarks});
+                var canSwitchMarks = containsCurrent && _roomData.Settings.CanMakeUpdate(currentUser,
+                    new TicTacToeRoomSettings { UpdateType = TicTacToeRoomSettings.EUpdateType.SwitchMarks });
                 _switchMarksButton.gameObject.SetActive(canSwitchMarks);
-                // TODO
+                _switchMarksButton.onClick.SetOnlyListener(() => onSwitchMarks(Id));
 
-                var canStartGame = containsCurrent && _roomData.Settings.CanStartGame(currentUserId);
+                var canStartGame = containsCurrent && _roomData.Settings.CanStartGame(currentUser);
                 _startGameButton.gameObject.SetActive(canStartGame);
-                // TODO
+                _startGameButton.onClick.SetOnlyListener(onStartGame);
             }
         }
 

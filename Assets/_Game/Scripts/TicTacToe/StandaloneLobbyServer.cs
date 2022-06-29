@@ -6,12 +6,14 @@ using UnityEngine;
 using _Game.Scripts.Lobby;
 using _Game.Scripts.ModelV4.Network;
 using _Game.Scripts.TicTacToe.Commands;
+using _Game.Scripts.TicTacToe.Data;
+using GeneralUtils;
 using GeneralUtils.Processes;
-using LiteNetLib.Utils;
+// using LiteNetLib.Utils;
 
 namespace _Game.Scripts.TicTacToe {
     public class StandaloneLobbyServer : MonoBehaviour {
-        [SerializeField] private TicTacToeInteractor _interactor;
+        // [SerializeField] private TicTacToeInteractor _interactor;
         private Server _server;
         private Game _game;
         private Lobby<TicTacToeRoomSettings> _lobby;
@@ -31,35 +33,36 @@ namespace _Game.Scripts.TicTacToe {
         }
 
         private void StartGame(TicTacToeRoomSettings settings, IReadOnlyCollection<LobbyUser> users) {
-            _game = Game.StartStandaloneServer(CreateConfigurationForUser(), _server.ClientConnections.Peers);
+            var orderedMarks = new[] { MarkData.EMark.X, MarkData.EMark.O };
+            var orderedUsers = settings.Users.OrderBy(u => orderedMarks.IndexOf(settings.Marks[settings.Users.IndexOf(u)])).ToArray();
 
-            _game.RegisterPresenter(_interactor);
-            _interactor.SetCurrentUser(1);
+            var startProcess = new ParallelProcess();
+            for (var i = 0; i < TicTacToeRoomSettings.MaxUsers; i++) {
+                var user = orderedUsers[i];
+                var peer = users.First(u => u.Id == user.Id).Peer;
+                startProcess.Add(AsyncProcess.From(peer.Send, CreateConfigurationForUser(IdFromIndex(i))));
+            }
+
+            _game = Game.StartStandaloneServer(CreateConfigurationForUser(), users.Select(u => u.Peer));
 
             var winChecker = new TicTacToeWinChecker(_game.EventsAPI);
             _game.RegisterGenerator(winChecker);
             _game.RegisterPresenter(winChecker);
 
-            var startProcess = new ParallelProcess();
-            for (var i = 0; i < TicTacToeRoomSettings.MaxUsers; i++) {
-                var user = settings.Users[i];
-                var peer = users.First(u => u.Id == user.Id).Peer;
-                startProcess.Add(AsyncProcess.From(peer.Send, CreateConfigurationForUser(IdFromIndex(i))));
-            }
             startProcess.Run(_game.Start);
 
             static int IdFromIndex(int index) => index + 1;
             GameConfigurationMessage CreateConfigurationForUser(int id = 0) {
-                var users = Enumerable.Range(0, TicTacToeRoomSettings.MaxUsers).Select(IdFromIndex).ToArray();
+                var userIds = Enumerable.Range(0, TicTacToeRoomSettings.MaxUsers).Select(IdFromIndex).ToArray();
                 return new GameConfigurationMessage {
                     InitialCommand = new TicTacToeInitialCommand {
                         Size = 3,
-                        Players = users,
-                        Marks = settings.Marks
+                        Players = userIds,
+                        Marks = orderedMarks
                     },
                     CurrenUser = id,
-                    UserSequence = users,
-                    UserNames = settings.Users.Select(u => u.Name).ToArray()
+                    UserSequence = userIds,
+                    UserNames = orderedUsers.Select(u => u.Name).ToArray(),
                 };
             }
         }

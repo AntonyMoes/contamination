@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
+using UnityEngine; // TODO
 
 namespace LiteNetLib.Utils
 {
@@ -47,7 +47,7 @@ namespace LiteNetLib.Utils
         protected virtual SubscribeDelegate GetCallbackFromData(NetDataReader reader)
         {
             ulong hash = reader.GetULong();
-            Debug.Log($"|NPP|: Receiving hash: {hash}");
+            Debug.Log($"|NPP|: Receiving hash: {hash}"); // TODO
 
             if (!_callbacks.TryGetValue(hash, out var action))
             {
@@ -58,7 +58,7 @@ namespace LiteNetLib.Utils
 
         protected virtual void WriteHash<T>(NetDataWriter writer)
         {
-            Debug.Log($"|NPP|: Sending hash of {typeof(T)}: {GetHash<T>()}");
+            Debug.Log($"|NPP|: Sending hash of {typeof(T)}: {GetHash<T>()}"); // TODO
             writer.Put(GetHash<T>());
         }
 

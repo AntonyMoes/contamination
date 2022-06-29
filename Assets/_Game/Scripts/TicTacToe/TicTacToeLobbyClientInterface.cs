@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using _Game.Scripts.Lobby;
 using TMPro;
@@ -26,8 +27,9 @@ namespace _Game.Scripts.TicTacToe {
         [SerializeField] private UserItem _userPrefab;
 
         private LobbyClient<TicTacToeRoomSettings> _lobbyClient;
-        private List<UserItem> _users = new List<UserItem>();
-        private List<RoomItem> _rooms = new List<RoomItem>();
+        private readonly List<UserItem> _users = new List<UserItem>();
+        private readonly List<RoomItem> _rooms = new List<RoomItem>();
+        private Action _gameStarter;
 
         private void Awake() {
             _connectButton.onClick.AddListener(TryConnect);
@@ -36,11 +38,13 @@ namespace _Game.Scripts.TicTacToe {
             gameObject.SetActive(false);
         }
 
-        public void StartLobby(LobbyClient<TicTacToeRoomSettings> lobbyClient) {
+        public void StartLobby(LobbyClient<TicTacToeRoomSettings> lobbyClient, Action gameStarter) {
             gameObject.SetActive(true);
 
             _lobbyClient = lobbyClient;
             _lobbyClient.OnLobbyUpdate.Subscribe(OnLobbyUpdate);
+            _gameStarter = gameStarter;
+            _lobbyClient.OnServerGameStart.Subscribe(_gameStarter);
             SetCurrentState();
             ReloadContent();
         }
@@ -51,6 +55,7 @@ namespace _Game.Scripts.TicTacToe {
 
             _lobbyClient.Stop();
             _lobbyClient.OnLobbyUpdate.Unsubscribe(OnLobbyUpdate);
+            _lobbyClient.OnServerGameStart.Unsubscribe(_gameStarter);
             _lobbyClient = null;
         }
 
@@ -86,6 +91,8 @@ namespace _Game.Scripts.TicTacToe {
 
         private void TryCreateRoom() {
             var password = string.IsNullOrEmpty(_roomPasswordInput.text) ? null : _roomPasswordInput.text;
+            _roomPasswordInput.text = string.Empty;
+
             EnableOverlay(true);
             _lobbyClient.TryUpdateRoom(null, password, new TicTacToeRoomSettings(), created => {
                 EnableOverlay(false);
@@ -124,9 +131,34 @@ namespace _Game.Scripts.TicTacToe {
             });
         }
 
-        // private void TryMakeUpdate() {
-        //     
-        // }
+        private void TrySwitchMarks(string roomId) {
+            var settings = new TicTacToeRoomSettings {
+                UpdateType = TicTacToeRoomSettings.EUpdateType.SwitchMarks
+            };
+
+            EnableOverlay(true);
+            _lobbyClient.TryUpdateRoom(roomId, null, settings, switched => {
+                EnableOverlay(false);
+                if (switched) {
+                    ReloadContent();
+                } else {
+                    Debug.LogError("Could not switch marks");
+                }
+            });
+        }
+
+        private void TryStartGame() {
+            EnableOverlay(true);
+            _lobbyClient.TryStartGame(started => {
+                EnableOverlay(false);
+                if (started) {
+                    Debug.LogWarning("Game started!");
+                    _gameStarter();
+                } else {
+                    Debug.LogError("Could not start game");
+                }
+            });
+        }
 
         private void SetCurrentState() {
             var state = _lobbyClient.State;
@@ -154,15 +186,16 @@ namespace _Game.Scripts.TicTacToe {
                 return;
             }
 
-            foreach (var userData in lobbyData.Users.Where(u => !lobbyData.Rooms.Any(r => r.Users.Contains(u)))) {
+            foreach (var userData in lobbyData.Users.Where(u => !lobbyData.Rooms.Any(r => r.Users.Any(ru => ru.Id == u.Id)))) {
                 var user = Instantiate(_userPrefab, _userRoot);
                 user.SetData(userData, userData.Id == _lobbyClient.Id);
                 _users.Add(user);
             }
 
+            var currenUser = _lobbyClient.LobbyData.Users.First(u => u.Id == _lobbyClient.Id);
             foreach (var roomData in lobbyData.Rooms) {
                 var room = Instantiate(_roomPrefab, _roomRoot);
-                room.SetData(roomData, _lobbyClient.Id, TryJoinRoom, TryLeaveRoom);
+                room.SetData(roomData, currenUser, TryJoinRoom, TryLeaveRoom, TrySwitchMarks, TryStartGame);
                 _rooms.Add(room);
             }
         }

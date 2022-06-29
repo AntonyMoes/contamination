@@ -6,9 +6,9 @@ namespace _Game.Scripts.Lobby {
         public abstract void Join(LobbyUser.Data user);
         public abstract void Leave(string userId);
 
-        public abstract bool CanMakeUpdate(string userId, TImplementation update);
+        public abstract bool CanMakeUpdate(LobbyUser.Data user, TImplementation update);
         public abstract void MakeUpdate(TImplementation update);
 
-        public abstract bool CanStartGame(string userId);
+        public abstract bool CanStartGame(LobbyUser.Data user);
     }
 }
