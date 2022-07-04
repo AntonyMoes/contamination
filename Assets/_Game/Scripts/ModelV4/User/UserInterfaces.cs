@@ -1,4 +1,5 @@
-﻿using GeneralUtils.Processes;
+﻿using System;
+using GeneralUtils.Processes;
 
 namespace _Game.Scripts.ModelV4.User {
     public interface IReadOnlyUser {
@@ -6,7 +7,7 @@ namespace _Game.Scripts.ModelV4.User {
         public string Name { get; }
     }
 
-    public interface IUser : IReadOnlyUser, ICommandGenerator, IUserTurnInformer {
+    public interface IUser : IReadOnlyUser, ICommandGenerator, IUserTurnInformer, IDisposable {
         public Process EndTurn();
         public void StartTurn();
     }

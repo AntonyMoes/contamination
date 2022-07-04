@@ -4,10 +4,11 @@ using _Game.Scripts.ModelV4.User;
 using _Game.Scripts.Network;
 using GeneralUtils;
 using GeneralUtils.Processes;
+using UnityEngine;
 using Guid = _Game.Scripts.Utils.Guid;
 
 namespace _Game.Scripts.ModelV4.Network {
-    public class GameClient : INetworkCommandSender, INetworkCommandReceiver {
+    public class GameClient : INetworkCommandSender, INetworkCommandReceiver, IDisposable {
         private readonly IPeer _serverPeer;
         private readonly ValueWaiter<int> _notSynchronizedMessages = new ValueWaiter<int>();
         private readonly Action<GameCommand, int> _onUserCommandReceived;
@@ -27,6 +28,7 @@ namespace _Game.Scripts.ModelV4.Network {
 
         private void OnSynchronizationFinished(FinishSynchronizationMessage message, IPeer _) {
             var finisher = GetSynchronizationFinisher(message.UserId);
+            Debug.Log($"SYNCED, finisher goes from |{finisher.Value ?? "NULL"}| to |{message.Guid}|");
             finisher.Value = message.Guid;
         }
 
@@ -61,9 +63,15 @@ namespace _Game.Scripts.ModelV4.Network {
             static bool IsSynchronized(string value) => value != null;
 
             var synchronizationProcess = new SerialProcess();
+            synchronizationProcess.Add(new SyncProcess(() => Debug.Log("START SYNC")));
             synchronizationProcess.Add(new AsyncProcess(onDone => finisher.WaitFor(IsSynchronized, onDone)));
             synchronizationProcess.Add(new SyncProcess(() => finisher.Value = null));
             return synchronizationProcess;
+        }
+
+        public void Dispose() {
+            _serverPeer.GetReceiveEvent<GameCommandMessage>().Unsubscribe(OnGameCommandReceived);
+            _serverPeer.GetReceiveEvent<FinishSynchronizationMessage>().Unsubscribe(OnSynchronizationFinished);
         }
     }
 }

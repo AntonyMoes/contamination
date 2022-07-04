@@ -29,5 +29,7 @@ namespace _Game.Scripts.ModelV4.User {
         }
 
         public Event<bool> OnUserTurnToggled { get; }
+
+        public abstract void Dispose();
     }
 }

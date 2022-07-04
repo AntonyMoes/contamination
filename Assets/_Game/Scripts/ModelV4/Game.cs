@@ -8,12 +8,16 @@ using _Game.Scripts.Network;
 namespace _Game.Scripts.ModelV4 {
     public class Game : IDisposable {
         private readonly InitialCommandGenerator _initialCommandGenerator;
+        private readonly IUser[] _users;
+        private readonly IDisposable[] _otherDisposables;
         private readonly CommandRunner _runner;
 
         public readonly GameDataEventsAPI EventsAPI;
 
-        private Game(GameCommand initialCommand, IEnumerable<IUser> users) {
-            var turnController = new TurnController(users);
+        private Game(GameCommand initialCommand, IEnumerable<IUser> users, params IDisposable[] otherDisposables) {
+            _users = users.ToArray();
+            _otherDisposables = otherDisposables;
+            var turnController = new TurnController(_users);
 
             var ecs = new ECS.ECS();
 
@@ -43,6 +47,14 @@ namespace _Game.Scripts.ModelV4 {
 
         public void Dispose() {
             _runner?.Dispose();
+
+            foreach (var user in _users) {
+                user.Dispose();
+            }
+
+            foreach (var disposable in _otherDisposables) {
+                disposable.Dispose();
+            }
         }
 
         public static Game CreateLocal(GameCommand initialCommand, IEnumerable<string> userNames, ICommandGenerator userCommandGenerator) {
@@ -60,7 +72,7 @@ namespace _Game.Scripts.ModelV4 {
                         ? new LocalNetworkUser(new LocalUser(id, name, userCommandGenerator), gameClient)
                         : (IUser) new RemoteNetworkUser(id, name, gameClient);
                 });
-            return new Game(message.InitialCommand, users);
+            return new Game(message.InitialCommand, users, gameClient);
         }
 
         public static Game StartServer(GameConfigurationMessage message, IEnumerable<IPeer> clientPeers, ICommandGenerator userCommandGenerator) {
@@ -73,14 +85,14 @@ namespace _Game.Scripts.ModelV4 {
                         ? new LocalNetworkUser(new LocalUser(id, name, userCommandGenerator), gameServer)
                         : (IUser) new RemoteNetworkUser(id, name, gameServer);
                 });
-            return new Game(message.InitialCommand, users);
+            return new Game(message.InitialCommand, users, gameServer);
         }
 
         public static Game StartStandaloneServer(GameConfigurationMessage message, IEnumerable<IPeer> clientPeers) {
             var gameServer = new GameServer(clientPeers);
             var users = Enumerable.Range(0, message.UserSequence.Length)
                 .Select(idx => new RemoteNetworkUser(message.UserSequence[idx], message.UserNames[idx], gameServer));
-            return new Game(message.InitialCommand, users);
+            return new Game(message.InitialCommand, users, gameServer);
         }
     }
 }

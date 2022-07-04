@@ -49,6 +49,8 @@ namespace _Game.Scripts.TicTacToe {
             _game.RegisterGenerator(winChecker);
             _game.RegisterPresenter(winChecker);
 
+            _game.EventsAPI.OnGameEnded.Subscribe(OnGameEnded);
+
             startProcess.Run(_game.Start);
 
             static int IdFromIndex(int index) => index + 1;
@@ -65,6 +67,12 @@ namespace _Game.Scripts.TicTacToe {
                     UserNames = orderedUsers.Select(u => u.Name).ToArray(),
                 };
             }
+        }
+
+        private void OnGameEnded() {
+            _game.EventsAPI.OnGameEnded.Unsubscribe(OnGameEnded);
+            _game.Dispose();
+            _game = null;
         }
 
         private void Update() {

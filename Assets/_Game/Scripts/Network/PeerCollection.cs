@@ -5,6 +5,7 @@ using GeneralUtils;
 using GeneralUtils.Processes;
 using LiteNetLib;
 using LiteNetLib.Utils;
+using UnityEngine;
 
 namespace _Game.Scripts.Network {
     public class PeerCollection : IDisposable, IPeerCollection {
@@ -58,8 +59,10 @@ namespace _Game.Scripts.Network {
                 if (peer == except)
                     continue;
 
+                Debug.LogWarning($"{GetHashCode()} Gonna send {typeof(T)} to peer");
                 sendProcess.Add(AsyncProcess.From(peer.Send, data));
             }
+            Debug.LogWarning($"{GetHashCode()} Gonna send no more");
 
             sendProcess.Run(onDone);
         }

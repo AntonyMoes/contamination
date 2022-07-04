@@ -1,10 +1,12 @@
-﻿using GeneralUtils;
+﻿using System;
+using GeneralUtils;
 using GeneralUtils.Processes;
 
 namespace _Game.Scripts.ModelV4.User {
     public class LocalNetworkUser : IUser {
         private readonly LocalUser _localUser;
         private readonly INetworkCommandSender _sender;
+        private readonly Action<GameCommand> _onCommandGenerated;
 
         public int Id => _localUser.Id;
         public string Name => _localUser.Name;
@@ -13,11 +15,13 @@ namespace _Game.Scripts.ModelV4.User {
             _localUser = localUser;
             _sender = sender;
             
-            OnCommandGenerated = new Event<GameCommand>(out var onCommandGenerated);
-            _localUser.OnCommandGenerated.Subscribe(command => {
-                _sender.SendCommand(Id, command);
-                onCommandGenerated(command);
-            });
+            OnCommandGenerated = new Event<GameCommand>(out _onCommandGenerated);
+            _localUser.OnCommandGenerated.Subscribe(OnLocalUserCommandGenerated);
+        }
+
+        private void OnLocalUserCommandGenerated(GameCommand command) {
+            _sender.SendCommand(Id, command);
+            _onCommandGenerated(command);
         }
 
         public Event<GameCommand> OnCommandGenerated { get; }
@@ -33,6 +37,10 @@ namespace _Game.Scripts.ModelV4.User {
         }
         public void StartTurn() {
             _localUser.StartTurn();
+        }
+
+        public void Dispose() {
+            _localUser.OnCommandGenerated.Unsubscribe(OnLocalUserCommandGenerated);
         }
     }
 }
