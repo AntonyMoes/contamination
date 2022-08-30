@@ -1,0 +1,48 @@
+﻿{
+  "skills": [
+    {
+      "name": "programmerAttack",
+      "description": "Regular programmer attack",
+      "enemyTarget": {
+        "positions": [
+          1,
+          2
+        ],
+        "exclusive": true
+      },
+      "effect": [
+        {
+          "type": "SanityDamage",
+          "powerMin": 8,
+          "powerMax": 10,
+          "accuracy": 90
+        }
+      ]
+    },
+    {
+      "name": "B",
+      "description" : "DESCRIPTION\nON\nMULTIPLE\nLINES"  ,
+      "target-positions": [
+      ],
+      "ally-target-include-self": true,
+      "self-positions": [
+        1, 2, 3, 4
+      ],
+      "effects": [
+        {
+          "type": "Damage",
+          "power": 5,
+          "duration": 0,
+          "accuracy": 95
+        }
+      ],
+      "self-effects": [
+        {
+          "type": "Damage",
+          "power": 8,
+          "accuracy": 200
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+﻿{
+  "employees": [
+    {
+      "name": "client-coder",
+      "sanity": 40,
+      "dodge": 8,
+      "skills": [
+        
+      ]
+    }
+  ]
+}
