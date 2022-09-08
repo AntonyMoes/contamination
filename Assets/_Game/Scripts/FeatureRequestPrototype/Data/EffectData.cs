@@ -21,25 +21,25 @@ namespace _Game.Scripts.Data {
             var validationErrors = new List<string>();
 
             if (!Enum.TryParse(type, out EEffectType effectType)) {
-                validationErrors.Add($"Could not parse effect type \"{effectType}\"!");
+                validationErrors.Add($"Could not parse effect type \"{type}\"!");
             } else {
                 EffectType = effectType;
             }
 
             if (powerMin < 0) {
-                validationErrors.Add($"Effect powerMin can't be <0: {powerMin}");
+                validationErrors.Add($"Effect powerMin can't be < 0: {powerMin}");
             }
 
             if (powerMax < 0 || powerMax < powerMin) {
-                validationErrors.Add($"Effect powerMax can't be <0 and <powerMin: {powerMax}");
+                validationErrors.Add($"Effect powerMax can't be < 0 and < powerMin: {powerMax}");
             }
 
             if (duration < 0) {
-                validationErrors.Add($"Effect duration can't be <0: {duration}");
+                validationErrors.Add($"Effect duration can't be < 0: {duration}");
             }
 
             if (accuracy < 0) {
-                validationErrors.Add($"Effect accuracy can't be <0: {accuracy}");
+                validationErrors.Add($"Effect accuracy can't be < 0: {accuracy}");
             } else if (accuracy == 0) {
                 accuracy = 100;
             }

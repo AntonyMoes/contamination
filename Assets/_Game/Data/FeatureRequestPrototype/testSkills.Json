@@ -1,0 +1,68 @@
+﻿{
+  "records": [
+    {
+      "name": "testSkill1",
+      "description": "Test skill 1 description",
+      "enemyTarget": {
+        "positions": [
+          1,
+          2
+        ],
+        "exclusive": true
+      },
+      "selfPositions": [
+        1,
+        2
+      ],
+      "effects": [
+        {
+          "type": "SanityDamage",
+          "powerMin": 8,
+          "powerMax": 10,
+          "accuracy": 90
+        }
+      ]
+    },
+    {
+      "name": "testSkill2",
+      "description": "Test skill 2 description",
+      "enemyTarget": {
+        "positions": [
+          3,
+          4
+        ],
+        "exclusive": false
+      },
+      "selfPositions": [
+        3,
+        4
+      ],
+      "effects": [
+        {
+          "type": "SanityDamage",
+          "powerMin": 5,
+          "powerMax": 6,
+          "accuracy": 85
+        }
+      ]
+    },
+    {
+      "name": "testSkill3",
+      "description": "Test skill 3 description",
+      "selfPositions": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "selfEffects": [
+        {
+          "type": "SanityHealing",
+          "powerMin": 5,
+          "powerMax": 6,
+          "accuracy": 85
+        }
+      ]
+    }
+  ]
+}

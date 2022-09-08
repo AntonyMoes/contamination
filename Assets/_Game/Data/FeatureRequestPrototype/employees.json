@@ -1,11 +1,13 @@
 ﻿{
-  "employees": [
+  "records": [
     {
-      "name": "client-coder",
-      "sanity": 40,
-      "dodge": 8,
+      "name": "genericUnit",
+      "department": "Client",
+      "sanity": 30,
       "skills": [
-        
+        "testSkill1",
+        "testSkill2",
+        "testSkill3"
       ]
     }
   ]
