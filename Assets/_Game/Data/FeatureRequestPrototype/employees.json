@@ -1,14 +1,16 @@
 ﻿{
   "records": [
     {
-      "name": "genericUnit",
+      "name": "testEmployee1",
       "department": "Client",
       "sanity": 30,
       "skills": [
         "testSkill1",
         "testSkill2",
         "testSkill3"
-      ]
+      ],
+      "moveForward": 1,
+      "moveBackward": 1
     }
   ]
 }

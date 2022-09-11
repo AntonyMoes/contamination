@@ -2,6 +2,7 @@
 using System.Linq;
 using _Game.Scripts.FeatureRequestPrototype.Utils;
 using GeneralUtils;
+using Unity.Plastic.Newtonsoft.Json;
 using UnityEngine;
 
 namespace _Game.Scripts.Data {
@@ -13,12 +14,13 @@ namespace _Game.Scripts.Data {
         public SkillData[] Skills { get; private set; }
 
         public void Init() {
+            // order matters
+            Skills = LoadRecords<SkillData>(_skills);
             Employees = LoadRecords<EmployeeData>(_employees);
-            Skills = LoadRecords<SkillData>(_employees);
         }
 
-        private T[] LoadRecords<T>(TextAsset asset) where T : IData {
-            var records = JsonUtility.FromJson<Records<T>>(asset.text).records;
+        private static T[] LoadRecords<T>(TextAsset asset) where T : IData {
+            var records = JsonConvert.DeserializeObject<Records<T>>(asset.text)!.records;
             var errors = records.Select(r => r.LoadAndValidate()).ToArray();
             if (!errors.SelectMany(e => e).Any()) {
                 return records;

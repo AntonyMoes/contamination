@@ -4,9 +4,11 @@ using _Game.Scripts.Data;
 
 namespace _Game.Scripts.FeatureRequestPrototype {
     public class Skill {
-        private readonly SkillData _skillData;
+        // public SkillData Data => _skillData;
+        public string Name => _skillData.Name;
+        public string Description => _skillData.Description;
 
-        public int[] Positions => _skillData.SelfPositions;
+        private readonly SkillData _skillData;
 
         public Skill(SkillData skillData) {
             _skillData = skillData;
@@ -16,31 +18,29 @@ namespace _Game.Scripts.FeatureRequestPrototype {
             if (!_skillData.SelfPositions.Contains(user.Position))
                 return false;
 
-            if (!CheckTarget(_skillData.EnemyTarget, enemies)) {
+            if (!CheckTarget(_skillData.EnemyTarget, enemies, user)) {
                 return false;
             }
 
-            if (!CheckTarget(_skillData.AllyTarget, allies)) {
+            if (!CheckTarget(_skillData.AllyTarget, allies, user, _skillData.AllyTargetExcludeSelf)) {
                 return false;
             }
 
             return true;
 
-            static bool CheckTarget(Target targetInfo, Employee[] employees) {
+            static bool CheckTarget(Target targetInfo, Employee[] employees, Employee user, bool allyTargetAndExcludeSelf = false) {
                 if (!(targetInfo is { } target)) {
                     return true;
                 }
 
-                var validEmployeesPresent = target.Exclusive
-                    ? employees.Any(e => target.Positions.Contains(e.Position))
-                    : target.Positions.All(p => employees.Any(e => e.Position == p));
-                return validEmployeesPresent;
+                return employees.Any(e => 
+                    !(allyTargetAndExcludeSelf && e == user) && target.Positions.Contains(e.Position));
             }
         }
 
         public (int[][] enemyGroups, int[][] allyGroups) GetTargets(Employee user) {
-            var enemyGroups = GetGroups(_skillData.EnemyTarget);
-            var allyGroups = GetGroups(_skillData.AllyTarget);
+            var enemyGroups = GetGroups(_skillData.EnemyTarget, user, _skillData.AllyTargetExcludeSelf);
+            var allyGroups = GetGroups(_skillData.AllyTarget, user, _skillData.AllyTargetExcludeSelf);
 
             if (enemyGroups.Length != 0 || allyGroups.Length != 0) {
                 return (enemyGroups, allyGroups);
@@ -49,13 +49,16 @@ namespace _Game.Scripts.FeatureRequestPrototype {
             var selfGroups = new[] { new[] { user.Position } };
             return (Array.Empty<int[]>(), selfGroups);
 
-            static int[][] GetGroups(Target target) {
+            static int[][] GetGroups(Target target, Employee user, bool allyTargetAndExcludeSelf = false) {
                 if (target == null) {
                     return Array.Empty<int[]>();
                 }
 
                 return target.Exclusive
-                    ? target.Positions.Select(p => new[] { p }).ToArray()
+                    ? target.Positions
+                        .Where(p => !(allyTargetAndExcludeSelf && p == user.Position))
+                        .Select(p => new[] { p })
+                        .ToArray()
                     : new[] { target.Positions };
             }
         }

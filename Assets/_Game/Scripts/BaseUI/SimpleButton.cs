@@ -11,9 +11,14 @@ namespace _Game.Scripts.BaseUI {
 
         private readonly Action<SimpleButton> _onClick;
         public readonly Event<SimpleButton> OnClick;
-        
+
         private readonly Action<SimpleButton, bool> _onHover;
         public readonly Event<SimpleButton, bool> OnHover;
+
+        public bool Interactable {
+            get => _button.interactable;
+            set => _button.interactable = value;
+        }
 
         public SimpleButton() {
             OnClick = new Event<SimpleButton>(out _onClick);

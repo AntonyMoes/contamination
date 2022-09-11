@@ -1,4 +1,6 @@
-﻿using _Game.Scripts.Data;
+﻿using System.Collections.Generic;
+using System.Linq;
+using _Game.Scripts.Data;
 using _Game.Scripts.FeatureRequestPrototype.UI;
 using UnityEngine;
 
@@ -7,17 +9,32 @@ namespace _Game.Scripts.FeatureRequestPrototype {
         [SerializeField] private EmployeeSelector _selector;
 
         public EmployeeSelector Selector => _selector;
+        public EmployeeData Data => _employeeData;
         public int Position => _positionProvider.Position;
+        public Skill[] Skills { get; private set; }
 
         private EmployeeData _employeeData;
         private IPositionProvider _positionProvider;
 
+        private void Awake() {
+            Selector.SetActive(false);
+        }
+
         public void Load(EmployeeData employeeData) {
             _employeeData = employeeData;
+            Skills = employeeData.Skills
+                .Select(skillData => new Skill(skillData))
+                .ToArray();
         }
 
         public void SetPositionProvider(IPositionProvider positionProvider) {
             _positionProvider = positionProvider;
+        }
+    }
+    
+    public static class EmployeeHelper {
+        public static Employee WithPosition(this IEnumerable<Employee> employees, int position) {
+            return employees.First(employee => employee.Position == position);
         }
     }
 }

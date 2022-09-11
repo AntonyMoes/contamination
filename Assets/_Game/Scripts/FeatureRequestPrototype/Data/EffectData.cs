@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
+using Unity.Plastic.Newtonsoft.Json;
 
 namespace _Game.Scripts.Data {
     [Serializable]
     public class EffectData : IData {
-        [SerializeField] private string type;
-        [SerializeField] private int powerMin;
-        [SerializeField] private int powerMax;
-        [SerializeField] private int duration;
-        [SerializeField] private int accuracy;
+        [JsonProperty] private string type;
+        [JsonProperty] private int powerMin;
+        [JsonProperty] private int powerMax;
+        [JsonProperty] private int duration;
+        [JsonProperty] private int accuracy;
 
         public EEffectType EffectType { get; private set; }
         public int PowerMin => powerMin;
