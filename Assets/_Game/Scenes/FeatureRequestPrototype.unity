@@ -292,7 +292,7 @@ GameObject:
   - component: {fileID: 59439214}
   - component: {fileID: 59439216}
   m_Layer: 5
-  m_Name: SkillsPanel
+  m_Name: SkillPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1676,6 +1676,7 @@ GameObject:
   - component: {fileID: 663334861}
   - component: {fileID: 663334862}
   - component: {fileID: 663334863}
+  - component: {fileID: 663334864}
   m_Layer: 0
   m_Name: App
   m_TagString: Untagged
@@ -1721,7 +1722,7 @@ MonoBehaviour:
   - {fileID: 1605557206}
   _employeePrefab: {fileID: 6272839995066232042, guid: 24f277eb1bb3fd043bae7dda60f3b02f, type: 3}
   _startButton: {fileID: 401657736}
-  _skillPanel: {fileID: 59439216}
+  _hudController: {fileID: 663334864}
 --- !u!114 &663334863
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1736,6 +1737,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _employees: {fileID: 4900000, guid: 3d706ed190b945eab9726aca56135c50, type: 3}
   _skills: {fileID: 4900000, guid: b91bf4fb24694992aa520b0ccb64f336, type: 3}
+--- !u!114 &663334864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 663334860}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0680fafdbc742feb1cdfaf2c1d4cace, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _skillPanel: {fileID: 59439216}
 --- !u!1001 &688028570
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -11,6 +11,42 @@
       ],
       "moveForward": 1,
       "moveBackward": 1
+    },
+    {
+      "name": "testEmployee2",
+      "department": "Client",
+      "sanity": 30,
+      "skills": [
+        "testSkill1",
+        "testSkill2",
+        "testSkill3"
+      ],
+      "moveForward": 1,
+      "moveBackward": 1
+    },
+    {
+      "name": "testEmployee3",
+      "department": "Client",
+      "sanity": 30,
+      "skills": [
+        "testSkill1",
+        "testSkill2",
+        "testSkill3"
+      ],
+      "moveForward": 1,
+      "moveBackward": 1
+    },
+    {
+      "name": "testEmployee4",
+      "department": "Client",
+      "sanity": 30,
+      "skills": [
+        "testSkill1",
+        "testSkill2",
+        "testSkill3"
+      ],
+      "moveForward": 1,
+      "moveBackward": 1
     }
   ]
 }

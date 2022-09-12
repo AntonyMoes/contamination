@@ -11,10 +11,10 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
         [SerializeField] private EmployeeSlot[] _rightSlots;
         [SerializeField] private Employee _employeePrefab;
         [SerializeField] private SimpleButton _startButton;
-        [SerializeField] private SkillPanel _skillPanel;
+        [SerializeField] private HUDController _hudController;
 
-        private EmployeeSlot[] _allies;
-        private EmployeeSlot[] _enemies;
+        private Dictionary<Employee, bool> _allies;  // employee, wasUsed
+        private Dictionary<Employee, bool> _enemies;  // employee, wasUsed
         private Selection.EmployeeSelectionProcess _employeeSelectionProcess;
         private Selection.SkillSelectionProcess _skillSelectionProcess;
 
@@ -27,20 +27,48 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
         private void StartTest(SimpleButton _) {
             DataStorage.Instance.Init();
 
+            var allies = DataStorage.Instance.Employees.Take(4).ToArray();
+            var enemies = DataStorage.Instance.Employees.Take(4).ToArray();
+            StartGame(allies, enemies);
+        }
+
+        private void StartGame(EmployeeData[] allies, EmployeeData[] enemies) {
             Clear();
 
-            foreach (var slot in Slots) {
-                slot.InstantiateEmployee(_employeePrefab, DataStorage.Instance.Employees.First());
+            _allies = CreateEmployees(allies, _leftSlots, _employeePrefab);
+            _enemies = CreateEmployees(enemies, _rightSlots, _employeePrefab);
+
+            static Dictionary<Employee, bool> CreateEmployees(EmployeeData[] data, EmployeeSlot[] slots, Employee prefab) {
+                return data
+                    .Zip(slots, (d, s) => (d, s))
+                    .Select(pair => {
+                        pair.s.InstantiateEmployee(prefab, pair.d);
+                        return pair.s.Employee;
+                    })
+                    .ToDictionary(employee => employee, _ => false);
             }
 
-            _allies = _leftSlots;
-            _enemies = _rightSlots;
+            StartRound();
+        }
 
-            var allies = _allies.Select(slot => slot.Employee).ToArray();
-            var enemies = _enemies.Select(slot => slot.Employee).ToArray();
+        private void StartRound() {
+            ResetUsage(_allies);
+            ResetUsage(_enemies);
 
-            var groups = allies
-                .Select(employee => new[] { employee })
+            StartTurn();
+
+            static void ResetUsage(Dictionary<Employee, bool> employeeDictionary) {
+                var employees = employeeDictionary.Keys.ToArray();
+                foreach (var employee in employees) {
+                    employeeDictionary[employee] = false;
+                }
+            }
+        }
+
+        private void StartTurn() {
+            var groups = _allies
+                .Where(pair => pair.Value == false)
+                .Select(pair => new[] { pair.Key })
                 .ToArray();
 
             _employeeSelectionProcess = new Selection.EmployeeSelectionProcess(groups, EmployeeSelector.SelectionType.UnitToUse, selected => {
@@ -48,19 +76,32 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
 
                 // only one selected in this case
                 var employee = selected.First();
-                employee.Selector.SetActive(true);
-                employee.Selector.SetType(EmployeeSelector.SelectionType.Current);
-                _skillPanel.Load(employee, enemies, allies, StartTargetSelection);
-                _skillPanel.Show();
+                _allies[employee] = true;
+
+                _hudController.SetSelectedEmployee(employee, _enemies.Keys.ToArray(), _allies.Keys.ToArray(), StartTargetSelection);
             });
+        }
+
+        private void PassTurn() {
+            (_allies, _enemies) = (_enemies, _allies);
+
+            if (_allies.All(pair => pair.Value)) {
+                if (_enemies.All(pair => pair.Value)) {
+                    StartRound();
+                } else {
+                    PassTurn();
+                }
+            } else {
+                StartTurn();
+            }
         }
 
         private void StartTargetSelection(Employee employee, Skill skill) {
             Debug.Log($"Start target selection for skill {skill.Name}");
             _skillSelectionProcess?.Abort();
 
-            var enemies = _enemies.Select(slot => slot.Employee).ToArray();
-            var allies = _allies.Select(slot => slot.Employee).ToArray();
+            var enemies = _enemies.Keys.ToArray();
+            var allies = _allies.Keys.ToArray();
             _skillSelectionProcess = new Selection.SkillSelectionProcess(employee, skill, enemies, allies,
                 (selectedEnemies, selectedAllies) => {
                     OnSelectedTargets(employee, skill, selectedEnemies, selectedAllies);
@@ -72,6 +113,10 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
             Debug.LogWarning($"Employee: {employee.Position}\nSkill: {skill.Name}\n" +
                              $"Enemies: {string.Join(",", selectedEnemies.Select(e => e.Position))}\n" +
                              $"Allies: {string.Join(",", selectedAllies.Select(e => e.Position))}\n");
+
+            _hudController.ResetSelectedEmployee();
+
+            PassTurn();
         }
 
         private void Clear() {
@@ -84,7 +129,7 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
             _skillSelectionProcess?.Abort();
             _skillSelectionProcess = null;
 
-            _skillPanel.Hide();
+            _hudController.Clear();
         }
     }
 }
