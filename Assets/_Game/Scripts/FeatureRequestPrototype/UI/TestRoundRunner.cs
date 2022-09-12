@@ -15,6 +15,7 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
 
         private EmployeeSlot[] _allies;
         private EmployeeSlot[] _enemies;
+        private Selection.EmployeeSelectionProcess _employeeSelectionProcess;
         private Selection.SkillSelectionProcess _skillSelectionProcess;
 
         private IEnumerable<EmployeeSlot> Slots => _leftSlots.Concat(_rightSlots);
@@ -42,9 +43,13 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
                 .Select(employee => new[] { employee })
                 .ToArray();
 
-            Selection.SelectEmployees(groups, selected => {
+            _employeeSelectionProcess = new Selection.EmployeeSelectionProcess(groups, EmployeeSelector.SelectionType.UnitToUse, selected => {
+                _employeeSelectionProcess = null;
+
                 // only one selected in this case
                 var employee = selected.First();
+                employee.Selector.SetActive(true);
+                employee.Selector.SetType(EmployeeSelector.SelectionType.Current);
                 _skillPanel.Load(employee, enemies, allies, StartTargetSelection);
                 _skillPanel.Show();
             });
@@ -63,6 +68,7 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
         }
 
         private void OnSelectedTargets(Employee employee, Skill skill, Employee[] selectedEnemies, Employee[] selectedAllies) {
+            _skillSelectionProcess = null;
             Debug.LogWarning($"Employee: {employee.Position}\nSkill: {skill.Name}\n" +
                              $"Enemies: {string.Join(",", selectedEnemies.Select(e => e.Position))}\n" +
                              $"Allies: {string.Join(",", selectedAllies.Select(e => e.Position))}\n");
@@ -72,6 +78,11 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
             foreach (var slot in Slots) {
                 slot.Clear();
             }
+
+            _employeeSelectionProcess?.Abort();
+            _employeeSelectionProcess = null;
+            _skillSelectionProcess?.Abort();
+            _skillSelectionProcess = null;
 
             _skillPanel.Hide();
         }
