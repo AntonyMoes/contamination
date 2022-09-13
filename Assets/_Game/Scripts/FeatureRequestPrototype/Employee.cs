@@ -9,9 +9,11 @@ namespace _Game.Scripts.FeatureRequestPrototype {
         [SerializeField] private EmployeeSelector _selector;
 
         public EmployeeSelector Selector => _selector;
-        public EmployeeData Data => _employeeData;
         public int Position => _positionProvider.Position;
         public Skill[] Skills { get; private set; }
+
+        public string Name => _employeeData.Name;
+        public EDepartment Department => _employeeData.Department;
 
         private EmployeeData _employeeData;
         private IPositionProvider _positionProvider;

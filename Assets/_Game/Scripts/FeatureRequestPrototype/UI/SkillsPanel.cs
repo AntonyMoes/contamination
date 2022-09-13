@@ -7,7 +7,7 @@ using TMPro;
 using UnityEngine;
 
 namespace _Game.Scripts.FeatureRequestPrototype.UI {
-    public class SkillPanel : UIElement {
+    public class SkillsPanel : UIElement {
         [SerializeField] private Transform _skillContainer;
         [SerializeField] private SkillItem _skillPrefab;
         [SerializeField] private TextMeshProUGUI _skillName;
