@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using _Game.Scripts.BaseUI;
 using _Game.Scripts.Data;
+using _Game.Scripts.FeatureRequestPrototype.GameObjects;
 using _Game.Scripts.FeatureRequestPrototype.Logic;
 using _Game.Scripts.FeatureRequestPrototype.Utils;
 using UnityEngine;
@@ -11,18 +12,18 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
     public class TestRoundRunner : MonoBehaviour {
         [SerializeField] private EmployeeSlot[] _leftSlots;
         [SerializeField] private EmployeeSlot[] _rightSlots;
-        [SerializeField] private Employee _employeePrefab;
+        [SerializeField] private EmployeeObject _employeePrefab;
         [SerializeField] private SimpleButton _startButton;
         [SerializeField] private HUDController _hudController;
 
-        private Dictionary<Employee, bool> _left;  // employee, wasUsed
-        private Dictionary<Employee, bool> _right;  // employee, wasUsed
+        private Dictionary<EmployeeObject, bool> _left;  // employee, wasUsed
+        private Dictionary<EmployeeObject, bool> _right;  // employee, wasUsed
         private Selection.EmployeeSelectionProcess _employeeSelectionProcess;
         private Selection.SkillSelectionProcess _skillSelectionProcess;
 
         private bool _currentSideIsLeft;
-        private Dictionary<Employee, bool> Allies => _currentSideIsLeft ? _left : _right;
-        private Dictionary<Employee, bool> Enemies => _currentSideIsLeft ? _right : _left;
+        private Dictionary<EmployeeObject, bool> Allies => _currentSideIsLeft ? _left : _right;
+        private Dictionary<EmployeeObject, bool> Enemies => _currentSideIsLeft ? _right : _left;
 
         private IEnumerable<EmployeeSlot> Slots => _leftSlots.Concat(_rightSlots);
 
@@ -45,13 +46,13 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
             _right = CreateEmployees(right, _rightSlots, _employeePrefab, employee => _hudController.SetCurrentEmployee(employee, false));
             _currentSideIsLeft = startingSideIsLeft;
 
-            static Dictionary<Employee, bool> CreateEmployees(EmployeeData[] data, EmployeeSlot[] slots, Employee prefab, Action<Employee> onHover) {
+            static Dictionary<EmployeeObject, bool> CreateEmployees(EmployeeData[] data, EmployeeSlot[] slots, EmployeeObject prefab, Action<Employee> onHover) {
                 return data
                     .Zip(slots, (d, s) => (d, s))
                     .Select(pair => {
                         pair.s.InstantiateEmployee(prefab, pair.d);
                         var employee = pair.s.Employee!;
-                        employee.Selector.Button.OnHover.Subscribe(hover => onHover?.Invoke(hover ? employee : null));
+                        employee.Selector.Button.OnHover.Subscribe(hover => onHover?.Invoke(hover ? employee.Employee : null));
                         return employee;
                     })
                     .ToDictionary(employee => employee, _ => false);
@@ -66,7 +67,7 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
 
             StartTurn();
 
-            static void ResetUsage(Dictionary<Employee, bool> employeeDictionary) {
+            static void ResetUsage(Dictionary<EmployeeObject, bool> employeeDictionary) {
                 var employees = employeeDictionary.Keys.ToArray();
                 foreach (var employee in employees) {
                     employeeDictionary[employee] = false;
@@ -87,7 +88,10 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
                 var employee = selected.First();
                 Allies[employee] = true;
 
-                _hudController.SetSelectedEmployee(employee, _currentSideIsLeft, Enemies.Keys.ToArray(), Allies.Keys.ToArray(), StartTargetSelection);
+                _hudController.SetSelectedEmployee(employee, _currentSideIsLeft, FromDict(Enemies), FromDict(Allies), StartTargetSelection);
+
+                static Employee[] FromDict(Dictionary<EmployeeObject, bool> dict) =>
+                    dict.Keys.Select(e => e.Employee).ToArray();
             });
         }
 
@@ -118,12 +122,12 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
                 });
         }
 
-        private void OnSelectedTargets(Employee employee, Skill skill, Employee[] selectedEnemies, Employee[] selectedAllies) {
+        private void OnSelectedTargets(Employee employee, Skill skill, EmployeeObject[] selectedEnemies, EmployeeObject[] selectedAllies) {
             _skillSelectionProcess = null;
             // TODO attack logic
             Debug.LogWarning($"Employee: {employee.Position}\nSkill: {skill.Name}\n" +
-                             $"Enemies: {string.Join(",", selectedEnemies.Select(e => e.Position))}\n" +
-                             $"Allies: {string.Join(",", selectedAllies.Select(e => e.Position))}\n");
+                             $"Enemies: {string.Join(",", selectedEnemies.Select(e => e.Employee.Position))}\n" +
+                             $"Allies: {string.Join(",", selectedAllies.Select(e => e.Employee.Position))}\n");
 
             _hudController.ResetSelectedEmployee();
 

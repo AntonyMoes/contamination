@@ -5,7 +5,6 @@ using _Game.Scripts.FeatureRequestPrototype.Logic.Effects;
 
 namespace _Game.Scripts.FeatureRequestPrototype.Logic {
     public class Skill {
-        // public SkillData Data => _skillData;
         public string Name => _skillData.Name;
         public string Description => _skillData.Description;
         public readonly Effect[] EnemyEffects;
@@ -22,6 +21,10 @@ namespace _Game.Scripts.FeatureRequestPrototype.Logic {
             
             static Effect[] CreateEffects(EffectData[] datas)
                 => (datas ?? new EffectData[]{}).Select(EffectFactory.Create).ToArray();
+        }
+
+        public void ApllyTo(Employee employee) {
+            
         }
 
         public bool CanBeUsed(Employee user, Employee[] enemies, Employee[] allies) {

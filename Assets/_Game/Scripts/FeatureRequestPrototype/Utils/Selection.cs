@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using _Game.Scripts.BaseUI;
+using _Game.Scripts.FeatureRequestPrototype.GameObjects;
 using _Game.Scripts.FeatureRequestPrototype.Logic;
 using _Game.Scripts.FeatureRequestPrototype.UI;
 using GeneralUtils.Processes;
@@ -53,8 +54,8 @@ namespace _Game.Scripts.FeatureRequestPrototype.Utils {
         public class EmployeeSelectionProcess {
             private readonly List<EmployeeSelectorGroup> _groups;
             
-            public EmployeeSelectionProcess(Employee[][] employeeGroups, EmployeeSelector.SelectionType type,
-                Action<Employee[]> onSelected) {
+            public EmployeeSelectionProcess(EmployeeObject[][] employeeGroups, EmployeeSelector.SelectionType type,
+                Action<EmployeeObject[]> onSelected) {
                 _groups = employeeGroups
                     .Select(employees => employees.Select(employee => employee.Selector).ToArray())
                     .Select(selectors => new EmployeeSelectorGroup(type, OnSelect, selectors))
@@ -67,7 +68,7 @@ namespace _Game.Scripts.FeatureRequestPrototype.Utils {
                         .First(employees => employees
                             .Zip(selected, (employee, selector) => (employee, selector))
                             .All(pair => pair.employee.Selector == pair.selector));
-                    Debug.Log($"Selected indices: {string.Join(",", selectedEmployees.Select(e => e.Position))}");
+                    Debug.Log($"Selected indices: {string.Join(",", selectedEmployees.Select(e => e.Employee.Position))}");
 
                     onSelected?.Invoke(selectedEmployees);
                 }
@@ -89,10 +90,10 @@ namespace _Game.Scripts.FeatureRequestPrototype.Utils {
         public class SkillSelectionProcess {
             private readonly SerialProcess _process;
 
-            public SkillSelectionProcess(Employee employee, Skill skill, Employee[] enemies, Employee[] allies,
-                Action<Employee[], Employee[]> onTargetsSelected) {
-                var selectedEnemies = Array.Empty<Employee>();
-                var selectedAllies = Array.Empty<Employee>();
+            public SkillSelectionProcess(Employee employee, Skill skill, EmployeeObject[] enemies, EmployeeObject[] allies,
+                Action<EmployeeObject[], EmployeeObject[]> onTargetsSelected) {
+                var selectedEnemies = Array.Empty<EmployeeObject>();
+                var selectedAllies = Array.Empty<EmployeeObject>();
                 var selectionProcess = new SerialProcess();
                 EmployeeSelectionProcess currentSelectionProcess = null;
 
@@ -118,7 +119,7 @@ namespace _Game.Scripts.FeatureRequestPrototype.Utils {
                     currentSelectionProcess = null;
                 });
 
-                static Employee[][] MapPositions(int[][] positions, Employee[] employees) {
+                static EmployeeObject[][] MapPositions(int[][] positions, EmployeeObject[] employees) {
                     return positions
                         .Select(group => group
                             .Select(employees.WithPosition)
@@ -126,7 +127,7 @@ namespace _Game.Scripts.FeatureRequestPrototype.Utils {
                         .ToArray();
                 }
 
-                AsyncProcess Select(Employee[][] employeeGroups, bool areEnemies, Action<Employee[]> setSelected) {
+                AsyncProcess Select(EmployeeObject[][] employeeGroups, bool areEnemies, Action<EmployeeObject[]> setSelected) {
                     var process = new AsyncProcess(onDone => {
                         var type = areEnemies ? EmployeeSelector.SelectionType.Enemy : EmployeeSelector.SelectionType.Ally;
 

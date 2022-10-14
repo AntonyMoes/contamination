@@ -1,4 +1,5 @@
 ﻿using System;
+using _Game.Scripts.FeatureRequestPrototype.GameObjects;
 using _Game.Scripts.FeatureRequestPrototype.Logic;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -9,13 +10,13 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
         [SerializeField] private EmployeePanel _leftEmployeePanel;
         [SerializeField] private EmployeePanel _rightEmployeePanel;
 
-        private Employee _selectedEmployee;
+        private EmployeeObject _selectedEmployee;
         private bool? _selectedLeft;
 
         private Employee _leftCurrentEmployee;
         private Employee _rightCurrentEmployee;
 
-        public void SetSelectedEmployee(Employee employee, bool isLeft, Employee[] enemies, Employee[] allies, Action<Employee, Skill> startTargetSelection) {
+        public void SetSelectedEmployee(EmployeeObject employee, bool isLeft, Employee[] enemies, Employee[] allies, Action<Employee, Skill> startTargetSelection) {
             ClearSelectedEmployee();
 
             _selectedEmployee = employee;
@@ -23,7 +24,7 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
             _selectedEmployee.Selector.SetActive(true);
             _selectedEmployee.Selector.SetType(EmployeeSelector.SelectionType.Current);
 
-            _skillsPanel.Load(employee, enemies, allies, startTargetSelection);
+            _skillsPanel.Load(employee.Employee, enemies, allies, startTargetSelection);
             _skillsPanel.Show();
         }
 
@@ -45,8 +46,8 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
             }
 
             EmployeePanel GetPanel() => isLeft ? _leftEmployeePanel : _rightEmployeePanel;
-            Employee GetSelected() => isLeft == _selectedLeft ? _selectedEmployee : null;
-            Employee GetCurrent() => isLeft ? _leftCurrentEmployee : _rightCurrentEmployee;
+            Employee GetSelected() => isLeft == _selectedLeft ? _selectedEmployee.Employee : null;
+            // Employee GetCurrent() => isLeft ? _leftCurrentEmployee : _rightCurrentEmployee;
             void SetCurrent(Employee newCurrent) {
                 if (isLeft) {
                     _leftCurrentEmployee = newCurrent;
