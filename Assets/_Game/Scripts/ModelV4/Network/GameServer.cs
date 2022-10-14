@@ -10,10 +10,10 @@ using Guid = _Game.Scripts.Utils.Guid;
 namespace _Game.Scripts.ModelV4.Network {
     public class GameServer : INetworkCommandSender, INetworkCommandReceiver, IDisposable {
         private readonly PeerCollection _clientPeers = new PeerCollection(false);
-        private readonly ValueWaiter<int> _notSynchronizedMessages = new ValueWaiter<int>();
+        private readonly UpdatedValue<int> _notSynchronizedMessages = new UpdatedValue<int>();
         private readonly Action<GameCommand, int> _onUserCommandReceived;
-        private readonly Dictionary<int, ValueWaiter<string>> _synchronizationFinishers =
-            new Dictionary<int, ValueWaiter<string>>();
+        private readonly Dictionary<int, UpdatedValue<string>> _synchronizationFinishers =
+            new Dictionary<int, UpdatedValue<string>>();
 
         public GameServer(IEnumerable<IPeer> clientPeers) {
             clientPeers.ForEach(_clientPeers.Add);
@@ -23,8 +23,8 @@ namespace _Game.Scripts.ModelV4.Network {
             OnUserCommandReceived = new Event<GameCommand, int>(out _onUserCommandReceived);
         }
 
-        private ValueWaiter<string> GetSynchronizationFinisher(int userId) =>
-            _synchronizationFinishers.GetValue(userId, () => new ValueWaiter<string>(null));
+        private UpdatedValue<string> GetSynchronizationFinisher(int userId) =>
+            _synchronizationFinishers.GetValue(userId, () => new UpdatedValue<string>(null));
 
         private void OnSynchronizationFinished(FinishSynchronizationMessage message, IPeer sender) {
             Debug.LogWarning($"{GetHashCode()} Server gonna send {message.GetType()}");

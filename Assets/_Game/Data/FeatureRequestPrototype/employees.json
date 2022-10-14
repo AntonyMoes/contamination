@@ -3,7 +3,7 @@
     {
       "name": "testEmployee1",
       "department": "Client",
-      "sanity": 30,
+      "sanity": 31,
       "skills": [
         "testSkill1",
         "testSkill2",
@@ -15,7 +15,7 @@
     {
       "name": "testEmployee2",
       "department": "Client",
-      "sanity": 30,
+      "sanity": 32,
       "skills": [
         "testSkill1",
         "testSkill2",
@@ -27,7 +27,7 @@
     {
       "name": "testEmployee3",
       "department": "Client",
-      "sanity": 30,
+      "sanity": 33,
       "skills": [
         "testSkill1",
         "testSkill2",
@@ -39,7 +39,7 @@
     {
       "name": "testEmployee4",
       "department": "Client",
-      "sanity": 30,
+      "sanity": 34,
       "skills": [
         "testSkill1",
         "testSkill2",

@@ -1,4 +1,5 @@
 ﻿using System;
+using _Game.Scripts.FeatureRequestPrototype.Logic;
 using JetBrains.Annotations;
 using UnityEngine;
 
@@ -32,17 +33,12 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
         }
 
         public void SetCurrentEmployee([CanBeNull] Employee employee, bool isLeft) {
+            var newCurrentOrSelected = employee != null ? employee : GetSelected();
+            SetCurrent(employee);
+
             var panel = GetPanel();
-
-            var newCurrent = employee != null ? employee : GetSelected();
-            var current = GetCurrent();
-
-            if (newCurrent != current) {
-                SetCurrent(newCurrent);
-            }
-
-            if (newCurrent != null) {
-                panel.Load(newCurrent);
+            if (newCurrentOrSelected != null) {
+                panel.Load(newCurrentOrSelected);
                 panel.Show();
             } else {
                 panel.Hide();
@@ -66,6 +62,14 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
                 _selectedEmployee = null;
                 _selectedLeft = null;
             }
+        }
+
+        public void SwitchSides() {
+            ClearSelectedEmployee();
+            _skillsPanel.Hide();
+
+            SetCurrentEmployee(_leftCurrentEmployee, true);
+            SetCurrentEmployee(_rightCurrentEmployee, false);
         }
 
         public void Clear() {

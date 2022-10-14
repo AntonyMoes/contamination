@@ -52,7 +52,7 @@ namespace _Game.Scripts.Network {
         public Process SendWithResponse<TMessage, TResponse>(TMessage message, Message respondsTo = null, Action<TResponse, IPeer> onDone = null)
             where TMessage : Message, new()
             where TResponse : Message, new() {
-            var responseWaiter = new ValueWaiter<TResponse>();
+            var responseWaiter = new UpdatedValue<TResponse>();
             GetReceiveEvent<TResponse>().Subscribe(Subscriber);
 
             var trace = Environment.StackTrace;

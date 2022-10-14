@@ -11,11 +11,11 @@ namespace _Game.Scripts.ModelV4.Network {
     // I will write the corresponding server if this will actually be used.
     public class FullySynchronizedGameClient : INetworkCommandSender, INetworkCommandReceiver {
         private readonly IPeer _serverPeer;
-        private readonly ValueWaiter<int> _notSynchronizedMessages = new ValueWaiter<int>();
+        private readonly UpdatedValue<int> _notSynchronizedMessages = new UpdatedValue<int>();
         private readonly List<string> _notSynchronizedGuids = new List<string>();
         private readonly Action<GameCommand, int> _onUserCommandReceived;
-        private readonly Dictionary<int, ValueWaiter<string>> _synchronizationFinishers =
-            new Dictionary<int, ValueWaiter<string>>();
+        private readonly Dictionary<int, UpdatedValue<string>> _synchronizationFinishers =
+            new Dictionary<int, UpdatedValue<string>>();
 
         public FullySynchronizedGameClient(IPeer serverPeer) {
             _serverPeer = serverPeer;
@@ -26,8 +26,8 @@ namespace _Game.Scripts.ModelV4.Network {
             OnUserCommandReceived = new Event<GameCommand, int>(out _onUserCommandReceived);
         }
 
-        private ValueWaiter<string> GetSynchronizationFinisher(int userId) =>
-            _synchronizationFinishers.GetValue(userId, () => new ValueWaiter<string>(null));
+        private UpdatedValue<string> GetSynchronizationFinisher(int userId) =>
+            _synchronizationFinishers.GetValue(userId, () => new UpdatedValue<string>(null));
 
         private void OnSynchronizationFinished(FinishSynchronizationMessage message, IPeer _) {
             var finisher = GetSynchronizationFinisher(message.UserId);

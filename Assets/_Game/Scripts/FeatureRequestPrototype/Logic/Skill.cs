@@ -1,17 +1,27 @@
 ﻿using System;
 using System.Linq;
 using _Game.Scripts.Data;
+using _Game.Scripts.FeatureRequestPrototype.Logic.Effects;
 
-namespace _Game.Scripts.FeatureRequestPrototype {
+namespace _Game.Scripts.FeatureRequestPrototype.Logic {
     public class Skill {
         // public SkillData Data => _skillData;
         public string Name => _skillData.Name;
         public string Description => _skillData.Description;
+        public readonly Effect[] EnemyEffects;
+        public readonly Effect[] AllyEffects;
+        public readonly Effect[] SelfEffects;
 
         private readonly SkillData _skillData;
 
         public Skill(SkillData skillData) {
             _skillData = skillData;
+            EnemyEffects = CreateEffects(skillData.EnemyTarget?.Effects);
+            AllyEffects = CreateEffects(skillData.AllyTarget?.Effects);
+            SelfEffects = CreateEffects(skillData.SelfEffects);
+            
+            static Effect[] CreateEffects(EffectData[] datas)
+                => (datas ?? new EffectData[]{}).Select(EffectFactory.Create).ToArray();
         }
 
         public bool CanBeUsed(Employee user, Employee[] enemies, Employee[] allies) {

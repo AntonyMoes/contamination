@@ -2,7 +2,7 @@
 using JetBrains.Annotations;
 using UnityEngine;
 
-namespace _Game.Scripts.FeatureRequestPrototype.UI {
+namespace _Game.Scripts.FeatureRequestPrototype.Logic {
     public class EmployeeSlot : MonoBehaviour , IPositionProvider {
         [SerializeField] private Transform _slot;
         [SerializeField] private int _position;

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using _Game.Scripts.BaseUI;
+using _Game.Scripts.FeatureRequestPrototype.Logic;
+using GeneralUtils.Processes;
 using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
@@ -12,7 +14,7 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
         [SerializeField] private SkillItem _skillPrefab;
         [SerializeField] private TextMeshProUGUI _skillName;
 
-        // [SerializeField] private SkillEffectsPanel _skillEffectsPanel;
+        [SerializeField] private SkillEffectsPanel _skillEffectsPanel;
 
         private Employee _employee;
         private readonly List<SkillItem> _skillItems = new List<SkillItem>();
@@ -65,12 +67,12 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
             _displayedSkill = skill ?? _selectedSkill;
             if (_displayedSkill == null) {
                 _skillName.text = "";
-                // _skillEffectsPanel.Hide();
+                _skillEffectsPanel.Hide();
                 return;
             }
             _skillName.text = _displayedSkill.Name;
-            // _skillEffectsPanel.Load(skill);
-            // _skillEffectsPanel.Show();
+            _skillEffectsPanel.Load(_displayedSkill);
+            _skillEffectsPanel.Show();
         }
 
         protected override void PerformShow(Action onDone = null) {
@@ -78,7 +80,10 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
         }
 
         protected override void PerformHide(Action onDone = null) {
-            base.PerformHide(onDone);
+            var hideProcess = new ParallelProcess();
+            hideProcess.Add(new AsyncProcess(base.PerformHide));
+            hideProcess.Add(new AsyncProcess(_skillEffectsPanel.Hide));
+            hideProcess.Run(onDone);
         }
 
         public override void Clear() {

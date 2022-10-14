@@ -5,12 +5,17 @@ using UnityEngine;
 namespace _Game.Scripts.BaseUI {
     public class UIElement : MonoBehaviour {
         public EState State => _state.Value;
-        private readonly ValueWaiter<EState> _state = new ValueWaiter<EState>(EState.Hided);
+        private readonly UpdatedValue<EState> _state = new UpdatedValue<EState>(EState.Hided);
 
         protected virtual bool ClearOnHide => true;
 
         public void Show(Action onDone = null) {
-            if (State == EState.Showing || State == EState.Shown) {
+            if (State == EState.Shown) {
+                onDone?.Invoke();
+                return;
+            }
+
+            if (State == EState.Showing) {
                 _state.WaitFor(EState.Shown, onDone);
                 return;
             }
@@ -31,8 +36,13 @@ namespace _Game.Scripts.BaseUI {
         }
 
         public void Hide(Action onDone = null) {
-            if (State == EState.Hiding || State == EState.Hided) {
-                _state.WaitFor(EState.Shown, onDone);
+            if (State == EState.Hided) {
+                onDone?.Invoke();
+                return;
+            }
+
+            if (State == EState.Hiding) {
+                _state.WaitFor(EState.Hided, onDone);
                 return;
             }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using _Game.Scripts.BaseUI;
 using _Game.Scripts.Data;
+using _Game.Scripts.FeatureRequestPrototype.Logic;
 using _Game.Scripts.FeatureRequestPrototype.Utils;
 using UnityEngine;
 
@@ -50,7 +51,7 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
                     .Select(pair => {
                         pair.s.InstantiateEmployee(prefab, pair.d);
                         var employee = pair.s.Employee!;
-                        employee.Selector.Button.OnHover.Subscribe((_, hover) => onHover?.Invoke(hover ? employee : null));
+                        employee.Selector.Button.OnHover.Subscribe(hover => onHover?.Invoke(hover ? employee : null));
                         return employee;
                     })
                     .ToDictionary(employee => employee, _ => false);
@@ -91,7 +92,7 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
         }
 
         private void PassTurn() {
-            _hudController.Clear();
+            _hudController.SwitchSides();
             _currentSideIsLeft = !_currentSideIsLeft;
 
             if (Allies.All(pair => pair.Value)) {
@@ -119,6 +120,7 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
 
         private void OnSelectedTargets(Employee employee, Skill skill, Employee[] selectedEnemies, Employee[] selectedAllies) {
             _skillSelectionProcess = null;
+            // TODO attack logic
             Debug.LogWarning($"Employee: {employee.Position}\nSkill: {skill.Name}\n" +
                              $"Enemies: {string.Join(",", selectedEnemies.Select(e => e.Position))}\n" +
                              $"Allies: {string.Join(",", selectedAllies.Select(e => e.Position))}\n");

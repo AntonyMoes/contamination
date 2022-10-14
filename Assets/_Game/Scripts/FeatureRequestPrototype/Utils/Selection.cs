@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using _Game.Scripts.BaseUI;
+using _Game.Scripts.FeatureRequestPrototype.Logic;
 using _Game.Scripts.FeatureRequestPrototype.UI;
 using GeneralUtils.Processes;
 using UnityEngine;
@@ -28,7 +29,7 @@ namespace _Game.Scripts.FeatureRequestPrototype.Utils {
                 _onSelect(_selectors.ToArray());
             }
 
-            private void OnHover(SimpleButton _, bool isHovering) {
+            private void OnHover(bool isHovering) {
                 foreach (var selector in _selectors) {
                     selector.SetSelected(isHovering);
                 }

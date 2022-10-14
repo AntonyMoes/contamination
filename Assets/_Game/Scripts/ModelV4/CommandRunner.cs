@@ -10,7 +10,7 @@ namespace _Game.Scripts.ModelV4 {
         private readonly List<ICommandGenerator> _generators = new List<ICommandGenerator>();
         private readonly List<ICommandPresenter> _presenters = new List<ICommandPresenter>();
         private readonly Queue<GameCommand> _commandQueue = new Queue<GameCommand>();
-        private readonly ValueWaiter<int> _queueSizeWaiter = new ValueWaiter<int>();
+        private readonly UpdatedValue<int> _queueSize = new UpdatedValue<int>();
         private readonly GameDataAPI _api;
         private readonly GameDataReadAPI _readAPI;
 
@@ -35,7 +35,7 @@ namespace _Game.Scripts.ModelV4 {
         private void OnCommandGenerated(GameCommand command) {
             if (_isCommandRunning) {
                 _commandQueue.Enqueue(command);
-                _queueSizeWaiter.Value++;
+                _queueSize.Value++;
                 return;
             }
 
@@ -58,7 +58,7 @@ namespace _Game.Scripts.ModelV4 {
                 Debug.Log($"Finished command {command.Serialize()}");
 
                 if (fromQueue) {
-                    _queueSizeWaiter.Value--;
+                    _queueSize.Value--;
                 }
 
                 TryRunNextCommand();
@@ -75,7 +75,7 @@ namespace _Game.Scripts.ModelV4 {
         }
 
         public void WaitForAllCommandsFinished(Action onDone) {
-            _queueSizeWaiter.WaitFor(0, onDone);
+            _queueSize.WaitFor(0, onDone);
         }
 
         public void Dispose() {

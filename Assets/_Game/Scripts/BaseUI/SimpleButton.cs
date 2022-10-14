@@ -12,8 +12,8 @@ namespace _Game.Scripts.BaseUI {
         private readonly Action<SimpleButton> _onClick;
         public readonly Event<SimpleButton> OnClick;
 
-        private readonly Action<SimpleButton, bool> _onHover;
-        public readonly Event<SimpleButton, bool> OnHover;
+        private readonly UpdatedValue<bool> _onHover = new UpdatedValue<bool>(false);
+        public IUpdatedValue<bool> OnHover => _onHover;
 
         public bool Interactable {
             get => _button.interactable;
@@ -22,7 +22,6 @@ namespace _Game.Scripts.BaseUI {
 
         public SimpleButton() {
             OnClick = new Event<SimpleButton>(out _onClick);
-            OnHover = new Event<SimpleButton, bool>(out _onHover);
         }
 
         private void Awake() {
@@ -40,14 +39,14 @@ namespace _Game.Scripts.BaseUI {
                 eventID = EventTriggerType.PointerEnter,
                 callback = new EventTrigger.TriggerEvent()
             };
-            enter.callback.AddListener(_ => _onHover(this, true));
+            enter.callback.AddListener(_ => _onHover.Value = true);
             eventTrigger.triggers.Add(enter);
 
             var exit = new EventTrigger.Entry {
                 eventID = EventTriggerType.PointerExit,
                 callback = new EventTrigger.TriggerEvent()
             };
-            exit.callback.AddListener(_ => _onHover(this, false));
+            exit.callback.AddListener(_ => _onHover.Value = false);
             eventTrigger.triggers.Add(exit);
         }
     }
