@@ -13,15 +13,15 @@
           {
             "type": "SanityDamage",
             "powerMin": 8,
-            "powerMax": 10,
-            "accuracy": 90
+            "powerMax": 10
           }
         ]
       },
       "selfPositions": [
         1,
         2
-      ]
+      ],
+      "accuracy": 90
     },
     {
       "name": "testSkill2",
@@ -36,10 +36,10 @@
           {
             "type": "SanityDamage",
             "powerMin": 5,
-            "powerMax": 6,
-            "accuracy": 85
+            "powerMax": 6
           }
-        ]
+        ],
+        "accuracy": 85
       },
       "selfPositions": [
         3,
@@ -59,10 +59,44 @@
         {
           "type": "SanityHealing",
           "powerMin": 5,
-          "powerMax": 6,
-          "accuracy": 85
+          "powerMax": 6
         }
-      ]
+      ],
+      "accuracy": 85
+    },
+    {
+      "name": "testSkill4",
+      "description": "Test skill 3 description",
+      "selfPositions": [
+        4
+      ],
+      "enemyTarget": {
+        "positions": [
+          1
+        ],
+        "exclusive": true,
+        "effects": [
+          {
+            "type": "SanityDamage",
+            "powerMin": 4,
+            "powerMax": 4
+          },
+          {
+            "type": "Move",
+            "powerMin": 2,
+            "powerMax": 2
+          }
+        ],
+        "accuracy": 85
+      },
+      "selfEffects": [
+        {
+          "type": "SanityHealing",
+          "powerMin": 5,
+          "powerMax": 6
+        }
+      ],
+      "accuracy": 85
     }
   ]
 }

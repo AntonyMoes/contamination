@@ -9,13 +9,13 @@ namespace _Game.Scripts.Data {
         [JsonProperty] private int powerMin;
         [JsonProperty] private int powerMax;
         [JsonProperty] private int duration;
-        [JsonProperty] private int accuracy;
+        // [JsonProperty] private int accuracy;
 
         public EEffectType EffectType { get; private set; }
         public int PowerMin => powerMin;
         public int PowerMax => powerMax;
         public int Duration => duration;
-        public int Accuracy => accuracy;
+        // public int Accuracy => accuracy;
 
         public List<string> LoadAndValidate() {
             var validationErrors = new List<string>();
@@ -38,11 +38,11 @@ namespace _Game.Scripts.Data {
                 validationErrors.Add($"Effect duration can't be < 0: {duration}");
             }
 
-            if (accuracy < 0) {
-                validationErrors.Add($"Effect accuracy can't be < 0: {accuracy}");
-            } else if (accuracy == 0) {
-                accuracy = 100;
-            }
+            // if (accuracy < 0) {
+            //     validationErrors.Add($"Effect accuracy can't be < 0: {accuracy}");
+            // } else if (accuracy == 0) {
+            //     accuracy = 100;
+            // }
 
             return validationErrors;
         }

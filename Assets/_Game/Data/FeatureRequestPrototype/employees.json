@@ -41,9 +41,7 @@
       "department": "Client",
       "sanity": 34,
       "skills": [
-        "testSkill1",
-        "testSkill2",
-        "testSkill3"
+        "testSkill4"
       ],
       "moveForward": 1,
       "moveBackward": 1

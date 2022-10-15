@@ -1,4 +1,5 @@
 using _Game.Scripts.Data;
+using GeneralUtils;
 
 namespace _Game.Scripts.FeatureRequestPrototype.Logic.Effects {
     public class MoveEffect : Effect {
@@ -9,8 +10,8 @@ namespace _Game.Scripts.FeatureRequestPrototype.Logic.Effects {
 
         protected override string SpriteName => "move";
 
-        public override void ApplyTo(Employee employee) {
-            throw new System.NotImplementedException();
+        protected override void PerformApplyTo(Rng rng, Employee employee) {
+            employee.Position += GetPower(rng);
         }
     }
 }

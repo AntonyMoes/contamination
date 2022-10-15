@@ -2,6 +2,8 @@
 using System.Linq;
 using _Game.Scripts.Data;
 using _Game.Scripts.FeatureRequestPrototype.Logic.Effects;
+using GeneralUtils;
+using UnityEngine;
 
 namespace _Game.Scripts.FeatureRequestPrototype.Logic {
     public class Skill {
@@ -23,8 +25,19 @@ namespace _Game.Scripts.FeatureRequestPrototype.Logic {
                 => (datas ?? new EffectData[]{}).Select(EffectFactory.Create).ToArray();
         }
 
-        public void ApllyTo(Employee employee) {
-            
+        public void Apply(Rng rng, Employee employee, Employee[] enemies, Employee[] allies) {
+            var rngResult = rng.NextInt(1, Constants.MaxAccuracy);
+            if (rngResult > _skillData.Accuracy) {
+                Debug.LogWarning("Miss!");
+                return;
+            }
+
+            ApplyEffects(rng, EnemyEffects, enemies);
+            ApplyEffects(rng, AllyEffects, allies);
+            ApplyEffects(rng, SelfEffects, employee);
+
+            static void ApplyEffects(Rng rng, Effect[] effects, params Employee[] targets)
+                => targets.ForEach(em => effects.ForEach(effect => effect.ApplyTo(rng, em)));
         }
 
         public bool CanBeUsed(Employee user, Employee[] enemies, Employee[] allies) {
@@ -52,7 +65,7 @@ namespace _Game.Scripts.FeatureRequestPrototype.Logic {
         }
 
         public (int[][] enemyGroups, int[][] allyGroups) GetTargets(Employee user) {
-            var enemyGroups = GetGroups(_skillData.EnemyTarget, user, _skillData.AllyTargetExcludeSelf);
+            var enemyGroups = GetGroups(_skillData.EnemyTarget, user);
             var allyGroups = GetGroups(_skillData.AllyTarget, user, _skillData.AllyTargetExcludeSelf);
 
             if (enemyGroups.Length != 0 || allyGroups.Length != 0) {
@@ -74,6 +87,12 @@ namespace _Game.Scripts.FeatureRequestPrototype.Logic {
                         .ToArray()
                     : new[] { target.Positions };
             }
+        }
+
+        public enum ETargetType {
+            Enemy,
+            Ally,
+            Self
         }
     }
 }

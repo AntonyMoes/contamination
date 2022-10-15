@@ -10,7 +10,7 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
 
         public void Load(Effect effect) {
             _image.sprite = effect.Sprite;
-            _text.text = effect.Serialization;
+            _text.text = effect.GetSerialization();
         }
     }
 }

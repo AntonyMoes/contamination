@@ -22,7 +22,7 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
             _selectedEmployee = employee;
             _selectedLeft = isLeft;
             _selectedEmployee.Selector.SetActive(true);
-            _selectedEmployee.Selector.SetType(EmployeeSelector.SelectionType.Current);
+            _selectedEmployee.Selector.SetType(EmployeeSelector.ESelectionType.Current);
 
             _skillsPanel.Load(employee.Employee, enemies, allies, startTargetSelection);
             _skillsPanel.Show();
@@ -34,7 +34,7 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
         }
 
         public void SetCurrentEmployee([CanBeNull] Employee employee, bool isLeft) {
-            var newCurrentOrSelected = employee != null ? employee : GetSelected();
+            var newCurrentOrSelected = employee ?? GetSelected();
             SetCurrent(employee);
 
             var panel = GetPanel();

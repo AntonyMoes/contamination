@@ -22,7 +22,7 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
             SetSelected(false);
         }
 
-        public void SetType(SelectionType type) {
+        public void SetType(ESelectionType type) {
             var color = _colors.First(c => c.type == type).color;
             foreach (var image in _selectorColoredImages) {
                 image.color = color;
@@ -39,7 +39,7 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
             // TODO animation
         }
 
-        public enum SelectionType {
+        public enum ESelectionType {
             UnitToUse,
             Current,
             Ally,
@@ -48,7 +48,7 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
         
         [Serializable]
         private struct TypeColor {
-            public SelectionType type;
+            public ESelectionType type;
             public Color color;
         }
     }

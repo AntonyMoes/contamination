@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using _Game.Scripts.FeatureRequestPrototype.Logic;
 using GeneralUtils;
 using JetBrains.Annotations;
 using Unity.Plastic.Newtonsoft.Json;
@@ -15,6 +16,7 @@ namespace _Game.Scripts.Data {
         [JsonProperty] private bool allyTargetExcludeSelf;
         [JsonProperty] private int[] selfPositions;
         [JsonProperty] private EffectData[] selfEffects;
+        [JsonProperty] private int accuracy;
 
         public string Name => name;
         public string Description { get; private set; }
@@ -23,6 +25,7 @@ namespace _Game.Scripts.Data {
         public bool AllyTargetExcludeSelf => allyTargetExcludeSelf;
         public int[] SelfPositions { get; private set; }
         public EffectData[] SelfEffects { get; private set; }
+        public int Accuracy => accuracy;
 
         public List<string> LoadAndValidate() {
             Description = (description ?? "").Replace("\\n", "\n");
@@ -42,6 +45,12 @@ namespace _Game.Scripts.Data {
 
             validationErrors.AddRange(LoadAndValidatePositions(selfPositions, out var loadedSelfPositions));
             SelfPositions = loadedSelfPositions;
+            
+            if (accuracy < 0) {
+                validationErrors.Add($"Skill accuracy can't be < 0: {accuracy}");
+            } else if (accuracy == 0) {
+                accuracy = Constants.MaxAccuracy;
+            }
 
             return validationErrors;
         }
@@ -51,8 +60,8 @@ namespace _Game.Scripts.Data {
             var truePositions = positions ?? Array.Empty<int>();
 
             foreach (var position in truePositions) {
-                if (position > 4 || position < 1) {
-                    validationErrors.Add($"Invalid position {position}: should be >= 1 && <= 4");
+                if (position > Constants.MaxPosition || position < Constants.MinPosition) {
+                    validationErrors.Add($"Invalid position {position}: should be >= {Constants.MinPosition} && <= {Constants.MaxPosition}");
                 }
             }
 
