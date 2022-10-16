@@ -48,7 +48,7 @@
     },
     {
       "name": "testSkill3",
-      "description": "Test skill 3 description",
+      "description": "Test skill 4 description",
       "selfPositions": [
         1,
         2,
@@ -86,8 +86,7 @@
             "powerMin": 2,
             "powerMax": 2
           }
-        ],
-        "accuracy": 85
+        ]
       },
       "selfEffects": [
         {
@@ -97,6 +96,28 @@
         }
       ],
       "accuracy": 85
+    },
+    {
+      "name": "testSkill5",
+      "description": "Test skill 5 description",
+      "selfPositions": [
+        4
+      ],
+      "enemyTarget": {
+        "positions": [
+          2, 3
+        ],
+        "exclusive": false,
+        "effects": [
+          {
+            "type": "Burnout",
+            "powerMin": 3,
+            "powerMax": 3,
+            "duration": 3
+          }
+        ]
+      },
+      "accuracy": 90
     }
   ]
 }

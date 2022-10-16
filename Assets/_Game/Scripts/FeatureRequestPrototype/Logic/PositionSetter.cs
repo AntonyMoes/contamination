@@ -11,11 +11,11 @@ namespace _Game.Scripts.FeatureRequestPrototype.Logic {
             _containers = containers.ToDictionary(container => container.Position, container => container);
         }
 
-        public int SetPosition(Employee employee, int newPosition) {
+        public void SetPosition(Employee employee, int newPosition) {
             var actualNewPosition = Mathf.Clamp(newPosition, Constants.MinPosition, Constants.MaxPosition);
             var currentPosition = employee.Position;
             if (actualNewPosition == currentPosition) {
-                return actualNewPosition;
+                return;
             }
 
             var iteration = actualNewPosition > currentPosition ? (Func<int, int>) Up : Down;
@@ -25,8 +25,6 @@ namespace _Game.Scripts.FeatureRequestPrototype.Logic {
                     _containers[position].SwapWith(_containers[nextPosition]);
                 }
             }
-
-            return actualNewPosition;
 
             static int Up(int idx) => idx + 1;
             static int Down(int idx) => idx - 1;

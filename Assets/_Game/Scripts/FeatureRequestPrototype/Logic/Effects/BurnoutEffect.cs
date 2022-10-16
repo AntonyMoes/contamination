@@ -7,8 +7,7 @@ namespace _Game.Scripts.FeatureRequestPrototype.Logic.Effects {
         public override Effect CreateFrom(EffectData data) => new BurnoutEffect(data);
 
         public override EEffectType Type => EEffectType.Burnout;
-
-        protected override string SpriteName => "burnout";
+        public override EEffectGroup Group => EEffectGroup.Burnout;
 
         protected override void PerformApplyTo(Rng rng, Employee employee) {
             employee.Sanity.Value -= GetPower(rng);

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using _Game.Scripts.Data;
 using _Game.Scripts.FeatureRequestPrototype.Logic.Effects;
@@ -13,7 +14,7 @@ namespace _Game.Scripts.FeatureRequestPrototype.Logic {
         private int _position;
         public int Position {
             get => _position;
-            set => _position = _positionSetter.SetPosition(this, value);
+            set => _positionSetter.SetPosition(this, value);
         }
 
         public readonly Skill[] Skills;
@@ -22,7 +23,9 @@ namespace _Game.Scripts.FeatureRequestPrototype.Logic {
         public readonly UpdatedValue<int> Sanity;
 
         private readonly List<AppliedEffect> _appliedEffects = new List<AppliedEffect>();
-        public IEnumerable<AppliedEffect> AppliedEffects => _appliedEffects;
+
+        private readonly Action<AppliedEffect, bool> _onEffectApplied;
+        public readonly Event<AppliedEffect, bool> OnEffectApplied;
 
         private readonly EmployeeData _employeeData;
         private readonly PositionSetter _positionSetter;
@@ -37,10 +40,13 @@ namespace _Game.Scripts.FeatureRequestPrototype.Logic {
                 .ToArray();
 
             Sanity = new UpdatedValue<int>(MaxSanity, SanitySetter);
+
+            OnEffectApplied = new Event<AppliedEffect, bool>(out _onEffectApplied);
         }
 
         public void AddEffect(AppliedEffect effect) {
             _appliedEffects.Add(effect);
+            _onEffectApplied(effect, true);
         }
 
         public void StartRound(Rng rng) {
@@ -49,6 +55,7 @@ namespace _Game.Scripts.FeatureRequestPrototype.Logic {
                 var shouldRemove = effect.Apply(rng, this);
                 if (shouldRemove) {
                     _appliedEffects.Remove(effect);
+                    _onEffectApplied(effect, false);
                 }
             }
         }

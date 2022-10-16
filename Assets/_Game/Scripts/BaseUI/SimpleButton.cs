@@ -1,7 +1,6 @@
 ﻿using System;
 using GeneralUtils;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace _Game.Scripts.BaseUI {
@@ -27,27 +26,9 @@ namespace _Game.Scripts.BaseUI {
         private void Awake() {
             _button.onClick.AddListener(() => _onClick(this));
 
-            if (_hoverZone == null) {
-                return;
+            if (_hoverZone != null) {
+                HoverComponent.Create(_hoverZone, _onHover);
             }
-
-            var eventTrigger = _hoverZone.TryGetComponent<EventTrigger>(out var trigger)
-                ? trigger
-                : _hoverZone.gameObject.AddComponent<EventTrigger>();
-
-            var enter = new EventTrigger.Entry {
-                eventID = EventTriggerType.PointerEnter,
-                callback = new EventTrigger.TriggerEvent()
-            };
-            enter.callback.AddListener(_ => _onHover.Value = true);
-            eventTrigger.triggers.Add(enter);
-
-            var exit = new EventTrigger.Entry {
-                eventID = EventTriggerType.PointerExit,
-                callback = new EventTrigger.TriggerEvent()
-            };
-            exit.callback.AddListener(_ => _onHover.Value = false);
-            eventTrigger.triggers.Add(exit);
         }
     }
 }

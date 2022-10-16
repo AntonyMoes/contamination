@@ -13,9 +13,8 @@ namespace _Game.Scripts.FeatureRequestPrototype.Logic.Effects {
         public abstract Effect CreateFrom(EffectData data);
 
         public abstract EEffectType Type { get; }
-        public Sprite Sprite => ArtStorage.Instance.GetSprite(SpriteName);
-
-        protected abstract string SpriteName { get; }
+        public abstract EEffectGroup Group { get; }
+        public Sprite Sprite => ArtStorage.Instance.GetSprite(Group.GetSpriteName());
 
         public string GetSerialization(int? remainingDuration = null) {
             var serializedPower = _data.PowerMin == _data.PowerMax
@@ -25,7 +24,7 @@ namespace _Game.Scripts.FeatureRequestPrototype.Logic.Effects {
             var duration = remainingDuration ?? _data.Duration;
             var serializedDuration = duration == 0
                 ? ""
-                : $" for {_data.Duration} rnd";
+                : $" for {duration} rnd";
 
             return $"{serializedPower} pts{serializedDuration}"; 
         }

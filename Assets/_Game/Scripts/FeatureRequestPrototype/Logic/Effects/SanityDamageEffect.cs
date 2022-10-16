@@ -7,8 +7,7 @@ namespace _Game.Scripts.FeatureRequestPrototype.Logic.Effects {
         public override Effect CreateFrom(EffectData data) => new SanityDamageEffect(data);
 
         public override EEffectType Type => EEffectType.SanityDamage;
-
-        protected override string SpriteName => "damage";
+        public override EEffectGroup Group => EEffectGroup.SanityDamage;
 
         protected override void PerformApplyTo(Rng rng, Employee employee) {
             employee.Sanity.Value -= GetPower(rng);
