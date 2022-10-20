@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using _Game.Scripts.Data;
+using _Game.Scripts.FeatureRequestPrototype.Data;
 using _Game.Scripts.FeatureRequestPrototype.Logic.Effects;
+using _Game.Scripts.FeatureRequestPrototype.Logic.Skills;
 using GeneralUtils;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace _Game.Scripts.FeatureRequestPrototype.Logic {
@@ -17,10 +19,13 @@ namespace _Game.Scripts.FeatureRequestPrototype.Logic {
             set => _positionSetter.SetPosition(this, value);
         }
 
-        public readonly Skill[] Skills;
+        public readonly ISkill[] Skills;
 
         public int MaxSanity => _employeeData.Sanity;
         public readonly UpdatedValue<int> Sanity;
+
+        public int MoveForward => _employeeData.MoveForward;
+        public int MoveBackward => _employeeData.MoveBackward;
 
         private readonly List<AppliedEffect> _appliedEffects = new List<AppliedEffect>();
 
@@ -30,18 +35,20 @@ namespace _Game.Scripts.FeatureRequestPrototype.Logic {
         private readonly EmployeeData _employeeData;
         private readonly PositionSetter _positionSetter;
 
-        public Employee(EmployeeData employeeData, PositionSetter positionSetter, int initialPosition) {
+        public Employee(EmployeeData employeeData, PositionSetter positionSetter, out Action<int> positionUpdater) {
             _employeeData = employeeData;
             _positionSetter = positionSetter;
-            _position = initialPosition;
 
             Skills = employeeData.Skills
                 .Select(skillData => new Skill(skillData))
+                .Append<ISkill>(new MoveSelfSkill(this))
                 .ToArray();
 
             Sanity = new UpdatedValue<int>(MaxSanity, SanitySetter);
 
             OnEffectApplied = new Event<AppliedEffect, bool>(out _onEffectApplied);
+
+            positionUpdater = position => _position = position;
         }
 
         public void AddEffect(AppliedEffect effect) {
@@ -62,6 +69,13 @@ namespace _Game.Scripts.FeatureRequestPrototype.Logic {
 
         private int SanitySetter(int newSanity) {
             return Mathf.Clamp(newSanity, 0, MaxSanity);
+        }
+    }
+
+    public static class EmployeeHelper {
+        [CanBeNull]
+        public static Employee WithPosition(this IEnumerable<Employee> employees, int position) {
+            return employees.FirstOrDefault(employee => employee.Position == position);
         }
     }
 }

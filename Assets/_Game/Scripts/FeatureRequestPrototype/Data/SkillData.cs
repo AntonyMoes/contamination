@@ -6,7 +6,7 @@ using GeneralUtils;
 using JetBrains.Annotations;
 using Unity.Plastic.Newtonsoft.Json;
 
-namespace _Game.Scripts.Data {
+namespace _Game.Scripts.FeatureRequestPrototype.Data {
     [Serializable]
     public class SkillData : IData {
         [JsonProperty] private string name;

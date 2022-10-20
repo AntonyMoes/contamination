@@ -5,7 +5,7 @@ using GeneralUtils;
 using Unity.Plastic.Newtonsoft.Json;
 using UnityEngine;
 
-namespace _Game.Scripts.Data {
+namespace _Game.Scripts.FeatureRequestPrototype.Data {
     public class DataStorage : SingletonBehaviour<DataStorage> {
         [SerializeField] private TextAsset _employees;
         [SerializeField] private TextAsset _skills;

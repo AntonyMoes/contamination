@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using _Game.Scripts.BaseUI;
-using _Game.Scripts.Data;
+using _Game.Scripts.FeatureRequestPrototype.Data;
 using _Game.Scripts.FeatureRequestPrototype.Logic;
+using _Game.Scripts.FeatureRequestPrototype.Logic.Skills;
 using _Game.Scripts.FeatureRequestPrototype.UI;
 using _Game.Scripts.FeatureRequestPrototype.Utils;
 using GeneralUtils;
@@ -116,7 +117,7 @@ namespace _Game.Scripts.FeatureRequestPrototype.GameObjects {
             }
         }
 
-        private void StartTargetSelection(Employee employee, Skill skill) {
+        private void StartTargetSelection(Employee employee, ISkill skill) {
             Debug.Log($"Start target selection for skill {skill.Name}");
             _skillSelectionProcess?.Abort();
 
@@ -128,9 +129,8 @@ namespace _Game.Scripts.FeatureRequestPrototype.GameObjects {
                 });
         }
 
-        private void OnSelectedTargets(Employee employee, Skill skill, Employee[] selectedEnemies, Employee[] selectedAllies) {
+        private void OnSelectedTargets(Employee employee, ISkill skill, Employee[] selectedEnemies, Employee[] selectedAllies) {
             _skillSelectionProcess = null;
-            // TODO attack logic
             Debug.LogWarning($"Employee: {employee.Position}\nSkill: {skill.Name}\n" +
                              $"Enemies: {string.Join(",", selectedEnemies.Select(e => e.Position))}\n" +
                              $"Allies: {string.Join(",", selectedAllies.Select(e => e.Position))}\n");

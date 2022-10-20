@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace _Game.Scripts.Data {
+namespace _Game.Scripts.FeatureRequestPrototype.Data {
     public interface IData {
         /**
          * Returns validation errors list

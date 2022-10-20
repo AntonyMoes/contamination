@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Plastic.Newtonsoft.Json;
 
-namespace _Game.Scripts.Data {
+namespace _Game.Scripts.FeatureRequestPrototype.Data {
     [Serializable]
     public class EmployeeData : IData {
         [JsonProperty] private string name;

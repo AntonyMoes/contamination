@@ -4,6 +4,7 @@ using System.Linq;
 using _Game.Scripts.BaseUI;
 using _Game.Scripts.FeatureRequestPrototype.GameObjects;
 using _Game.Scripts.FeatureRequestPrototype.Logic;
+using _Game.Scripts.FeatureRequestPrototype.Logic.Skills;
 using _Game.Scripts.FeatureRequestPrototype.UI;
 using GeneralUtils.Processes;
 using UnityEngine;
@@ -90,26 +91,23 @@ namespace _Game.Scripts.FeatureRequestPrototype.Utils {
         public class SkillSelectionProcess {
             private readonly SerialProcess _process;
 
-            public SkillSelectionProcess(Employee employee, Skill skill, EmployeeObject[] enemies, EmployeeObject[] allies,
+            public SkillSelectionProcess(Employee employee, ISkill skill, EmployeeObject[] enemies, EmployeeObject[] allies,
                 Action<Employee[], Employee[]> onTargetsSelected) {
                 var selectedEnemies = Array.Empty<Employee>();
                 var selectedAllies = Array.Empty<Employee>();
                 var selectionProcess = new SerialProcess();
                 EmployeeSelectionProcess currentSelectionProcess = null;
 
-                var (enemyPositions, allyPositions) = skill.GetTargets(employee);
+                var targets = skill.GetTargets(employee);
 
-                if (enemyPositions.Length != 0) {
-                    var enemyGroups = MapPositions(enemyPositions, enemies);
-                    selectionProcess.Add(Select(enemyGroups, true, selected => selectedEnemies = selected));
-                    selectionProcess.Add(new SyncProcess(() => currentSelectionProcess = null));
-                }
+                selectionProcess.Add(Select(targets, allies, ESkillTarget.Ally,
+                    selected => selectedAllies = selected, process => currentSelectionProcess = process));
 
-                if (allyPositions.Length != 0) {
-                    var allyGroups = MapPositions(allyPositions, allies);
-                    selectionProcess.Add(Select(allyGroups, false, selected => selectedAllies = selected));
-                    selectionProcess.Add(new SyncProcess(() => currentSelectionProcess = null));
-                }
+                selectionProcess.Add(Select(targets, allies, ESkillTarget.MovePosition,
+                    selected => selectedAllies = selected, process => currentSelectionProcess = process));
+
+                selectionProcess.Add(Select(targets, enemies, ESkillTarget.Enemy,
+                    selected => selectedEnemies = selected, process => currentSelectionProcess = process));
 
                 _process = selectionProcess;
                 _process.Run(() => {
@@ -120,6 +118,7 @@ namespace _Game.Scripts.FeatureRequestPrototype.Utils {
                 });
 
                 static EmployeeObject[][] MapPositions(int[][] positions, EmployeeObject[] employees) {
+                    // TODO: no empty slots handling
                     return positions
                         .Select(group => group
                             .Select(employees.WithPosition)
@@ -127,16 +126,32 @@ namespace _Game.Scripts.FeatureRequestPrototype.Utils {
                         .ToArray();
                 }
 
-                AsyncProcess Select(EmployeeObject[][] employeeGroups, bool areEnemies, Action<Employee[]> setSelected) {
-                    var process = new AsyncProcess(onDone => {
-                        var type = areEnemies ? EmployeeSelector.ESelectionType.Enemy : EmployeeSelector.ESelectionType.Ally;
+                static Process Select(IDictionary<ESkillTarget, int[][]> targets, EmployeeObject[] employees, ESkillTarget target, Action<Employee[]> setSelected, Action<EmployeeSelectionProcess> setSelectionProcess) {
+                    if (!targets.TryGetValue(target, out var positions) || positions.Length == 0) {
+                        return new DummyProcess();
+                    }
 
-                        currentSelectionProcess = new EmployeeSelectionProcess(employeeGroups, type, selected => {
+                    // TODO: no empty slots handling
+                    var employeeGroups = MapPositions(positions, employees);
+                    var selectionType = target switch {
+                        ESkillTarget.Enemy => EmployeeSelector.ESelectionType.Enemy,
+                        ESkillTarget.Ally => EmployeeSelector.ESelectionType.Ally,
+                        ESkillTarget.MovePosition => EmployeeSelector.ESelectionType.MovePosition,
+                        _ => throw new ArgumentOutOfRangeException(nameof(target), target, null)
+                    };
+
+                    var selectionProcess = new AsyncProcess(onDone => {
+                        var currentSelectionProcess = new EmployeeSelectionProcess(employeeGroups, selectionType, selected => {
                             setSelected(selected.Select(e => e.Employee).ToArray());
                             onDone?.Invoke();
                         });
+                        setSelectionProcess(currentSelectionProcess);
                     });
+                    var cleanupProcess = new SyncProcess(() => setSelectionProcess(null));
 
+                    var process = new SerialProcess();
+                    process.Add(selectionProcess);
+                    process.Add(cleanupProcess);
                     return process;
                 }
             }

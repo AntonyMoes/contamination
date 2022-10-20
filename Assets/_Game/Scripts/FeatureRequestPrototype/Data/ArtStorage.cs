@@ -2,7 +2,7 @@ using System.IO;
 using _Game.Scripts.FeatureRequestPrototype.Utils;
 using UnityEngine;
 
-namespace _Game.Scripts.Data {
+namespace _Game.Scripts.FeatureRequestPrototype.Data {
     public class ArtStorage : SingletonBehaviour<ArtStorage> {
         private const string Location = "FeatureRequestPrototype";
         

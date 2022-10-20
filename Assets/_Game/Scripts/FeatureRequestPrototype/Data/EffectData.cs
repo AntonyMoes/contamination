@@ -2,20 +2,18 @@
 using System.Collections.Generic;
 using Unity.Plastic.Newtonsoft.Json;
 
-namespace _Game.Scripts.Data {
+namespace _Game.Scripts.FeatureRequestPrototype.Data {
     [Serializable]
     public class EffectData : IData {
         [JsonProperty] private string type;
         [JsonProperty] private int powerMin;
         [JsonProperty] private int powerMax;
         [JsonProperty] private int duration;
-        // [JsonProperty] private int accuracy;
 
         public EEffectType EffectType { get; private set; }
-        public int PowerMin => powerMin;
-        public int PowerMax => powerMax;
-        public int Duration => duration;
-        // public int Accuracy => accuracy;
+        public int PowerMin { get; private set; }
+        public int PowerMax { get; private set; }
+        public int Duration { get; private set; }
 
         public List<string> LoadAndValidate() {
             var validationErrors = new List<string>();
@@ -28,23 +26,32 @@ namespace _Game.Scripts.Data {
 
             if (powerMin < 0) {
                 validationErrors.Add($"Effect powerMin can't be < 0: {powerMin}");
+            } else {
+                PowerMin = powerMin;
             }
 
             if (powerMax < 0 || powerMax < powerMin) {
                 validationErrors.Add($"Effect powerMax can't be < 0 and < powerMin: {powerMax}");
+            } else {
+                PowerMax = powerMax;
             }
 
             if (duration < 0) {
                 validationErrors.Add($"Effect duration can't be < 0: {duration}");
+            } else {
+                Duration = duration;
             }
 
-            // if (accuracy < 0) {
-            //     validationErrors.Add($"Effect accuracy can't be < 0: {accuracy}");
-            // } else if (accuracy == 0) {
-            //     accuracy = 100;
-            // }
-
             return validationErrors;
+        }
+
+        public static EffectData CreateFakeMoveData(int moveForward, int moveBackward) {
+            return new EffectData {
+                EffectType = EEffectType.Move,
+                PowerMin = -moveForward,
+                PowerMax = moveBackward,
+                Duration = 0
+            };
         }
     }
 }

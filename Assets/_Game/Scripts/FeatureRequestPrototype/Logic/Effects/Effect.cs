@@ -1,4 +1,4 @@
-using _Game.Scripts.Data;
+using _Game.Scripts.FeatureRequestPrototype.Data;
 using GeneralUtils;
 using UnityEngine;
 

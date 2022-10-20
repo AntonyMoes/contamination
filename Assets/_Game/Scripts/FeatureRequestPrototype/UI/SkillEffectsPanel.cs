@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using _Game.Scripts.BaseUI;
-using _Game.Scripts.FeatureRequestPrototype.Logic;
 using _Game.Scripts.FeatureRequestPrototype.Logic.Effects;
+using _Game.Scripts.FeatureRequestPrototype.Logic.Skills;
 using UnityEngine;
 
 namespace _Game.Scripts.FeatureRequestPrototype.UI {
@@ -15,9 +15,9 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
         [SerializeField] private Transform _selfParent;
 
         private readonly List<EffectItem> _effects = new List<EffectItem>();
-        private Skill _skill;
+        private ISkill _skill;
 
-        public void Load(Skill skill) {
+        public void Load(ISkill skill) {
             if (_skill == skill) {
                 return;
             }
@@ -27,24 +27,27 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
             }
 
             _skill = skill;
-            FillGroup(_enemyGroup, _enemyParent, skill.EnemyEffects);
-            FillGroup(_allyGroup, _allyParent, skill.AllyEffects);
-            FillGroup(_selfGroup, _selfParent, skill.SelfEffects);
+            FillGroup(_enemyGroup, _enemyParent, skill.Effects, ESkillTarget.Enemy);
+            FillGroup(_allyGroup, _allyParent, skill.Effects, ESkillTarget.Ally);
+            FillGroup(_selfGroup, _selfParent, skill.Effects, ESkillTarget.Self, ESkillTarget.MovePosition);
         }
 
-        private void FillGroup(GameObject group, Transform parent, Effect[] effects) {
-            if (effects.Length == 0) {
-                group.SetActive(false);
-                return;
-            }
+        private void FillGroup(GameObject group, Transform parent, IDictionary<ESkillTarget, Effect[]> effects, params ESkillTarget[] targets) {
+            group.SetActive(false);
 
-            foreach (var effect in effects) {
-                var item = Instantiate(_effectPrefab, parent);
-                item.Load(effect);
-                _effects.Add(item);
-            }
+            foreach (var target in targets) {
+                if (!effects.TryGetValue(target, out var targetEffects) || targetEffects.Length == 0) {
+                    continue;
+                }
 
-            group.gameObject.SetActive(true);
+                group.gameObject.SetActive(true);
+
+                foreach (var effect in targetEffects) {
+                    var item = Instantiate(_effectPrefab, parent);
+                    item.Load(effect);
+                    _effects.Add(item);
+                }
+            }
         }
 
         public override void Clear() {

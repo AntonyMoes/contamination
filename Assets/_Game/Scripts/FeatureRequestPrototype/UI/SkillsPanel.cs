@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using _Game.Scripts.BaseUI;
 using _Game.Scripts.FeatureRequestPrototype.Logic;
+using _Game.Scripts.FeatureRequestPrototype.Logic.Skills;
 using GeneralUtils.Processes;
 using JetBrains.Annotations;
 using TMPro;
@@ -18,11 +19,11 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
 
         private Employee _employee;
         private readonly List<SkillItem> _skillItems = new List<SkillItem>();
-        private Skill _selectedSkill;
-        private Skill _displayedSkill;
-        private Action<Employee, Skill> _startTargetSelection;
+        private ISkill _selectedSkill;
+        private ISkill _displayedSkill;
+        private Action<Employee, ISkill> _startTargetSelection;
 
-        public void Load(Employee employee, Employee[] enemies, Employee[] allies, Action<Employee, Skill> startTargetSelection) {
+        public void Load(Employee employee, Employee[] enemies, Employee[] allies, Action<Employee, ISkill> startTargetSelection) {
             _employee = employee;
             _startTargetSelection = startTargetSelection;
 
@@ -50,7 +51,7 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
             SelectSkill(skill);
         }
 
-        private void SelectSkill(Skill skill) {
+        private void SelectSkill(ISkill skill) {
             if (_selectedSkill != null) {
                 _skillItems.First(i => i.Skill == _selectedSkill).SetCurrent(false);
             }
@@ -63,7 +64,7 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
             _startTargetSelection(_employee, skill);
         }
 
-        private void DisplaySkill([CanBeNull] Skill skill) {
+        private void DisplaySkill([CanBeNull] ISkill skill) {
             _displayedSkill = skill ?? _selectedSkill;
             if (_displayedSkill == null) {
                 _skillName.text = "";

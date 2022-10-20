@@ -1,6 +1,7 @@
 ﻿using System;
 using _Game.Scripts.FeatureRequestPrototype.GameObjects;
 using _Game.Scripts.FeatureRequestPrototype.Logic;
+using _Game.Scripts.FeatureRequestPrototype.Logic.Skills;
 using JetBrains.Annotations;
 using UnityEngine;
 
@@ -16,7 +17,7 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
         private Employee _leftCurrentEmployee;
         private Employee _rightCurrentEmployee;
 
-        public void SetSelectedEmployee(EmployeeObject employee, bool isLeft, Employee[] enemies, Employee[] allies, Action<Employee, Skill> startTargetSelection) {
+        public void SetSelectedEmployee(EmployeeObject employee, bool isLeft, Employee[] enemies, Employee[] allies, Action<Employee, ISkill> startTargetSelection) {
             ClearSelectedEmployee();
 
             _selectedEmployee = employee;

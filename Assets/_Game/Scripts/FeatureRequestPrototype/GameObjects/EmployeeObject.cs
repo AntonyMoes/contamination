@@ -4,6 +4,7 @@ using _Game.Scripts.BaseUI;
 using _Game.Scripts.FeatureRequestPrototype.Logic;
 using _Game.Scripts.FeatureRequestPrototype.Logic.Effects;
 using _Game.Scripts.FeatureRequestPrototype.UI;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace _Game.Scripts.FeatureRequestPrototype.GameObjects {
@@ -55,8 +56,8 @@ namespace _Game.Scripts.FeatureRequestPrototype.GameObjects {
     }
 
     public static class EmployeeObjectHelper {
-        public static EmployeeObject WithPosition(this IEnumerable<EmployeeObject> employees, int position) {
-            return employees.First(employee => employee.Employee.Position == position);
+        [CanBeNull] public static EmployeeObject WithPosition(this IEnumerable<EmployeeObject> employees, int position) {
+            return employees.FirstOrDefault(employee => employee.Employee.Position == position);
         }
     }
 }

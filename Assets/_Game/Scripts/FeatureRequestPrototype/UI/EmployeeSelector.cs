@@ -44,6 +44,7 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
             Current,
             Ally,
             Enemy,
+            MovePosition
         }
         
         [Serializable]

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using _Game.Scripts.Data;
+using _Game.Scripts.FeatureRequestPrototype.Data;
 
 namespace _Game.Scripts.FeatureRequestPrototype.Logic.Effects {
     public static class EffectFactory {

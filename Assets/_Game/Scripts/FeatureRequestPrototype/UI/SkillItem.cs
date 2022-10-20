@@ -1,6 +1,6 @@
 ﻿using System;
 using _Game.Scripts.BaseUI;
-using _Game.Scripts.FeatureRequestPrototype.Logic;
+using _Game.Scripts.FeatureRequestPrototype.Logic.Skills;
 using TMPro;
 using UnityEngine;
 
@@ -10,9 +10,9 @@ namespace _Game.Scripts.FeatureRequestPrototype.UI {
         [SerializeField] private TextMeshProUGUI _name;
         [SerializeField] private GameObject _frame;
 
-        public Skill Skill { get; private set; }
+        public ISkill Skill { get; private set; }
 
-        public void Load(Skill skill, bool canUse, Action<SkillItem, bool> onHover, Action<SkillItem> onClick) {
+        public void Load(ISkill skill, bool canUse, Action<SkillItem, bool> onHover, Action<SkillItem> onClick) {
             Skill = skill;
             _name.text = skill.Name;
 
