@@ -1,5 +1,5 @@
 using System.IO;
-using _Game.Scripts.FeatureRequestPrototype.Utils;
+using GeneralUtils;
 using UnityEngine;
 
 namespace _Game.Scripts.FeatureRequestPrototype.Data {
