@@ -2,9 +2,9 @@
 using System.Linq;
 using _Game.Scripts.ModelV4;
 using _Game.Scripts.ModelV4.ECS;
-using _Game.Scripts.TicTacToe.Data;
+using _Game.Scripts.TicTacToe.Game.Data;
 
-namespace _Game.Scripts.TicTacToe.Commands {
+namespace _Game.Scripts.TicTacToe.Game.Commands {
     public class TicTacToeInitialCommand : TicTacToeCommand {
         public int Size;
         public int[] Players;

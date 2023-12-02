@@ -1,7 +1,7 @@
 ﻿using _Game.Scripts.ModelV4;
 using _Game.Scripts.NetworkModel;
 
-namespace _Game.Scripts.TicTacToe.Commands {
+namespace _Game.Scripts.TicTacToe.Game.Commands {
     public abstract class TicTacToeCommand : GameCommand {
         protected sealed override void PerformDoOnData(IGameAPI api) {
             PerformDoOnAPI((GameDataAPI) api);

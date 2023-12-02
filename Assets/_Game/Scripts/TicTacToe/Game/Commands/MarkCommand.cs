@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
 using _Game.Scripts.ModelV4;
-using _Game.Scripts.TicTacToe.Data;
+using _Game.Scripts.TicTacToe.Game.Data;
 
-namespace _Game.Scripts.TicTacToe.Commands {
+namespace _Game.Scripts.TicTacToe.Game.Commands {
     public class MarkCommand : TicTacToeCommand {
         public MarkData.EMark Mark;
         public int EntityId;

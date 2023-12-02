@@ -1,16 +1,16 @@
-﻿using _Game.Scripts.ModelV4;
-using _Game.Scripts.Network;
+﻿using _Game.Scripts.Network;
 using _Game.Scripts.NetworkModel.Network;
-using _Game.Scripts.TicTacToe.Commands;
-using _Game.Scripts.TicTacToe.Data;
+using _Game.Scripts.TicTacToe.Game;
+using _Game.Scripts.TicTacToe.Game.Commands;
+using _Game.Scripts.TicTacToe.Game.Data;
 using UnityEngine;
 
-namespace _Game.Scripts.TicTacToe {
+namespace _Game.Scripts.TicTacToe.Network {
     public class TicTacToeServer : MonoBehaviour {
         [SerializeField] private int _size = 3;
         [SerializeField] private TicTacToeInteractor _interactor;
         private Server _server;
-        private Game _game;
+        private ModelV4.Game _game;
 
         private void OnEnable() {
             Application.runInBackground = true;
@@ -43,7 +43,7 @@ namespace _Game.Scripts.TicTacToe {
 
             Debug.Log("Client connected");
 
-            _game = Game.StartServer(CreateConfigurationForUser(1), _server.ClientConnections.Peers, _interactor);
+            _game = ModelV4.Game.StartServer(CreateConfigurationForUser(1), _server.ClientConnections.Peers, _interactor);
 
             _game.RegisterPresenter(_interactor);
             _interactor.SetCurrentUser(1);

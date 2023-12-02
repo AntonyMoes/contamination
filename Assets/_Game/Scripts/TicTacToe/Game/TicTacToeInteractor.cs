@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using _Game.Scripts.ModelV4;
 using _Game.Scripts.NetworkModel;
-using _Game.Scripts.TicTacToe.Commands;
-using _Game.Scripts.TicTacToe.Data;
+using _Game.Scripts.TicTacToe.Game.Commands;
+using _Game.Scripts.TicTacToe.Game.Data;
+using _Game.Scripts.TicTacToe.Game.Presentation;
 using GeneralUtils;
 using GeneralUtils.Processes;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace _Game.Scripts.TicTacToe {
+namespace _Game.Scripts.TicTacToe.Game {
     public class TicTacToeInteractor : MonoBehaviour, ICommandGenerator, ICommandPresenter {
         [SerializeField] private Tile _tilePrefab;
         [SerializeField] private RectTransform _container;
@@ -87,7 +88,7 @@ namespace _Game.Scripts.TicTacToe {
             return generatedCommand switch {
                 TicTacToeInitialCommand initCommand => new SyncProcess(() => InitializeField(initCommand)),
                 MarkCommand markCommand => new SyncProcess(() => MarkTile(markCommand)),
-                _ => null
+                _ => new DummyProcess()
             };
         }
     }

@@ -1,10 +1,10 @@
 ﻿using System;
-using _Game.Scripts.TicTacToe.Data;
+using _Game.Scripts.TicTacToe.Game.Data;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace _Game.Scripts.TicTacToe {
+namespace _Game.Scripts.TicTacToe.Game.Presentation {
     public class Tile : MonoBehaviour {
         [SerializeField] private Button _button;
         [SerializeField] private TextMeshProUGUI _label;

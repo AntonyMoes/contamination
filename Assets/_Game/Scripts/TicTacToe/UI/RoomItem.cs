@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Linq;
 using _Game.Scripts.Lobby;
+using _Game.Scripts.TicTacToe.Network;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace _Game.Scripts.TicTacToe {
+namespace _Game.Scripts.TicTacToe.UI {
     public class RoomItem : MonoBehaviour {
         [SerializeField] private Slot[] _slots;
         [SerializeField] private Button _joinButton;

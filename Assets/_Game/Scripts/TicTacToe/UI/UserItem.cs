@@ -2,7 +2,7 @@
 using TMPro;
 using UnityEngine;
 
-namespace _Game.Scripts.TicTacToe {
+namespace _Game.Scripts.TicTacToe.UI {
     public class UserItem : MonoBehaviour {
         [SerializeField] private TextMeshProUGUI _name;
         [SerializeField] private Color _regularColor = Color.white;

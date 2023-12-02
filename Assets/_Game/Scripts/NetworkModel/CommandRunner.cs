@@ -46,7 +46,6 @@ namespace _Game.Scripts.NetworkModel {
             var presentProcess = new SerialProcess();
             _presenters
                 .Select(p => p.PresentCommand(command))
-                .Where(process => process != null)
                 .ForEach(presentProcess.Add);
 
             presentProcess.Run(() => {

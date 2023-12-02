@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using _Game.Scripts.Lobby;
+using _Game.Scripts.TicTacToe.Network;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace _Game.Scripts.TicTacToe {
+namespace _Game.Scripts.TicTacToe.UI {
     public class TicTacToeLobbyClientInterface : MonoBehaviour {
         [SerializeField] private GameObject _loadingOverlay;
 

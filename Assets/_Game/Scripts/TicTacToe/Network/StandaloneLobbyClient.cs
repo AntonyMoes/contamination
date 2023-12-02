@@ -1,17 +1,18 @@
 ﻿using _Game.Scripts.Lobby;
-using _Game.Scripts.ModelV4;
 using _Game.Scripts.Network;
 using _Game.Scripts.NetworkModel.Network;
+using _Game.Scripts.TicTacToe.Game;
+using _Game.Scripts.TicTacToe.UI;
 using UnityEngine;
 
-namespace _Game.Scripts.TicTacToe {
+namespace _Game.Scripts.TicTacToe.Network {
     public class StandaloneLobbyClient : MonoBehaviour {
         [SerializeField] private TicTacToeInteractor _interactor;
         [SerializeField] private TicTacToeLobbyClientInterface _lobbyClientInterface;
 
         private Client _client;
         private LobbyClient<TicTacToeRoomSettings> _lobbyClient;
-        private Game _game;
+        private ModelV4.Game _game;
         private int _currentUserId;
         private int _winnerId;
 
@@ -40,7 +41,7 @@ namespace _Game.Scripts.TicTacToe {
 
         private void OnGameConfigurationMessageReceived(GameConfigurationMessage message, IPeer serverPeer) {
             _client.ServerConnection.GetReceiveEvent<GameConfigurationMessage>().Unsubscribe(OnGameConfigurationMessageReceived);
-            _game = Game.StartClient(message, serverPeer, _interactor);
+            _game = ModelV4.Game.StartClient(message, serverPeer, _interactor);
 
             _game.RegisterPresenter(_interactor);
             _interactor.SetCurrentUser(message.CurrenUser);

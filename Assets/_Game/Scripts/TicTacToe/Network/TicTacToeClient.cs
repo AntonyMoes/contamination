@@ -1,13 +1,13 @@
-﻿using _Game.Scripts.ModelV4;
-using _Game.Scripts.Network;
+﻿using _Game.Scripts.Network;
 using _Game.Scripts.NetworkModel.Network;
+using _Game.Scripts.TicTacToe.Game;
 using UnityEngine;
 
-namespace _Game.Scripts.TicTacToe {
+namespace _Game.Scripts.TicTacToe.Network {
     public class TicTacToeClient : MonoBehaviour {
         [SerializeField] private TicTacToeInteractor _interactor;
         private Client _client;
-        private Game _game;
+        private ModelV4.Game _game;
 
         private void OnEnable() {
             Application.runInBackground = true;
@@ -18,7 +18,7 @@ namespace _Game.Scripts.TicTacToe {
         }
 
         private void OnGameConfigurationMessageReceived(GameConfigurationMessage message, IPeer serverPeer) {
-            _game = Game.StartClient(message, serverPeer, _interactor);
+            _game = ModelV4.Game.StartClient(message, serverPeer, _interactor);
 
             _game.RegisterPresenter(_interactor);
             _interactor.SetCurrentUser(message.CurrenUser);

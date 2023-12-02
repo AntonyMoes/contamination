@@ -1,22 +1,22 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using _Game.Scripts.Lobby;
-using _Game.Scripts.ModelV4;
 using _Game.Scripts.Network;
 using _Game.Scripts.NetworkModel.Network;
-using _Game.Scripts.TicTacToe.Commands;
-using _Game.Scripts.TicTacToe.Data;
+using _Game.Scripts.TicTacToe.Game;
+using _Game.Scripts.TicTacToe.Game.Commands;
+using _Game.Scripts.TicTacToe.Game.Data;
 using GeneralUtils;
 using GeneralUtils.Processes;
 using UnityEngine;
 
 // using LiteNetLib.Utils;
 
-namespace _Game.Scripts.TicTacToe {
+namespace _Game.Scripts.TicTacToe.Network {
     public class StandaloneLobbyServer : MonoBehaviour {
         // [SerializeField] private TicTacToeInteractor _interactor;
         private Server _server;
-        private Game _game;
+        private ModelV4.Game _game;
         private Lobby<TicTacToeRoomSettings> _lobby;
 
         private void OnEnable() {
@@ -44,7 +44,7 @@ namespace _Game.Scripts.TicTacToe {
                 startProcess.Add(AsyncProcess.From(peer.Send, CreateConfigurationForUser(IdFromIndex(i))));
             }
 
-            _game = Game.StartStandaloneServer(CreateConfigurationForUser(), users.Select(u => u.Peer));
+            _game = ModelV4.Game.StartStandaloneServer(CreateConfigurationForUser(), users.Select(u => u.Peer));
 
             var winChecker = new TicTacToeWinChecker(_game.EventsAPI);
             _game.RegisterGenerator(winChecker);

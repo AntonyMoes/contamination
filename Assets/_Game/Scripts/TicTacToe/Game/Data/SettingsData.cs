@@ -2,7 +2,7 @@
 using _Game.Scripts.ModelV4.ECS;
 using GeneralUtils;
 
-namespace _Game.Scripts.TicTacToe.Data {
+namespace _Game.Scripts.TicTacToe.Game.Data {
     public struct SettingsData : ISame<SettingsData> {
         public int Size;
         public int[] Players;

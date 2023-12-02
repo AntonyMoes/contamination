@@ -3,13 +3,13 @@ using System.Linq;
 using _Game.Scripts.ModelV4;
 using _Game.Scripts.ModelV4.ECS;
 using _Game.Scripts.NetworkModel;
-using _Game.Scripts.TicTacToe.Commands;
-using _Game.Scripts.TicTacToe.Data;
+using _Game.Scripts.TicTacToe.Game.Commands;
+using _Game.Scripts.TicTacToe.Game.Data;
 using GeneralUtils;
 using GeneralUtils.Processes;
 using UnityEngine;
 
-namespace _Game.Scripts.TicTacToe {
+namespace _Game.Scripts.TicTacToe.Game {
     public class TicTacToeWinChecker : ICommandPresenter, ICommandGenerator {
         private readonly Action<GameCommand> _onCommandGenerated;
         private readonly Action<int> _onWin;
@@ -87,7 +87,7 @@ namespace _Game.Scripts.TicTacToe {
 
         public Process PresentCommand(GameCommand generatedCommand) {
             if (!(generatedCommand is WinCommand winCommand)) {
-                return null;
+                return new DummyProcess();
             }
 
             return new SyncProcess(() => {

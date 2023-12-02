@@ -1,6 +1,6 @@
 ﻿using _Game.Scripts.ModelV4;
 
-namespace _Game.Scripts.TicTacToe.Commands {
+namespace _Game.Scripts.TicTacToe.Game.Commands {
     public class WinCommand : TicTacToeCommand {
         public int Winner;
         

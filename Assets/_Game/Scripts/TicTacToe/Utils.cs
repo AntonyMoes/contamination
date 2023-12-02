@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using _Game.Scripts.ModelV4.ECS;
-using _Game.Scripts.TicTacToe.Data;
+using _Game.Scripts.TicTacToe.Game.Data;
 
 namespace _Game.Scripts.TicTacToe {
     public static class Utils {

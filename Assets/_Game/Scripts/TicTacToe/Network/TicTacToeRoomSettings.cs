@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using _Game.Scripts.Lobby;
-using _Game.Scripts.TicTacToe.Data;
+using _Game.Scripts.TicTacToe.Game.Data;
 using LiteNetLib.Utils;
 
-namespace _Game.Scripts.TicTacToe {
+namespace _Game.Scripts.TicTacToe.Network {
     public class TicTacToeRoomSettings : IRoomSettings<TicTacToeRoomSettings> {
         public const int MaxUsers = 2;
 
