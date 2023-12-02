@@ -5,30 +5,28 @@ using GeneralUtils;
 using GeneralUtils.Processes;
 using UnityEngine;
 
-namespace _Game.Scripts.ModelV4 {
+namespace _Game.Scripts.NetworkModel {
     public class CommandRunner : ICommandSynchronizer, IDisposable {
         private readonly List<ICommandGenerator> _generators = new List<ICommandGenerator>();
         private readonly List<ICommandPresenter> _presenters = new List<ICommandPresenter>();
         private readonly Queue<GameCommand> _commandQueue = new Queue<GameCommand>();
         private readonly UpdatedValue<int> _queueSize = new UpdatedValue<int>();
-        private readonly GameDataAPI _api;
-        private readonly GameDataReadAPI _readAPI;
+        private readonly IGameAPI _api;
 
         private bool _isCommandRunning;
 
-        public CommandRunner(GameDataAPI api, GameDataReadAPI readAPI) {
+        public CommandRunner(IGameAPI api) {
             _api = api;
-            _readAPI = readAPI;
         }
 
         public void RegisterGenerator(ICommandGenerator generator) {
             generator.OnCommandGenerated.Subscribe(OnCommandGenerated);
-            generator.SetReadAPI(_readAPI);
+            generator.SetReadAPI(_api);
             _generators.Add(generator);
         }
 
         public void RegisterPresenter(ICommandPresenter presenter) {
-            presenter.SetReadAPI(_readAPI);
+            presenter.SetReadAPI(_api);
             _presenters.Add(presenter);
         }
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using GeneralUtils.Processes;
 
-namespace _Game.Scripts.ModelV4.User {
+namespace _Game.Scripts.NetworkModel.User {
     public interface IReadOnlyUser {
         public int Id { get; }
         public string Name { get; }

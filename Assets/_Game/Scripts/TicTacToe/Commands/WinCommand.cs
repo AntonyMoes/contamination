@@ -1,10 +1,10 @@
 ﻿using _Game.Scripts.ModelV4;
 
 namespace _Game.Scripts.TicTacToe.Commands {
-    public class WinCommand : GameCommand {
+    public class WinCommand : TicTacToeCommand {
         public int Winner;
         
-        protected override void PerformDoOnData(GameDataAPI api) {
+        protected override void PerformDoOnAPI(GameDataAPI api) {
             api.EndTurn(true);
         }
 

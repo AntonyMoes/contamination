@@ -1,9 +1,9 @@
 ﻿using GeneralUtils;
 using GeneralUtils.Processes;
 
-namespace _Game.Scripts.ModelV4 {
+namespace _Game.Scripts.NetworkModel {
     public interface IDataReader {
-        public void SetReadAPI(GameDataReadAPI api);
+        public void SetReadAPI(IGameReadAPI api);
     }
 
     public interface ICommandPresenter : IDataReader {

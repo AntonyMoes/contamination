@@ -1,7 +1,7 @@
 ﻿using System;
 using GeneralUtils;
 
-namespace _Game.Scripts.ModelV4 {
+namespace _Game.Scripts.NetworkModel {
     public class InitialCommandGenerator : ICommandGenerator {
         private Action _triggerInitialCommand;
 
@@ -16,6 +16,6 @@ namespace _Game.Scripts.ModelV4 {
         }
 
         public Event<GameCommand> OnCommandGenerated { get; }
-        public void SetReadAPI(GameDataReadAPI api) { }
+        public void SetReadAPI(IGameReadAPI api) { }
     }
 }

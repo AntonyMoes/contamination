@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace _Game.Scripts.ModelV4 {
+namespace _Game.Scripts.NetworkModel {
     public interface ICommandSynchronizer {
         void WaitForAllCommandsFinished(Action onDone);
     }

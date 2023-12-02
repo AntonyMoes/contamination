@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using _Game.Scripts.ModelV4.User;
+using _Game.Scripts.NetworkModel.User;
 using GeneralUtils;
 using GeneralUtils.Processes;
 using UnityEngine;
 
-namespace _Game.Scripts.ModelV4 {
+namespace _Game.Scripts.NetworkModel {
     public class TurnController : ICommandGenerator {
         private readonly List<IUser> _userSequence;
         private readonly Action<GameCommand> _onCommandGenerated;
@@ -38,7 +38,7 @@ namespace _Game.Scripts.ModelV4 {
         }
 
         public Event<GameCommand> OnCommandGenerated { get; }
-        public void SetReadAPI(GameDataReadAPI api) {
+        public void SetReadAPI(IGameReadAPI api) {
             foreach (var user in _userSequence) {
                 user.SetReadAPI(api);
             }

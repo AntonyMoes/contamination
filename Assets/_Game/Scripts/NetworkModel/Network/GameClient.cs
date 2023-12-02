@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using _Game.Scripts.ModelV4.User;
 using _Game.Scripts.Network;
+using _Game.Scripts.NetworkModel.User;
 using GeneralUtils;
 using GeneralUtils.Processes;
 using UnityEngine;
 using Guid = _Game.Scripts.Utils.Guid;
 
-namespace _Game.Scripts.ModelV4.Network {
+namespace _Game.Scripts.NetworkModel.Network {
     public class GameClient : INetworkCommandSender, INetworkCommandReceiver, IDisposable {
         private readonly IPeer _serverPeer;
         private readonly UpdatedValue<int> _notSynchronizedMessages = new UpdatedValue<int>();

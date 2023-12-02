@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using _Game.Scripts.ModelV4.Network;
-using _Game.Scripts.ModelV4.User;
 using _Game.Scripts.Network;
+using _Game.Scripts.NetworkModel;
+using _Game.Scripts.NetworkModel.Network;
+using _Game.Scripts.NetworkModel.User;
 
 namespace _Game.Scripts.ModelV4 {
     public class Game : IDisposable {
@@ -19,13 +20,12 @@ namespace _Game.Scripts.ModelV4 {
             _otherDisposables = otherDisposables;
             var turnController = new TurnController(_users);
 
-            var ecs = new ECS.ECS();
+            var ecs = new ModelV4.ECS.ECS();
 
             var api = new GameDataAPI(ecs, turnController);
-            var readApi = new GameDataReadAPI(ecs, turnController);
             EventsAPI = new GameDataEventsAPI(ecs, turnController);
 
-            _runner = new CommandRunner(api, readApi);
+            _runner = new CommandRunner(api);
             turnController.SetCommandSynchronizer(_runner);
             _runner.RegisterGenerator(turnController);
 

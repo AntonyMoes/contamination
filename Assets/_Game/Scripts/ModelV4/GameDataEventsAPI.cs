@@ -1,10 +1,11 @@
 ﻿using _Game.Scripts.ModelV4.ECS;
-using _Game.Scripts.ModelV4.User;
+using _Game.Scripts.NetworkModel;
+using _Game.Scripts.NetworkModel.User;
 using GeneralUtils;
 
 namespace _Game.Scripts.ModelV4 {
     public class GameDataEventsAPI {
-        private readonly ECS.ECS _ecs;
+        private readonly ModelV4.ECS.ECS _ecs;
         private readonly TurnController _turnController;
 
         public Event<Entity> OnEntityCreated => _ecs.OnEntityCreated;
@@ -13,7 +14,7 @@ namespace _Game.Scripts.ModelV4 {
         public Event<IReadOnlyUser, IReadOnlyUser> OnTurnChanged => _turnController.OnTurnChanged;
         public readonly Event OnGameEnded;
 
-        public GameDataEventsAPI(ECS.ECS ecs, TurnController turnController) {
+        public GameDataEventsAPI(ModelV4.ECS.ECS ecs, TurnController turnController) {
             _ecs = ecs;
             _turnController = turnController;
             OnGameEnded = new Event(out var onGameEnded);

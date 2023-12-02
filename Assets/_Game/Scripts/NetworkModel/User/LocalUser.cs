@@ -2,7 +2,7 @@
 using GeneralUtils;
 using GeneralUtils.Processes;
 
-namespace _Game.Scripts.ModelV4.User {
+namespace _Game.Scripts.NetworkModel.User {
     public class LocalUser : User {
         private readonly ICommandGenerator _userCommandGenerator;
         private readonly Action<GameCommand> _onCommandGenerated;
@@ -17,7 +17,7 @@ namespace _Game.Scripts.ModelV4.User {
             _onCommandGenerated(command);
         }
 
-        public sealed override void SetReadAPI(GameDataReadAPI api) => _userCommandGenerator.SetReadAPI(api);
+        public sealed override void SetReadAPI(IGameReadAPI api) => _userCommandGenerator.SetReadAPI(api);
         public sealed override Event<GameCommand> OnCommandGenerated { get; }
 
         protected override Process PerformEndTurn() => new DummyProcess();

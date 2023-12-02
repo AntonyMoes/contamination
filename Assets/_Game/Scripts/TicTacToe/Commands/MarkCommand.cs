@@ -4,12 +4,12 @@ using _Game.Scripts.ModelV4;
 using _Game.Scripts.TicTacToe.Data;
 
 namespace _Game.Scripts.TicTacToe.Commands {
-    public class MarkCommand : GameCommand {
+    public class MarkCommand : TicTacToeCommand {
         public MarkData.EMark Mark;
         public int EntityId;
 
-        protected override void PerformDoOnData(GameDataAPI api) {
-            var entityToMark = api.Entities.First(entity => entity.Id == EntityId);
+        protected override void PerformDoOnAPI(GameDataAPI api) {
+            var entityToMark = api.ModifiableEntities.First(entity => entity.Id == EntityId);
             entityToMark.GetModifiableComponent<MarkData>().Data = new MarkData {
                 Mark = Mark
             };

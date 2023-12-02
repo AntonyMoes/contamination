@@ -2,7 +2,7 @@
 using GeneralUtils;
 using GeneralUtils.Processes;
 
-namespace _Game.Scripts.ModelV4.User {
+namespace _Game.Scripts.NetworkModel.User {
     public abstract class User : IUser {
         private readonly Action<bool> _onUserTurnToggled;
 
@@ -16,7 +16,7 @@ namespace _Game.Scripts.ModelV4.User {
             OnUserTurnToggled = new Event<bool>(out _onUserTurnToggled);
         }
 
-        public abstract void SetReadAPI(GameDataReadAPI api);
+        public abstract void SetReadAPI(IGameReadAPI api);
         public abstract Event<GameCommand> OnCommandGenerated { get; }
 
         public Process EndTurn() {

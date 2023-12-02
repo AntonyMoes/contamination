@@ -1,12 +1,11 @@
 ﻿using System;
-using _Game.Scripts.Utils;
 using GeneralUtils.Command;
 
-namespace _Game.Scripts.ModelV4 {
+namespace _Game.Scripts.NetworkModel {
     public abstract class GameCommand : Command {
-        private GameDataAPI _api;
+        private IGameAPI _api;
 
-        public void ProvideDataApi(GameDataAPI api) {
+        public void ProvideDataApi(IGameAPI api) {
             _api = api;
         }
 
@@ -14,7 +13,7 @@ namespace _Game.Scripts.ModelV4 {
             PerformDoOnData(_api);
         }
 
-        protected abstract void PerformDoOnData(GameDataAPI api);
+        protected abstract void PerformDoOnData(IGameAPI api);
 
         protected abstract string SerializeContents();
         protected abstract void DeserializeContents(string contents);

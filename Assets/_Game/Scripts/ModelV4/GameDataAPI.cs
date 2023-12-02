@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using _Game.Scripts.ModelV4.ECS;
+using _Game.Scripts.NetworkModel;
 
 namespace _Game.Scripts.ModelV4 {
-    public class GameDataAPI {
-        private readonly ECS.ECS _ecs;
+    public class GameDataAPI : GameDataReadAPI, IGameAPI {
+        private readonly ModelV4.ECS.ECS _ecs;
         private readonly TurnController _turnController;
 
-        public IReadOnlyCollection<IEntity> Entities => _ecs.Entities;
+        public IReadOnlyCollection<IEntity> ModifiableEntities => _ecs.Entities;
 
-        public GameDataAPI(ECS.ECS ecs, TurnController turnController) {
+        public GameDataAPI(ModelV4.ECS.ECS ecs, TurnController turnController) : base(ecs, turnController) {
             _ecs = ecs;
             _turnController = turnController;
         }

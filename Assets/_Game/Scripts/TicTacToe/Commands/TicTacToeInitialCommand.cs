@@ -5,12 +5,12 @@ using _Game.Scripts.ModelV4.ECS;
 using _Game.Scripts.TicTacToe.Data;
 
 namespace _Game.Scripts.TicTacToe.Commands {
-    public class TicTacToeInitialCommand : GameCommand {
+    public class TicTacToeInitialCommand : TicTacToeCommand {
         public int Size;
         public int[] Players;
         public MarkData.EMark[] Marks;
 
-        protected override void PerformDoOnData(GameDataAPI api) {
+        protected override void PerformDoOnAPI(GameDataAPI api) {
             api.AddEntity(id => new Entity(id, Entity.Add(new SettingsData {
                 Size = Size,
                 Players = Players,

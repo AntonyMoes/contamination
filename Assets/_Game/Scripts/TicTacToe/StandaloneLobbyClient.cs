@@ -1,7 +1,7 @@
 ﻿using _Game.Scripts.Lobby;
 using _Game.Scripts.ModelV4;
-using _Game.Scripts.ModelV4.Network;
 using _Game.Scripts.Network;
+using _Game.Scripts.NetworkModel.Network;
 using UnityEngine;
 
 namespace _Game.Scripts.TicTacToe {

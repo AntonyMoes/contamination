@@ -1,8 +1,7 @@
-﻿using System;
-using _Game.Scripts.Network;
+﻿using _Game.Scripts.Network;
 using LiteNetLib.Utils;
 
-namespace _Game.Scripts.ModelV4.Network {
+namespace _Game.Scripts.NetworkModel.Network {
     public class GameCommandMessage : Message {
         public string Guid;
         public int UserId;

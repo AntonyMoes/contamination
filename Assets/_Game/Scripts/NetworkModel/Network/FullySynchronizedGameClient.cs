@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using _Game.Scripts.ModelV4.User;
 using _Game.Scripts.Network;
+using _Game.Scripts.NetworkModel.User;
 using GeneralUtils;
 using GeneralUtils.Processes;
 using Guid = _Game.Scripts.Utils.Guid;
 
-namespace _Game.Scripts.ModelV4.Network {
+namespace _Game.Scripts.NetworkModel.Network {
     // A client that waits for all other clients to receive its updates.
     // I will write the corresponding server if this will actually be used.
     public class FullySynchronizedGameClient : INetworkCommandSender, INetworkCommandReceiver {

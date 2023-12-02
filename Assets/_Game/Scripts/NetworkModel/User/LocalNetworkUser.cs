@@ -2,7 +2,7 @@
 using GeneralUtils;
 using GeneralUtils.Processes;
 
-namespace _Game.Scripts.ModelV4.User {
+namespace _Game.Scripts.NetworkModel.User {
     public class LocalNetworkUser : IUser {
         private readonly LocalUser _localUser;
         private readonly INetworkCommandSender _sender;
@@ -26,7 +26,7 @@ namespace _Game.Scripts.ModelV4.User {
 
         public Event<GameCommand> OnCommandGenerated { get; }
 
-        public void SetReadAPI(GameDataReadAPI api) => _localUser.SetReadAPI(api);
+        public void SetReadAPI(IGameReadAPI api) => _localUser.SetReadAPI(api);
         public Event<bool> OnUserTurnToggled => _localUser.OnUserTurnToggled;
 
         public Process EndTurn() {

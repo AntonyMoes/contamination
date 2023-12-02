@@ -1,14 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using _Game.Scripts.Lobby;
 using _Game.Scripts.ModelV4;
 using _Game.Scripts.Network;
-using UnityEngine;
-using _Game.Scripts.Lobby;
-using _Game.Scripts.ModelV4.Network;
+using _Game.Scripts.NetworkModel.Network;
 using _Game.Scripts.TicTacToe.Commands;
 using _Game.Scripts.TicTacToe.Data;
 using GeneralUtils;
 using GeneralUtils.Processes;
+using UnityEngine;
+
 // using LiteNetLib.Utils;
 
 namespace _Game.Scripts.TicTacToe {

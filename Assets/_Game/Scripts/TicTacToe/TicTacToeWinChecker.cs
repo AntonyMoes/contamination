@@ -2,6 +2,7 @@
 using System.Linq;
 using _Game.Scripts.ModelV4;
 using _Game.Scripts.ModelV4.ECS;
+using _Game.Scripts.NetworkModel;
 using _Game.Scripts.TicTacToe.Commands;
 using _Game.Scripts.TicTacToe.Data;
 using GeneralUtils;
@@ -80,8 +81,8 @@ namespace _Game.Scripts.TicTacToe {
             return true;
         }
 
-        public void SetReadAPI(GameDataReadAPI api) {
-            _readApi = api;
+        public void SetReadAPI(IGameReadAPI api) {
+            _readApi = (GameDataReadAPI) api;
         }
 
         public Process PresentCommand(GameCommand generatedCommand) {

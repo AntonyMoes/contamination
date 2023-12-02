@@ -1,7 +1,7 @@
 ﻿using _Game.Scripts.Network;
 using LiteNetLib.Utils;
 
-namespace _Game.Scripts.ModelV4.Network {
+namespace _Game.Scripts.NetworkModel.Network {
     public class GameConfigurationMessage : Message {
         public GameCommand InitialCommand;
         public int[] UserSequence;
