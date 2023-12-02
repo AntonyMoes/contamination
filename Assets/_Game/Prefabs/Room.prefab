@@ -1550,7 +1550,7 @@ MonoBehaviour:
   - _mark: {fileID: 4040994431434033713}
     _userItem: {fileID: 1703166946262863597}
   _joinButton: {fileID: 2343899127061608847}
-  _passwordField: {fileID: 5798724070811833786}
+  _passwordInput: {fileID: 5798724070811833786}
   _leaveButton: {fileID: 434014055839012450}
   _switchMarksButton: {fileID: 1007968089069193036}
   _startGameButton: {fileID: 4125824749727692404}
