@@ -3,6 +3,7 @@ using System.Linq;
 using _Game.Scripts.ModelV4;
 using _Game.Scripts.ModelV4.ECS;
 using _Game.Scripts.NetworkModel;
+using _Game.Scripts.NetworkModel.Commands;
 using _Game.Scripts.TicTacToe.Game.Commands;
 using _Game.Scripts.TicTacToe.Game.Data;
 using GeneralUtils;
@@ -24,7 +25,7 @@ namespace _Game.Scripts.TicTacToe.Game {
         private void OnMarkUpdated(MarkData oldData, IReadOnlyComponent<MarkData> component) {
             var data = component.Data;
             var settings = _readApi.Entities.GetSettings();
-            var position = component.Entity.GetReadOnlyComponent<PositionData>().Data;
+            var position = component.ReadOnlyEntity.GetReadOnlyComponent<PositionData>().Data;
             if (CheckRow(data.Mark, position.Row, settings.Size)
                 || CheckColumn(data.Mark, position.Column, settings.Size)
                 || CheckDiagonal(data.Mark, position.Row, position.Column, settings.Size)) {

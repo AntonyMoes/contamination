@@ -9,7 +9,7 @@ namespace _Game.Scripts.TicTacToe {
             return entities
                 .GetComponent<PositionData>()
                 .First(position => position.Data.Row == row && position.Data.Column == column)
-                .Entity.GetReadOnlyComponent<MarkData>();
+                .ReadOnlyEntity.GetReadOnlyComponent<MarkData>();
         }
 
         public static SettingsData GetSettings(this IEnumerable<IReadOnlyEntity> entities) {

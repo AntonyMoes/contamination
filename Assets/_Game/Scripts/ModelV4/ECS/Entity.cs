@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace _Game.Scripts.ModelV4.ECS {
     public class Entity : IEntity {
@@ -29,6 +30,7 @@ namespace _Game.Scripts.ModelV4.ECS {
             };
         }
 
+        [CanBeNull]
         private Component<TComponentData> GetComponent<TComponentData>()
             where TComponentData : struct, ISame<TComponentData> {
             return _components.TryGetValue(typeof(Component<TComponentData>), out var component)

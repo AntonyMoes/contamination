@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using _Game.Scripts.NetworkModel.Commands;
 using _Game.Scripts.NetworkModel.User;
 using GeneralUtils;
 using GeneralUtils.Processes;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace _Game.Scripts.NetworkModel {
     public class TurnController : ICommandGenerator {
         private readonly List<IUser> _userSequence;
         private readonly Action<GameCommand> _onCommandGenerated;
+        public int CurrentTurn { get; private set; }
         private int _currentUserIndex;
-        private IUser CurrentModifiableUser => _currentUserIndex >= 0 && _currentUserIndex < _userSequence.Count 
+        [CanBeNull] private IUser CurrentModifiableUser => _currentUserIndex >= 0 && _currentUserIndex < _userSequence.Count 
             ? _userSequence[_currentUserIndex]
             : null;
 
@@ -44,11 +47,17 @@ namespace _Game.Scripts.NetworkModel {
             }
         }
 
+        public void OnInitialCommandFinished() {
+            _onTurnChanged.Invoke(null, CurrentModifiableUser);
+        }
+
         // Kinda hacky: synchronously switch current user, but continue to listen for their commands until sync ends.
         // TODO: stop processing local commands in user on end turn but continue processing network commands until synced???
         public void EndTurn(bool endGame = false) {
             var currentUser = CurrentModifiableUser;
-            _currentUserIndex = !endGame ? GetNextUserIndex(_currentUserIndex, _userSequence.Count) : -1;
+            (CurrentTurn, _currentUserIndex) = !endGame
+                ? GetNextTurnAndUserIndex(CurrentTurn, _currentUserIndex, _userSequence.Count)
+                : (CurrentTurn, -1);
             var newCurrentUser = CurrentModifiableUser;
 
             var endTurnProcess = new SerialProcess();
@@ -67,8 +76,8 @@ namespace _Game.Scripts.NetworkModel {
             endTurnProcess.Run();
         }
 
-        private static int GetNextUserIndex(int currentUserIndex, int userCount) {
-            return (currentUserIndex + 1) % userCount;
+        private static (int, int) GetNextTurnAndUserIndex(int currentTurn, int currentUserIndex, int userCount) {
+            return (currentTurn + (currentUserIndex + 1) / userCount, (currentUserIndex + 1) % userCount);
         }
 
         private static int GetPreviousUserIndex(int currentUserIndex, int userCount) {

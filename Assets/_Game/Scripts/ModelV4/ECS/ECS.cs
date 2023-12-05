@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using GeneralUtils;
+using JetBrains.Annotations;
 
 namespace _Game.Scripts.ModelV4.ECS {
     public class ECS : IComponentUpdateProxy {
@@ -31,7 +32,7 @@ namespace _Game.Scripts.ModelV4.ECS {
         public int AddEntity(Func<int, Entity> entityCreator) {
             var entity = entityCreator(_idCreator());
             foreach (var component in entity.Components) {
-                component.SubscribeProxy(this);
+                component.SubscribeProxy(this, true);
             }
 
             _entities.Add(entity.Id, entity);
@@ -47,10 +48,15 @@ namespace _Game.Scripts.ModelV4.ECS {
 
             _entities.Remove(id);
             foreach (var component in entity.Components) {
-                component.SubscribeProxy(this);
+                component.UnsubscribeProxy(this);
             }
 
             _onEntityDestroyed(entity);
+        }
+
+        [CanBeNull]
+        public Entity GetEntity(int id) {
+            return _entities.TryGetValue(id, out var entity) ? entity : null;
         }
 
         public Event<TComponentData, IReadOnlyComponent<TComponentData>> GetComponentUpdateEvent<TComponentData>()
@@ -58,9 +64,14 @@ namespace _Game.Scripts.ModelV4.ECS {
             return GetEventPair<TComponentData>(typeof(TComponentData)).updateEvent;
         }
 
-        public void RegisterComponent<TComponentData>(Event<TComponentData, IReadOnlyComponent<TComponentData>> updateEvent)
+        public void RegisterComponent<TComponentData>(Event<TComponentData, IReadOnlyComponent<TComponentData>> updateEvent,
+            IReadOnlyComponent<TComponentData> initialData)
             where TComponentData : struct, ISame<TComponentData> {
             updateEvent.Subscribe(GetEventPair<TComponentData>(typeof(TComponentData)).invoker);
+
+            if (initialData != null) {
+                GetEventPair<TComponentData>(typeof(TComponentData)).invoker(default, initialData);
+            }
         }
 
         public void UnregisterComponent<TComponentData>(Event<TComponentData, IReadOnlyComponent<TComponentData>> updateEvent)

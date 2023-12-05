@@ -12,8 +12,16 @@ namespace _Game.Scripts.ModelV4.ECS {
 
         public static IEnumerable<IReadOnlyComponent<TComponentData>> GetComponent<TComponentData>(this IEnumerable<IReadOnlyEntity> entities)
             where TComponentData : struct, ISame<TComponentData> {
-            return entities.WithComponent<TComponentData>()
-                .Select(e => e.GetReadOnlyComponent<TComponentData>());
+            return entities
+                .Select(e => e.GetReadOnlyComponent<TComponentData>())
+                .Where(c => c != null);
+        }
+
+        public static IEnumerable<IComponent<TComponentData>> GetModifiableComponent<TComponentData>(this IEnumerable<IEntity> entities)
+            where TComponentData : struct, ISame<TComponentData> {
+            return entities
+                .Select(e => e.GetModifiableComponent<TComponentData>())
+                .Where(c => c != null);
         }
 
         #endregion

@@ -6,7 +6,8 @@ namespace _Game.Scripts.ModelV4.ECS {
         where TComponentData : struct, ISame<TComponentData> {
         private TComponentData _data;
 
-        public IReadOnlyEntity Entity { get; }
+        public IReadOnlyEntity ReadOnlyEntity => Entity;
+        public IEntity Entity { get; }
 
         public TComponentData Data {
             get => _data;
@@ -28,8 +29,8 @@ namespace _Game.Scripts.ModelV4.ECS {
             _onDataUpdate = new Event<TComponentData, IReadOnlyComponent<TComponentData>>(out _onDataUpdateInvoker);
         }
 
-        public void SubscribeProxy(IComponentUpdateProxy updateProxy) {
-            updateProxy.RegisterComponent(_onDataUpdate);
+        public void SubscribeProxy(IComponentUpdateProxy updateProxy, bool triggerInitialUpdate) {
+            updateProxy.RegisterComponent(_onDataUpdate, triggerInitialUpdate ? this : null);
         }
 
         public void UnsubscribeProxy(IComponentUpdateProxy updateProxy) {

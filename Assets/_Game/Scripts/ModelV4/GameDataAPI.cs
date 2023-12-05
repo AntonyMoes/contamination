@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using _Game.Scripts.ModelV4.ECS;
 using _Game.Scripts.NetworkModel;
+using JetBrains.Annotations;
 
 namespace _Game.Scripts.ModelV4 {
     public class GameDataAPI : GameDataReadAPI, IGameAPI {
@@ -21,6 +22,11 @@ namespace _Game.Scripts.ModelV4 {
 
         public void RemoveEntity(int id) {
             _ecs.RemoveEntity(id);
+        }
+
+        [CanBeNull]
+        public IEntity GetModifiableEntity(int id) {
+            return _ecs.GetEntity(id);
         }
 
         public void EndTurn(bool endGame = false) {

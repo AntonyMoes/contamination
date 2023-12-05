@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using _Game.Scripts.BurnMark.Game;
-using _Game.Scripts.BurnMark.Game.Commands;
-using _Game.Scripts.BurnMark.Game.Data;
 using _Game.Scripts.Lobby;
 using _Game.Scripts.Network;
 using _Game.Scripts.NetworkModel.Network;
@@ -30,39 +28,14 @@ namespace _Game.Scripts.BurnMark.Network {
         }
 
         private void StartGame(RoomSettings settings, IReadOnlyCollection<LobbyUser> users) {
-            var orderedMarks = new[] { MarkData.EMark.X, MarkData.EMark.O };
-            var orderedUsers = settings.Users.ToArray();
-
             var startProcess = new ParallelProcess();
-            for (var i = 0; i < RoomSettings.MaxUsers; i++) {
-                var user = orderedUsers[i];
-                var peer = users.First(u => u.Id == user.Id).Peer;
-                startProcess.Add(AsyncProcess.From(peer.Send, CreateConfigurationForUser(IdFromIndex(i))));
-            }
-
-            _game = ModelV4.Game.StartStandaloneServer(CreateConfigurationForUser(), users.Select(u => u.Peer));
-
-            var winChecker = new TicTacToeWinChecker(_game.EventsAPI);
-            _game.RegisterGenerator(winChecker);
-            _game.RegisterPresenter(winChecker);
-
+            _game = GameStarter.StartServerGame(users, QueueMessage);
             _game.EventsAPI.OnGameEnded.Subscribe(OnGameEnded);
-
             startProcess.Run(_game.Start);
 
-            static int IdFromIndex(int index) => index + 1;
-            GameConfigurationMessage CreateConfigurationForUser(int id = 0) {
-                var userIds = Enumerable.Range(0, RoomSettings.MaxUsers).Select(IdFromIndex).ToArray();
-                return new GameConfigurationMessage {
-                    InitialCommand = new TicTacToeInitialCommand {
-                        Size = 3,
-                        Players = userIds,
-                        Marks = orderedMarks
-                    },
-                    CurrenUser = id,
-                    UserSequence = userIds,
-                    UserNames = orderedUsers.Select(u => u.Name).ToArray(),
-                };
+            void QueueMessage(LobbyUser user, GameConfigurationMessage message) {
+                var peer = users.First(u => u.Id == user.Id).Peer;
+                startProcess.Add(AsyncProcess.From(peer.Send, message));
             }
         }
 

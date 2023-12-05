@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using _Game.Scripts.ModelV4.ECS.Systems;
 using _Game.Scripts.Network;
 using _Game.Scripts.NetworkModel;
+using _Game.Scripts.NetworkModel.Commands;
 using _Game.Scripts.NetworkModel.Network;
 using _Game.Scripts.NetworkModel.User;
 
@@ -13,24 +15,27 @@ namespace _Game.Scripts.ModelV4 {
         private readonly IDisposable[] _otherDisposables;
         private readonly CommandRunner _runner;
 
+        private readonly TurnController _turnController;
+        private readonly ECS.ECS _ecs;
+        private readonly GameDataAPI _api;
         public readonly GameDataEventsAPI EventsAPI;
 
         private Game(GameCommand initialCommand, IEnumerable<IUser> users, params IDisposable[] otherDisposables) {
             _users = users.ToArray();
             _otherDisposables = otherDisposables;
-            var turnController = new TurnController(_users);
+            _turnController = new TurnController(_users);
 
-            var ecs = new ModelV4.ECS.ECS();
+            _ecs = new ModelV4.ECS.ECS();
 
-            var api = new GameDataAPI(ecs, turnController);
-            EventsAPI = new GameDataEventsAPI(ecs, turnController);
+            _api = new GameDataAPI(_ecs, _turnController);
+            EventsAPI = new GameDataEventsAPI(_ecs, _turnController);
 
-            _runner = new CommandRunner(api);
-            turnController.SetCommandSynchronizer(_runner);
-            _runner.RegisterGenerator(turnController);
+            _runner = new CommandRunner(_api);
+            _turnController.SetCommandSynchronizer(_runner);
+            _runner.RegisterGenerator(_turnController);
 
-            _initialCommandGenerator = new InitialCommandGenerator(initialCommand);
-            _runner.RegisterGenerator(_initialCommandGenerator);
+            _initialCommandGenerator = new InitialCommandGenerator(initialCommand, _turnController);
+            _runner.RegisterInitialGenerator(_initialCommandGenerator);
         }
 
         public void Start() {
@@ -43,6 +48,25 @@ namespace _Game.Scripts.ModelV4 {
 
         public void RegisterPresenter(ICommandPresenter presenter) {
             _runner.RegisterPresenter(presenter);
+        }
+
+        public void RegisterSystem(ECS.Systems.System system) {
+            system.Initialize(_api, _ecs.Entities);
+
+            EventsAPI.OnEntityCreated.Subscribe(system.TryAddEntity);
+            EventsAPI.OnEntityDestroyed.Subscribe(system.TryRemoveEntity);
+
+            if (system is IStartTurnSystem startTurnSystem) {
+                EventsAPI.OnTurnChanged.Subscribe(Subscriber);
+
+                void Subscriber(IReadOnlyUser _, IReadOnlyUser user) {
+                    if (user == null) {
+                        return;
+                    }
+
+                    startTurnSystem.OnStartTurn(user.Id, _turnController.CurrentTurn);
+                }
+            }
         }
 
         public void Dispose() {

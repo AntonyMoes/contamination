@@ -1,4 +1,5 @@
-﻿using GeneralUtils.Processes;
+﻿using _Game.Scripts.NetworkModel.Commands;
+using GeneralUtils.Processes;
 
 namespace _Game.Scripts.NetworkModel.User {
     public interface INetworkCommandSender {

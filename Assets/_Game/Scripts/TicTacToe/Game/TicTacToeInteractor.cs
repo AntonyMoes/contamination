@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using _Game.Scripts.ModelV4;
 using _Game.Scripts.NetworkModel;
+using _Game.Scripts.NetworkModel.Commands;
 using _Game.Scripts.TicTacToe.Game.Commands;
 using _Game.Scripts.TicTacToe.Game.Data;
 using _Game.Scripts.TicTacToe.Game.Presentation;
@@ -68,7 +69,7 @@ namespace _Game.Scripts.TicTacToe.Game {
             if (markComponent.Data.Mark == MarkData.EMark.None) {
                 var settings = _readApi.Entities.GetSettings();
                 _onCommandGenerated(new MarkCommand {
-                    EntityId = markComponent.Entity.Id,
+                    EntityId = markComponent.ReadOnlyEntity.Id,
                     Mark = settings.MarkPerPlayer[_currentUser]
                 });
             }

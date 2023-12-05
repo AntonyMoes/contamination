@@ -1,0 +1,67 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using _Game.Scripts.BurnMark.Game.Commands;
+using _Game.Scripts.BurnMark.Game.Data;
+using _Game.Scripts.BurnMark.Game.Presentation;
+using _Game.Scripts.BurnMark.Network;
+using _Game.Scripts.Lobby;
+using _Game.Scripts.Network;
+using _Game.Scripts.NetworkModel.Network;
+using UnityEngine;
+
+namespace _Game.Scripts.BurnMark.Game {
+    public static class GameStarter {
+        public static ModelV4.Game StartClientGame(GameConfigurationMessage message, IPeer serverPeer,
+            PlayerUI playerUI, Action onClientClosedGame) {
+            var presenter = new GamePresenter(message.CurrenUser, playerUI);
+            var game = ModelV4.Game.StartClient(message, serverPeer, presenter);
+            game.RegisterPresenter(presenter);
+
+            GameMechanicsRegistry.RegisterMechanics(game);
+            
+            presenter.Start(game.EventsAPI, OnClientClosedGame);
+            return game;
+
+            void OnClientClosedGame() {
+                presenter.Stop();
+                onClientClosedGame?.Invoke();
+            }
+        }
+
+        public static ModelV4.Game StartServerGame(IReadOnlyCollection<LobbyUser> users, Action<LobbyUser, GameConfigurationMessage> sendMessage) {
+            var orderedUsers = users.ToArray(); //
+
+            for (var i = 0; i < RoomSettings.MaxUsers; i++) {
+                var user = orderedUsers[i];
+                sendMessage(user, CreateConfigurationForUser(orderedUsers, IdFromIndex(i)));
+            }
+
+            var game = ModelV4.Game.StartStandaloneServer(CreateConfigurationForUser(orderedUsers), users.Select(u => u.Peer));
+
+            GameMechanicsRegistry.RegisterMechanics(game);
+
+            return game;
+        }
+
+        private static GameConfigurationMessage CreateConfigurationForUser(IEnumerable<LobbyUser> orderedUsers, int id = 0) {
+            var userIds = Enumerable.Range(0, RoomSettings.MaxUsers).Select(IdFromIndex).ToArray();
+            return new GameConfigurationMessage {
+                InitialCommand = new StartGameCommand {
+                    Players = userIds,
+                    MapData = new MapData {
+                        PlayerBases = new [] {
+                            Vector2Int.zero,
+                            Vector2Int.one
+                        }
+                    }
+                },
+                CurrenUser = id,
+                UserSequence = userIds,
+                UserNames = orderedUsers.Select(u => u.Name).ToArray(),
+            };
+        }
+
+        private static int IdFromIndex(int index) => index + 1;
+    }
+}

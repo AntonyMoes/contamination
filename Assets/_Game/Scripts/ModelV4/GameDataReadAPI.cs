@@ -2,6 +2,7 @@
 using _Game.Scripts.ModelV4.ECS;
 using _Game.Scripts.NetworkModel;
 using _Game.Scripts.NetworkModel.User;
+using JetBrains.Annotations;
 
 namespace _Game.Scripts.ModelV4 {
     public class GameDataReadAPI : IGameReadAPI {
@@ -11,10 +12,16 @@ namespace _Game.Scripts.ModelV4 {
         public IReadOnlyCollection<IReadOnlyEntity> Entities => _ecs.Entities;
         public IReadOnlyCollection<IReadOnlyUser> UserSequence => _turnController.UserSequence;
         public IReadOnlyUser CurrentUser => _turnController.CurrentUser;
+        public int CurrentTurn => _turnController.CurrentTurn;
 
         public GameDataReadAPI(ModelV4.ECS.ECS ecs, TurnController turnController) {
             _ecs = ecs;
             _turnController = turnController;
+        }
+
+        [CanBeNull]
+        public IReadOnlyEntity GetReadOnlyEntity(int id) {
+            return _ecs.GetEntity(id);
         }
     }
 }

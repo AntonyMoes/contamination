@@ -1,4 +1,5 @@
 ﻿using _Game.Scripts.Network;
+using _Game.Scripts.NetworkModel.Commands;
 using LiteNetLib.Utils;
 
 namespace _Game.Scripts.NetworkModel.Network {
@@ -9,12 +10,12 @@ namespace _Game.Scripts.NetworkModel.Network {
 
         public override void SerializeContents(NetDataWriter writer) {
             writer.Put(UserId);
-            writer.Put(Command.Serialize());
+            Command.Serialize(writer);
         }
 
         public override void DeserializeContents(NetDataReader reader) {
             UserId = reader.GetInt();
-            Command = GameCommand.Deserialize(reader.GetString());
+            Command = GameCommand.Deserialize(reader);
         }
     }
 }

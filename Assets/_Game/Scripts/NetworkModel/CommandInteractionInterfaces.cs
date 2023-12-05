@@ -1,4 +1,5 @@
-﻿using GeneralUtils;
+﻿using _Game.Scripts.NetworkModel.Commands;
+using GeneralUtils;
 using GeneralUtils.Processes;
 
 namespace _Game.Scripts.NetworkModel {
@@ -15,4 +16,8 @@ namespace _Game.Scripts.NetworkModel {
     }
 
     public interface ICommandGenerator : ICommandSource, IDataReader { }
+
+    public interface IInitialCommandGenerator : ICommandSource {
+        public void OnInitialCommandFinished();
+    }
 }
