@@ -18,6 +18,7 @@ namespace _Game.Scripts.ModelV4 {
         private readonly TurnController _turnController;
         private readonly ECS.ECS _ecs;
         private readonly GameDataAPI _api;
+        public GameDataReadAPI ReadAPI => _api;
         public readonly GameDataEventsAPI EventsAPI;
 
         private Game(GameCommand initialCommand, IEnumerable<IUser> users, params IDisposable[] otherDisposables) {

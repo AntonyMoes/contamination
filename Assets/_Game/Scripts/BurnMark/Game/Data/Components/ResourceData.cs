@@ -5,10 +5,9 @@ namespace _Game.Scripts.BurnMark.Game.Data.Components {
         public int Money;
         public int Metal;
 
-        public bool IsSame(ISame<ResourceData> other) {
-            var o = other.Get();
-            return Money == o.Money
-                   && Metal == o.Metal;
+        public bool IsSame(ResourceData other) {
+            return Money == other.Money
+                   && Metal == other.Metal;
         }
 
         public ResourceData Gain(ResourceGainData gainData) {

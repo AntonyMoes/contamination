@@ -37,7 +37,7 @@ namespace _Game.Scripts.ModelV4.ECS.Systems {
                 _onEntityUpdate = onEntityUpdate;
             }
 
-            public void RegisterComponent<TComponentData>(Event<TComponentData, IReadOnlyComponent<TComponentData>> updateEvent,
+            public void RegisterComponent<TComponentData>(Event<TComponentData?, IReadOnlyComponent<TComponentData>> updateEvent,
                 IReadOnlyComponent<TComponentData> initialData)
                 where TComponentData : struct, ISame<TComponentData> {
                 updateEvent.Subscribe(Subscriber);
@@ -47,12 +47,12 @@ namespace _Game.Scripts.ModelV4.ECS.Systems {
                     Subscriber(default, initialData);
                 }
 
-                void Subscriber(TComponentData data, IReadOnlyComponent<TComponentData> component) {
+                void Subscriber(TComponentData? data, IReadOnlyComponent<TComponentData> component) {
                     _onEntityUpdate(_trackedEntities.First(e => e.Id == component.ReadOnlyEntity.Id));
                 }
             }
 
-            public void UnregisterComponent<TComponentData>(Event<TComponentData, IReadOnlyComponent<TComponentData>> updateEvent)
+            public void UnregisterComponent<TComponentData>(Event<TComponentData?, IReadOnlyComponent<TComponentData>> updateEvent)
                 where TComponentData : struct, ISame<TComponentData> {
                 _unsubscribers[updateEvent]();
             }

@@ -12,10 +12,8 @@ namespace _Game.Scripts.BurnMark.Game.Entities {
             var positionComponent = Entity.Add(new PositionData {
                 Position = position
             });
-            var passableComponent = Entity.Add(new PassableData {
-                Status = PassableData.PassableStatus.Passable
-            });
-            return id => new Entity(id, ownerComponent, positionComponent, passableComponent);
+            var fieldObjectComponent = Entity.Add(new FieldObjectData());
+            return id => new Entity(id, ownerComponent, positionComponent, fieldObjectComponent);
         } 
     }
 }

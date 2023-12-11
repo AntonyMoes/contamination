@@ -12,15 +12,13 @@ namespace _Game.Scripts.BurnMark.Game.Entities {
             var positionComponent = Entity.Add(new PositionData {
                 Position = position
             });
-            var passableComponent = Entity.Add(new PassableData {
-                Status = PassableData.PassableStatus.PassableToAlliesNotStoppable
-            });
+            var unitComponent = Entity.Add(new UnitData());
             var healthComponent = Entity.Add(healthData);
             var attackComponent = Entity.Add(attackData);
             var movementComponent = Entity.Add(new MoveData {
                 Distance = movementDistance
             });
-            return id => new Entity(id, ownerComponent, positionComponent, passableComponent, healthComponent, attackComponent, movementComponent);
+            return id => new Entity(id, ownerComponent, positionComponent, unitComponent, healthComponent, attackComponent, movementComponent);
         } 
     }
 }

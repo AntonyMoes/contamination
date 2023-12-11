@@ -8,13 +8,12 @@ namespace _Game.Scripts.BurnMark.Game.Data.Components {
         public int Range;
         public bool CanAttack;
 
-        public bool IsSame(ISame<AttackData> other) {
-            var o = other.Get();
-            return Damage == o.Damage
-                   && Attacks == o.Attacks
-                   && ArmorPiercing == o.ArmorPiercing
-                   && Range == o.Range
-                   && CanAttack == o.CanAttack;
+        public bool IsSame(AttackData other) {
+            return Damage == other.Damage
+                   && Attacks == other.Attacks
+                   && ArmorPiercing == other.ArmorPiercing
+                   && Range == other.Range
+                   && CanAttack == other.CanAttack;
         }
     }
 }

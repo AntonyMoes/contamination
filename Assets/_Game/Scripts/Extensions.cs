@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using LiteNetLib.Utils;
+using UnityEngine;
 using UnityEngine.Events;
 
 namespace _Game.Scripts {
@@ -83,6 +85,18 @@ namespace _Game.Scripts {
             }
 
             return array;
+        }
+
+        #endregion
+
+        #region Vector2Int
+
+        public static IEnumerable<Vector2Int> EnumeratePositions(this Vector2Int vector) {
+            for (var i = 0; i < vector.x; i++) {
+                for (var j = 0; j < vector.y; j++) {
+                    yield return new Vector2Int(i, j);
+                }
+            }
         }
 
         #endregion

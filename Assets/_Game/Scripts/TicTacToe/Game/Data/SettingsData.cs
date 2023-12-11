@@ -11,8 +11,8 @@ namespace _Game.Scripts.TicTacToe.Game.Data {
         public Dictionary<int, MarkData.EMark> MarkPerPlayer => Players.ZipToDictionary(Marks);
         public Dictionary<MarkData.EMark, int> PlayerPerMark => Marks.ZipToDictionary(Players);
 
-        public bool IsSame(ISame<SettingsData> other) {
-            return Size == other.Get().Size;
+        public bool IsSame(SettingsData other) {
+            return Size == other.Size;
         }
     }
 }

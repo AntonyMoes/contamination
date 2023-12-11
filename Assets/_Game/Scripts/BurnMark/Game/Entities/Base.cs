@@ -18,9 +18,7 @@ namespace _Game.Scripts.BurnMark.Game.Entities {
             var positionComponent = Entity.Add(new PositionData {
                 Position = position
             });
-            var passableComponent = Entity.Add(new PassableData {
-                Status = PassableData.PassableStatus.PassableToAllies
-            });
+            var fieldObjectComponent = Entity.Add(new FieldObjectData());
             var healthComponent = Entity.Add(new HealthData {
                 Health = Health,
                 MaxHealth = Health,
@@ -30,7 +28,7 @@ namespace _Game.Scripts.BurnMark.Game.Entities {
                 Money = MoneyGain,
                 Metal = MetalGain,
             });
-            return id => new Entity(id, ownerComponent, positionComponent, passableComponent, healthComponent, resourceGainComponent);
+            return id => new Entity(id, ownerComponent, positionComponent, fieldObjectComponent, healthComponent, resourceGainComponent);
         } 
     }
 }

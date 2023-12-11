@@ -22,7 +22,7 @@ namespace _Game.Scripts.BurnMark.Game.Commands {
         protected override void PerformDoOnAPI(GameDataAPI api) {
             api.GetModifiableEntity(EntityId)
                 !.GetModifiableComponent<PositionData>()
-                !.Data = new PositionData { Position = Position};
+                !.Data = new PositionData { Position = Position };
         }
     }
 }

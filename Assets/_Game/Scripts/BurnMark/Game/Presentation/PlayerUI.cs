@@ -67,7 +67,7 @@ namespace _Game.Scripts.BurnMark.Game.Presentation {
             _testEndGame.Enabled = newUser.Id == _player;
         }
 
-        private void OnResourceUpdate(ResourceData oldData, IReadOnlyComponent<ResourceData> newData) {
+        private void OnResourceUpdate(ResourceData? oldData, IReadOnlyComponent<ResourceData> newData) {
             var owner = newData.ReadOnlyEntity.GetOwnerId();
             Debug.LogWarning($"UPDATE for {owner} in {_player}");
             if (owner != _player) {

@@ -5,10 +5,9 @@ namespace _Game.Scripts.BurnMark.Game.Data.Components {
         public int Distance;
         public bool CanMove;
 
-        public bool IsSame(ISame<MoveData> other) {
-            var o = other.Get();
-            return Distance == o.Distance
-                && CanMove == o.CanMove;
+        public bool IsSame(MoveData other) {
+            return Distance == other.Distance
+                && CanMove == other.CanMove;
         }
     }
 }

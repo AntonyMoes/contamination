@@ -6,11 +6,10 @@ namespace _Game.Scripts.BurnMark.Game.Data.Components {
         public int Health;
         public int Armor;
 
-        public bool IsSame(ISame<HealthData> other) {
-            var o = other.Get();
-            return MaxHealth == o.MaxHealth
-                   && Health == o.Health
-                   && Armor == o.Armor;
+        public bool IsSame(HealthData other) {
+            return MaxHealth == other.MaxHealth
+                   && Health == other.Health
+                   && Armor == other.Armor;
         }
     }
 }

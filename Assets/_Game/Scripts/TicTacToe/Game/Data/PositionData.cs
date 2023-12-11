@@ -5,9 +5,8 @@ namespace _Game.Scripts.TicTacToe.Game.Data {
         public int Row;
         public int Column;
 
-        public bool IsSame(ISame<PositionData> other) {
-            var o = other.Get();
-            return Row == o.Row && Column == o.Column;
+        public bool IsSame(PositionData other) {
+            return Row == other.Row && Column == other.Column;
         }
     }
 }

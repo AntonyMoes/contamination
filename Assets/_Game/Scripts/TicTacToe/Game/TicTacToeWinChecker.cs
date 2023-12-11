@@ -22,7 +22,7 @@ namespace _Game.Scripts.TicTacToe.Game {
             _onWin = onWin;
         }
 
-        private void OnMarkUpdated(MarkData oldData, IReadOnlyComponent<MarkData> component) {
+        private void OnMarkUpdated(MarkData? oldData, IReadOnlyComponent<MarkData> component) {
             var data = component.Data;
             var settings = _readApi.Entities.GetSettings();
             var position = component.ReadOnlyEntity.GetReadOnlyComponent<PositionData>().Data;
