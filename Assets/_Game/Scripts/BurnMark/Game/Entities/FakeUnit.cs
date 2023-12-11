@@ -6,7 +6,7 @@ using UnityEngine;
 namespace _Game.Scripts.BurnMark.Game.Entities {
     public class FakeUnit {
         public static Func<int, Entity> Create(int user, Vector2Int position) {
-            return Unit.Create(user, position, new HealthData(), new AttackData(), 0);
+            return Unit.Create(user, position, new HealthData(), new AttackData(), 2);
         }
     }
 }

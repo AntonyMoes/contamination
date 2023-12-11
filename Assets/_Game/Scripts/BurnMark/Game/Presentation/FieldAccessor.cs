@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using _Game.Scripts.BurnMark.Game.Data.Components;
+using _Game.Scripts.BurnMark.Game.Pathfinding;
 using _Game.Scripts.ModelV4;
 using _Game.Scripts.ModelV4.ECS;
+using JetBrains.Annotations;
 using UnityEngine;
 using TerrainData = _Game.Scripts.BurnMark.Game.Data.Components.TerrainData;
 
@@ -10,18 +12,24 @@ namespace _Game.Scripts.BurnMark.Game.Presentation {
     public class FieldAccessor {
         private readonly GameDataReadAPI _readAPI;
         private readonly GameDataEventsAPI _eventsAPI;
+        private readonly IPathFindingAlgorithm _algorithm;
 
-        private readonly Dictionary<Vector2Int, IReadOnlyEntity> _terrain =
-            new Dictionary<Vector2Int, IReadOnlyEntity>();
+        private readonly Dictionary<Vector2Int, IReadOnlyComponent<TerrainData>> _terrain =
+            new Dictionary<Vector2Int, IReadOnlyComponent<TerrainData>>();
+        public IDictionary<Vector2Int, IReadOnlyComponent<TerrainData>> Terrain => _terrain;
+
         private readonly Dictionary<Vector2Int, IReadOnlyEntity> _fieldObjects =
             new Dictionary<Vector2Int, IReadOnlyEntity>();
+
         private readonly Dictionary<Vector2Int, IReadOnlyEntity> _units =
             new Dictionary<Vector2Int, IReadOnlyEntity>();
 
-        public FieldAccessor(GameDataReadAPI readAPI, GameDataEventsAPI eventsAPI) {
+        public FieldAccessor(GameDataReadAPI readAPI, GameDataEventsAPI eventsAPI, IPathFindingAlgorithm algorithm) {
             _readAPI = readAPI;
             _eventsAPI = eventsAPI;
-            
+            _algorithm = algorithm;
+            _algorithm.SetAccessor(this);
+
             _eventsAPI.OnEntityCreated.Subscribe(OnEntityCreated);
             _eventsAPI.OnEntityDestroyed.Subscribe(OnEntityDestroyed);
             
@@ -52,8 +60,8 @@ namespace _Game.Scripts.BurnMark.Game.Presentation {
             }
 
             var position = positionData.Data.Position;
-            if (entity.GetReadOnlyComponent<TerrainData>() != null) {
-                _terrain.Add(position, entity);
+            if (entity.GetReadOnlyComponent<TerrainData>() is {} terrainComponent) {
+                _terrain.Add(position, terrainComponent);
             } else if (entity.GetReadOnlyComponent<FieldObjectData>() != null) {
                 _fieldObjects.Add(position, entity);
             } else if (entity.GetReadOnlyComponent<UnitData>() != null) {
@@ -76,16 +84,17 @@ namespace _Game.Scripts.BurnMark.Game.Presentation {
             }
         }
 
-        public bool TryGetTerrainAt(Vector2Int position, out IReadOnlyEntity entity) {
-            return _terrain.TryGetValue(position, out entity);
-        }
-
         public bool TryGetFieldObjectAt(Vector2Int position, out IReadOnlyEntity entity) {
             return _fieldObjects.TryGetValue(position, out entity);
         }
 
         public bool TryGetUnitAt(Vector2Int position, out IReadOnlyEntity entity) {
             return _units.TryGetValue(position, out entity);
+        }
+
+        [CanBeNull]
+        public Vector2Int[] CalculatePath(Vector2Int from, Vector2Int to) {
+            return _algorithm.CalculatePath(from, to);
         }
     }
 }

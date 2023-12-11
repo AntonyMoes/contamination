@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using GeneralUtils;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -24,9 +25,6 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
         [Header("Camera")]
         [SerializeField] private GameObject _cameraContainer;
 
-        private float XSize => Mathf.Sqrt(3 * _tileSize);
-        private float ZOffset => _tileSize * 1.5f;
-
         private readonly Dictionary<Vector2Int, Tile> _tiles = new Dictionary<Vector2Int, Tile>();
         private readonly Dictionary<Tile, Vector2Int> _tilePositions = new Dictionary<Tile, Vector2Int>();
         private readonly Dictionary<Vector2Int, GameObject> _objects = new Dictionary<Vector2Int, GameObject>();
@@ -36,7 +34,7 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
 
         private readonly Action<Tile, Tile> _currentTileUpdated;
         public readonly Event<Tile, Tile> CurrentTileUpdated;
-        public Tile CurrentTile { get; private set; }
+        [CanBeNull] public Tile CurrentTile { get; private set; }
         // public Vector2Int CurrentTilePosition => _tilePosition.TryGetValue(CurrentTile, out var position)
         //     ? position
         //     : Vector2Int.zero;
@@ -55,8 +53,8 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
                 tile.MouseEnter.Subscribe(OnTileEnter);
                 tile.MouseExit.Subscribe(OnTileExit);
 
-                var xOffset = position.y % 2 == 0 ? 0f : XSize / 2f;
-                var localPosition = new Vector3(position.x * XSize + xOffset, 0f, position.y * ZOffset);
+                var localPosition2D = PositionMapper.Map(position, _tileSize);
+                var localPosition = new Vector3(localPosition2D.x, 0f, localPosition2D.y);
                 tile.transform.localPosition = localPosition;
 
                 _tiles.Add(position, tile);
@@ -84,10 +82,8 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
         }
 
         private Vector3 GetFieldCenter(Vector2Int fieldSize) {
-            var xOffset = fieldSize.x > 1
-                ? XSize / 4f
-                : 0f;
-            return new Vector3((fieldSize.x - 1) * XSize / 2f + xOffset, 0f, (fieldSize.y - 1) * ZOffset/ 2f);
+            var fieldCenter2D = PositionMapper.GetFieldCenter(fieldSize, _tileSize);
+            return new Vector3(fieldCenter2D.x, 0f, fieldCenter2D.y);
         }
 
         private void OnCurrentTileUpdated(Tile newCurrent) {

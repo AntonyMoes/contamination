@@ -4,27 +4,32 @@ using System.Linq;
 using _Game.Scripts.BurnMark.Game.Commands;
 using _Game.Scripts.BurnMark.Game.Data;
 using _Game.Scripts.BurnMark.Game.Presentation;
+using _Game.Scripts.BurnMark.Game.Presentation.GameField;
 using _Game.Scripts.BurnMark.Network;
 using _Game.Scripts.Lobby;
 using _Game.Scripts.Network;
+using _Game.Scripts.NetworkModel;
 using _Game.Scripts.NetworkModel.Network;
 using UnityEngine;
 
 namespace _Game.Scripts.BurnMark.Game {
     public static class GameStarter {
+        private static GameFieldPresenter _gameFieldPresenter;
+
         public static ModelV4.Game StartClientGame(GameConfigurationMessage message, IPeer serverPeer,
             PlayerUI playerUI, Action onClientClosedGame) {
-            var presenter = new GamePresenter(message.CurrenUser, playerUI);
-            var game = ModelV4.Game.StartClient(message, serverPeer, presenter);
+            var proxy = new ProxyCommandGenerator();
+            var game = ModelV4.Game.StartClient(message, serverPeer, proxy);
+            GamePresenter presenter = null;
+            presenter = new GamePresenter(proxy, message.CurrenUser, playerUI, game.EventsAPI, OnClientClosedGame, _gameFieldPresenter);
             game.RegisterPresenter(presenter);
 
             GameMechanicsRegistry.RegisterMechanics(game);
-            
-            presenter.Start(game.EventsAPI, OnClientClosedGame);
+
             return game;
 
             void OnClientClosedGame() {
-                presenter.Stop();
+                presenter.Dispose();
                 onClientClosedGame?.Invoke();
             }
         }

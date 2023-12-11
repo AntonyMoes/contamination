@@ -10,6 +10,7 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
 
         [SerializeField] private Color _highlightedColor;
         [SerializeField] private Color _selectedColor;
+        [SerializeField] private Color _forbiddenColor;
 
         private Preset _preset;
         public Vector3 Center => _preset.Center.position;
@@ -54,6 +55,7 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
             switch (state) {
                 case State.None:
                     Border.gameObject.SetActive(false);
+                    Border.color = Color.clear;
                     break;
                 case State.Highlighted:
                     Border.gameObject.SetActive(true);
@@ -63,6 +65,10 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
                     Border.gameObject.SetActive(true);
                     Border.color = _selectedColor;
                     break;
+                case State.Forbidden:
+                    Border.gameObject.SetActive(true);
+                    Border.color = _forbiddenColor;
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
             }
@@ -71,7 +77,8 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
         public enum State {
             None,
             Highlighted,
-            Selected
+            Selected,
+            Forbidden
         }
 
         [Serializable]
