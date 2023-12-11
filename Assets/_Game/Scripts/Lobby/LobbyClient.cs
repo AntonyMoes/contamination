@@ -4,7 +4,6 @@ using System.Linq;
 using _Game.Scripts.Network;
 using GeneralUtils;
 using GeneralUtils.Processes;
-using Event = GeneralUtils.Event;
 
 namespace _Game.Scripts.Lobby {
     public class LobbyClient<TRoomSettings>where TRoomSettings : IRoomSettings<TRoomSettings>, new() {
@@ -17,7 +16,7 @@ namespace _Game.Scripts.Lobby {
         private Action _onServerGameStart;
         public Event OnServerGameStart { get; }
 
-        public EState State => _stateSwitcher.State;
+        public EState State => _stateSwitcher.State.Value;
         public bool RequestInProcess => _sendProcesses.Count != 0;
         public Lobby<TRoomSettings>.Data LobbyData { get; private set; }
         public string Id { get; private set; }
