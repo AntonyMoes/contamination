@@ -8,7 +8,7 @@ using JetBrains.Annotations;
 using UnityEngine;
 using TerrainData = _Game.Scripts.BurnMark.Game.Data.Components.TerrainData;
 
-namespace _Game.Scripts.BurnMark.Game.Presentation {
+namespace _Game.Scripts.BurnMark.Game.Data {
     public class FieldAccessor {
         private readonly GameDataReadAPI _readAPI;
         private readonly GameDataEventsAPI _eventsAPI;
@@ -92,9 +92,22 @@ namespace _Game.Scripts.BurnMark.Game.Presentation {
             return _units.TryGetValue(position, out entity);
         }
 
+        public IReadOnlyList<IReadOnlyEntity> TryGetEntitiesAt(Vector2Int position) {
+            var result = new List<IReadOnlyEntity>();
+            if (TryGetUnitAt(position, out var unit)) {
+                result.Add(unit);
+            }
+
+            if (TryGetFieldObjectAt(position, out var fieldObject)) {
+                result.Add(fieldObject);
+            }
+
+            return result;
+        }
+
         [CanBeNull]
-        public Vector2Int[] CalculatePath(Vector2Int from, Vector2Int to) {
-            return _algorithm.CalculatePath(from, to);
+        public Vector2Int[] CalculatePath(IReadOnlyEntity entity, Vector2Int from, Vector2Int to) {
+            return _algorithm.CalculatePath(entity, from, to);
         }
     }
 }

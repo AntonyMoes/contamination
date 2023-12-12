@@ -4,7 +4,7 @@ using _Game.Scripts.ModelV4.ECS;
 using UnityEngine;
 
 namespace _Game.Scripts.BurnMark.Game.Entities {
-    public class Base {
+    public static class Base {
         private const int Health = 100;
         private const int Armor = 10;
 

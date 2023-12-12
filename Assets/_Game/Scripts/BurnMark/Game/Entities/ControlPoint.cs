@@ -4,7 +4,7 @@ using _Game.Scripts.ModelV4.ECS;
 using UnityEngine;
 
 namespace _Game.Scripts.BurnMark.Game.Entities {
-    public class ControlPoint {
+    public static class ControlPoint {
         public static Func<int, Entity> Create(Vector2Int position) {
             var ownerComponent = Entity.Add(new OwnerData {
                 Owner = null

@@ -14,14 +14,14 @@ using UnityEngine;
 
 namespace _Game.Scripts.BurnMark.Game {
     public static class GameStarter {
-        private static GameFieldPresenter _gameFieldPresenter;
+        private static FieldPresenter _fieldPresenter;
 
         public static ModelV4.Game StartClientGame(GameConfigurationMessage message, IPeer serverPeer,
             PlayerUI playerUI, Action onClientClosedGame) {
             var proxy = new ProxyCommandGenerator();
             var game = ModelV4.Game.StartClient(message, serverPeer, proxy);
             GamePresenter presenter = null;
-            presenter = new GamePresenter(proxy, message.CurrenUser, playerUI, game.EventsAPI, OnClientClosedGame, _gameFieldPresenter);
+            presenter = new GamePresenter(proxy, message.CurrenUser, playerUI, game.EventsAPI, OnClientClosedGame, null/*TODO*/);
             game.RegisterPresenter(presenter);
 
             GameMechanicsRegistry.RegisterMechanics(game);

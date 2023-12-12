@@ -599,7 +599,8 @@ MonoBehaviour:
     Border: {fileID: 424678180015149397}
   _highlightedColor: {r: 1, g: 1, b: 1, a: 1}
   _selectedColor: {r: 0, g: 1, b: 0, a: 1}
-  _forbiddenColor: {r: 1, g: 0, b: 0, a: 1}
+  _forbiddenColor: {r: 1, g: 0.643766, b: 0, a: 1}
+  _attackColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &6127669170665480082
 GameObject:
   m_ObjectHideFlags: 0

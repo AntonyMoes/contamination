@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using _Game.Scripts.BurnMark.Game.Mechanics;
 using GeneralUtils;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -53,7 +54,7 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
                 tile.MouseEnter.Subscribe(OnTileEnter);
                 tile.MouseExit.Subscribe(OnTileExit);
 
-                var localPosition2D = PositionMapper.Map(position, _tileSize);
+                var localPosition2D = Position.Map(position, _tileSize);
                 var localPosition = new Vector3(localPosition2D.x, 0f, localPosition2D.y);
                 tile.transform.localPosition = localPosition;
 
@@ -82,7 +83,7 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
         }
 
         private Vector3 GetFieldCenter(Vector2Int fieldSize) {
-            var fieldCenter2D = PositionMapper.GetFieldCenter(fieldSize, _tileSize);
+            var fieldCenter2D = Position.GetFieldCenter(fieldSize, _tileSize);
             return new Vector3(fieldCenter2D.x, 0f, fieldCenter2D.y);
         }
 

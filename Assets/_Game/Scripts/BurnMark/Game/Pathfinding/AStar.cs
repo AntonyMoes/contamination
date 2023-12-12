@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using _Game.Scripts.BurnMark.Game.Data;
-using _Game.Scripts.BurnMark.Game.Presentation;
+using _Game.Scripts.BurnMark.Game.Mechanics;
+using _Game.Scripts.ModelV4.ECS;
 using GeneralUtils;
 using UnityEngine;
 using Pair = System.Collections.Generic.KeyValuePair<UnityEngine.Vector2Int,
@@ -15,9 +16,13 @@ namespace _Game.Scripts.BurnMark.Game.Pathfinding {
             _accessor = fieldAccessor;
         }
 
-        public Vector2Int[] CalculatePath(Vector2Int from, Vector2Int to) {
+        public Vector2Int[] CalculatePath(IReadOnlyEntity entity, Vector2Int from, Vector2Int to) {
             var source = Pair(from);
             var destination = Pair(to);
+
+            if (!Movement.CanFinishOn(_accessor, entity, to)) {
+                return null;
+            }
 
             var pathMap = new Dictionary<Pair, Step> { { source, GetFirstStep(source, destination) } };
             var foundPath = false;
@@ -39,7 +44,7 @@ namespace _Game.Scripts.BurnMark.Game.Pathfinding {
                 }
 
                 currentStep.Explored = true;
-                UpdateWeights(currentNode, destination, pathMap);
+                UpdateWeights(entity, currentNode, destination, pathMap);
             }
 
             if (!foundPath) {
@@ -61,9 +66,9 @@ namespace _Game.Scripts.BurnMark.Game.Pathfinding {
             return path.ToArray();
         }
 
-        private void UpdateWeights(Pair around, Pair destination, Dictionary<Pair, Step> pathMap) {
+        private void UpdateWeights(IReadOnlyEntity entity, Pair around, Pair destination, Dictionary<Pair, Step> pathMap) {
             var aroundStep = pathMap[around];
-            var adjacent = GetAdjacent(around);
+            var adjacent = GetAdjacent(entity, around);
             foreach (var node in adjacent) {
                 if (aroundStep.PreviousPoint == node.Key) {
                     continue;
@@ -83,7 +88,7 @@ namespace _Game.Scripts.BurnMark.Game.Pathfinding {
                 pathMap[node] = newStep;
 
                 if (newStep.Explored) {
-                    UpdateWeights(node, destination, pathMap);
+                    UpdateWeights(entity, node, destination, pathMap);
                 }
             }
         }
@@ -100,23 +105,26 @@ namespace _Game.Scripts.BurnMark.Game.Pathfinding {
             var delta = Map(to.Key) - Map(from.Key);
             return delta.magnitude;
 
-            Vector2 Map(Vector2Int position) => PositionMapper.Map(position, 1f);
+            Vector2 Map(Vector2Int position) => Position.Map(position, 1f);
         }
 
         private static float GetPathWeight(Pair from, Pair to) {
             return GetHeuristicWeight(from, to);
         }
 
-        private IEnumerable<Pair> GetAdjacent(Pair node) {
+        private IEnumerable<Pair> GetAdjacent(IReadOnlyEntity entity, Pair node) {
             return DirectionUtils.Directions
                 .Select(dir => dir.ToVector2Int(node.Key))
                 .Select(OffsetNode)
                 .Where(p => p != null)
                 .Select(p => p.Value);
 
-            Pair? OffsetNode(Vector2Int offset) => _accessor.Terrain.TryGetValue(node.Key + offset, out var value)
-                ? new Pair(node.Key + offset, value)
-                : (Pair?) null;
+            Pair? OffsetNode(Vector2Int offset) {
+                var targetPosition = node.Key + offset;
+                return Movement.CanMoveThrough(_accessor, entity, targetPosition)
+                    ? new Pair(targetPosition, _accessor.Terrain[targetPosition])
+                    : (Pair?) null;
+            }
         }
 
         private Pair Pair(Vector2Int position) => new Pair(position, _accessor.Terrain[position]);

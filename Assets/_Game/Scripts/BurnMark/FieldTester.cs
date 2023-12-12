@@ -1,8 +1,10 @@
 ﻿using _Game.Scripts.BurnMark.Game;
+using _Game.Scripts.BurnMark.Game.Data;
 using _Game.Scripts.BurnMark.Game.Entities;
 using _Game.Scripts.BurnMark.Game.Pathfinding;
 using _Game.Scripts.BurnMark.Game.Presentation;
 using _Game.Scripts.BurnMark.Game.Presentation.GameField;
+using _Game.Scripts.BurnMark.Game.Presentation.GameField.FieldActions;
 using _Game.Scripts.Fake;
 using _Game.Scripts.ModelV4;
 using _Game.Scripts.NetworkModel;
@@ -36,8 +38,7 @@ namespace _Game.Scripts.BurnMark {
             GameMechanicsRegistry.RegisterMechanics(_game);
 
             var accessor = new FieldAccessor(_game.ReadAPI, _game.EventsAPI, new AStar());
-            var fieldPresenter = new GameFieldPresenter(_input, _field, accessor, _size, _baseLocations, _unitLocations);
-            _presenter = new GamePresenter(proxy, Player, _playerUI, _game.EventsAPI, OnGameClosed, fieldPresenter);
+            _presenter = new GamePresenter(proxy, Player, _playerUI, _game.EventsAPI, OnGameClosed, CreateFieldPresenter);
             _game.RegisterPresenter(_presenter);
 
             _game.Start();
@@ -54,8 +55,12 @@ namespace _Game.Scripts.BurnMark {
                 }
 
                 foreach (var unitLocation in _unitLocations) {
-                    api.AddEntity(FakeUnit.Create(Player, unitLocation));
+                    api.AddEntity(ScoutCar.Create(Player, unitLocation));
                 }
+            }
+
+            FieldPresenter CreateFieldPresenter(IFieldActionUIPresenter presenter) {
+                return new FieldPresenter(_input, _field, accessor, presenter, _size, _baseLocations, _unitLocations);
             }
         }
 

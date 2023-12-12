@@ -11,6 +11,7 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
         [SerializeField] private Color _highlightedColor;
         [SerializeField] private Color _selectedColor;
         [SerializeField] private Color _forbiddenColor;
+        [SerializeField] private Color _attackColor;
 
         private Preset _preset;
         public Vector3 Center => _preset.Center.position;
@@ -52,33 +53,23 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
         }
 
         public void SetState(State state) {
-            switch (state) {
-                case State.None:
-                    Border.gameObject.SetActive(false);
-                    Border.color = Color.clear;
-                    break;
-                case State.Highlighted:
-                    Border.gameObject.SetActive(true);
-                    Border.color = _highlightedColor;
-                    break;
-                case State.Selected:
-                    Border.gameObject.SetActive(true);
-                    Border.color = _selectedColor;
-                    break;
-                case State.Forbidden:
-                    Border.gameObject.SetActive(true);
-                    Border.color = _forbiddenColor;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(state), state, null);
-            }
+            Border.gameObject.SetActive(state != State.None);
+            Border.color = state switch {
+                State.None => Color.clear,
+                State.Highlighted => _highlightedColor,
+                State.Selected => _selectedColor,
+                State.Forbidden => _forbiddenColor,
+                State.Attack => _attackColor,
+                _ => throw new ArgumentOutOfRangeException(nameof(state), state, null)
+            };
         }
         
         public enum State {
             None,
             Highlighted,
             Selected,
-            Forbidden
+            Forbidden,
+            Attack
         }
 
         [Serializable]

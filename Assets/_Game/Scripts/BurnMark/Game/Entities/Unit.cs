@@ -4,7 +4,7 @@ using _Game.Scripts.ModelV4.ECS;
 using UnityEngine;
 
 namespace _Game.Scripts.BurnMark.Game.Entities {
-    public class Unit {
+    public static class Unit {
         public static Func<int, Entity> Create(int user, Vector2Int position, HealthData healthData, AttackData attackData, int movementDistance) {
             var ownerComponent = Entity.Add(new OwnerData {
                 Owner = user

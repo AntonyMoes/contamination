@@ -15,5 +15,25 @@ namespace _Game.Scripts.BurnMark.Game.Data.Components {
                    && Range == other.Range
                    && CanAttack == other.CanAttack;
         }
+
+        public AttackData ResetAttacking() {
+            return new AttackData {
+                Damage = Damage,
+                Attacks = Attacks,
+                ArmorPiercing = ArmorPiercing,
+                Range = Range,
+                CanAttack = true
+            };
+        }
+
+        public AttackData Attack() {
+            return new AttackData {
+                Damage = Damage,
+                Attacks = Attacks,
+                ArmorPiercing = ArmorPiercing,
+                Range = Range,
+                CanAttack = false
+            };
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using _Game.Scripts.BurnMark.Game.Commands;
 using _Game.Scripts.BurnMark.Game.Presentation.GameField;
+using _Game.Scripts.BurnMark.Game.Presentation.GameField.FieldActions;
 using _Game.Scripts.ModelV4;
 using _Game.Scripts.NetworkModel;
 using GeneralUtils.Processes;
@@ -8,18 +9,18 @@ using UnityEngine;
 using GameCommand = _Game.Scripts.NetworkModel.Commands.GameCommand;
 
 namespace _Game.Scripts.BurnMark.Game.Presentation {
-    public class GamePresenter : ICommandPresenter, IDisposable {
+    public class GamePresenter : ICommandPresenter, IDisposable, IFieldActionUIPresenter {
         private readonly ProxyCommandGenerator _proxy;
         private readonly int _player;
         private readonly PlayerUI _playerUI;
-        private readonly GameFieldPresenter _fieldPresenter;
+        private readonly FieldPresenter _fieldPresenter;
 
-        public GamePresenter(ProxyCommandGenerator proxy, int player, PlayerUI playerUI,
-            GameDataEventsAPI eventsAPI, Action onPlayerClosedGame, GameFieldPresenter gameFieldPresenter) {
+        public GamePresenter(ProxyCommandGenerator proxy, int player, PlayerUI playerUI, GameDataEventsAPI eventsAPI,
+            Action onPlayerClosedGame, Func<IFieldActionUIPresenter, FieldPresenter> fieldPresenterCreator) {
             _proxy = proxy;
             _player = player;
             _playerUI = playerUI;
-            _fieldPresenter = gameFieldPresenter;
+            _fieldPresenter = fieldPresenterCreator(this);
             _playerUI.Initialize(_player, eventsAPI, EndTurn, EndGame, onPlayerClosedGame);
             _playerUI.gameObject.SetActive(true);
             _fieldPresenter.OnCommandGenerated.Subscribe(_proxy.GenerateCommand);

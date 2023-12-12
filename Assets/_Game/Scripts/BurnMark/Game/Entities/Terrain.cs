@@ -5,7 +5,7 @@ using UnityEngine;
 using TerrainData = _Game.Scripts.BurnMark.Game.Data.Components.TerrainData;
 
 namespace _Game.Scripts.BurnMark.Game.Entities {
-    public class Terrain {
+    public static class Terrain {
         public static Func<int, Entity> Create(Vector2Int position) {
             var positionComponent = Entity.Add(new PositionData {
                 Position = position
