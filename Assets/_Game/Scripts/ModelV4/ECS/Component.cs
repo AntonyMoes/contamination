@@ -22,19 +22,19 @@ namespace _Game.Scripts.ModelV4.ECS {
         }
 
         private readonly Action<TComponentData?, IReadOnlyComponent<TComponentData>> _onDataUpdateInvoker;
-        private readonly Event<TComponentData?, IReadOnlyComponent<TComponentData>> _onDataUpdate;
+        public Event<TComponentData?, IReadOnlyComponent<TComponentData>> OnDataUpdate { get; }
 
         public Component(Entity correspondingEntity) {
             Entity = correspondingEntity;
-            _onDataUpdate = new Event<TComponentData?, IReadOnlyComponent<TComponentData>>(out _onDataUpdateInvoker);
+            OnDataUpdate = new Event<TComponentData?, IReadOnlyComponent<TComponentData>>(out _onDataUpdateInvoker);
         }
 
         public void SubscribeProxy(IComponentUpdateProxy updateProxy, bool triggerInitialUpdate) {
-            updateProxy.RegisterComponent(_onDataUpdate, triggerInitialUpdate ? this : null);
+            updateProxy.RegisterComponent(OnDataUpdate, triggerInitialUpdate ? this : null);
         }
 
         public void UnsubscribeProxy(IComponentUpdateProxy updateProxy) {
-            updateProxy.UnregisterComponent(_onDataUpdate);
+            updateProxy.UnregisterComponent(OnDataUpdate);
         }
     }
 }

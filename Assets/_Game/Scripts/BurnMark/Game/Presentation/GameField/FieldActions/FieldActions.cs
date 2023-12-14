@@ -10,7 +10,7 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField.FieldActions {
     public static class FieldActions {
         [CanBeNull]
         public static IReadOnlyEntity TrySelectTile(FieldAccessor accessor, Vector2Int position) {
-            return accessor.TryGetUnitAt(position, out var selectedUnit) ? selectedUnit : null;
+            return accessor.Units.TryGetValue(position, out var selectedUnit) ? selectedUnit : null;
         }
 
         [CanBeNull]

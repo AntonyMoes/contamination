@@ -1,9 +1,12 @@
-﻿using _Game.Scripts.ModelV4.ECS;
+﻿using System;
+using _Game.Scripts.ModelV4.ECS;
+using UnityEngine;
 
 namespace _Game.Scripts.BurnMark.Game.Data.Components {
+    [Serializable]
     public struct MoveData : ISame<MoveData> {
         public int Distance;
-        public bool CanMove;
+        [HideInInspector] public bool CanMove;
 
         public int RemainingDistance => CanMove ? Distance : 0;
 

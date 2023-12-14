@@ -174,14 +174,14 @@ MonoBehaviour:
   _tilePrefab: {fileID: -699152735845808031, guid: ca2c650bef285d7439c5e91029e0257b, type: 3}
   _tileSize: 1
   _objectsParent: {fileID: 3617862661713069335}
-  _basePrefab: {fileID: 9190372971909936776, guid: 579b13c53bb512544aa31344c2c718d9, type: 3}
-  _carPrefab: {fileID: 6408812596350239585, guid: 757dd27def4ca5948bb47f5c680d8b48, type: 3}
+  _iconPrefab: {fileID: 8217858640199710565, guid: 15b7a34c6bb555543bab6c7d41cccb1f, type: 3}
   _heightWeights:
   - 6
   - 2
   - 1
   _heights: 010000000200000003000000
   _cameraContainer: {fileID: 3617862662897920476}
+  _fieldCamera: {fileID: 3617862662293056153}
 --- !u!1 &3617862662293056155
 GameObject:
   m_ObjectHideFlags: 0
@@ -245,7 +245,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 23
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0

@@ -12,6 +12,11 @@ namespace _Game.Scripts.BurnMark.Game.Entities {
             });
             var terrainComponent =  Entity.Add(new TerrainData());
             return id => new Entity(id, positionComponent, terrainComponent);
-        } 
+        }
+
+        public static bool IsTerrain(IReadOnlyEntity entity, out IReadOnlyComponent<TerrainData> component) {
+            component = entity.GetReadOnlyComponent<TerrainData>();
+            return component != null;
+        }
     }
 }

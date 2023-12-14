@@ -1,5 +1,5 @@
-﻿using _Game.Scripts.BurnMark.Game.Data;
-using _Game.Scripts.BurnMark.Game.Entities;
+﻿using System;
+using _Game.Scripts.BurnMark.Game.Data;
 using _Game.Scripts.ModelV4;
 using LiteNetLib.Utils;
 using UnityEngine;
@@ -24,8 +24,9 @@ namespace _Game.Scripts.BurnMark.Game.Commands {
                 var player = Players[i];
                 var basePosition = MapData.PlayerBases[i];
 
-                api.AddEntity(Player.Create(player));
-                api.AddEntity(Base.Create(player, basePosition));
+                throw new NotImplementedException();
+                // api.AddEntity(Player.Create(player));
+                // api.AddEntity(Base.Create(player, basePosition));
             }
         }
     }

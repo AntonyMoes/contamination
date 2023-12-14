@@ -27,7 +27,7 @@ namespace _Game.Scripts.BurnMark.Game.Entities {
                 ArmorPiercing = ArmorPiercing,
                 Range = Range
             };
-            return Unit.Create(user, position, healthData, attackData, MovementDistance);
+            return null;//Unit.Create(user, position, healthData, attackData, MovementDistance);
         }
     }
 }

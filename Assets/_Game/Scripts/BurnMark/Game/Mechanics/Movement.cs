@@ -9,8 +9,8 @@ namespace _Game.Scripts.BurnMark.Game.Mechanics {
         }
 
         public static bool CanFinishOn(FieldAccessor accessor, IReadOnlyEntity entity, Vector2Int position) {
-            return !accessor.TryGetUnitAt(position, out _)
-                   && !accessor.TryGetFieldObjectAt(position, out _)
+            return !accessor.Units.ContainsKey(position)
+                   && !accessor.FieldObjects.ContainsKey(position)
                    && accessor.Terrain.ContainsKey(position);
         }
     }

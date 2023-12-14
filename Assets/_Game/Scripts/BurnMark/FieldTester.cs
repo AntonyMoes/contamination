@@ -1,6 +1,7 @@
-﻿using _Game.Scripts.BurnMark.Game;
+﻿using System;
+using _Game.Scripts.BurnMark.Game;
 using _Game.Scripts.BurnMark.Game.Data;
-using _Game.Scripts.BurnMark.Game.Entities;
+using _Game.Scripts.BurnMark.Game.Data.Configs;
 using _Game.Scripts.BurnMark.Game.Pathfinding;
 using _Game.Scripts.BurnMark.Game.Presentation;
 using _Game.Scripts.BurnMark.Game.Presentation.GameField;
@@ -18,9 +19,11 @@ namespace _Game.Scripts.BurnMark {
         [SerializeField] private Scheduler _scheduler;
         [SerializeField] private Field _field;
         [SerializeField] private Vector2Int _size;
-        [SerializeField] private Vector2Int[] _baseLocations;
-        [SerializeField] private Vector2Int[] _unitLocations;
+        [SerializeField] private StartingBase[] _startingBases;
+        [SerializeField] private StartingUnit[] _startingUnits;
         [SerializeField] private PlayerUI _playerUI;
+        [SerializeField] private Camera _uiCamera;
+        [SerializeField] private RectTransform _iconsParent;
 
         private GamePresenter _presenter;
         private ModelV4.Game _game;
@@ -50,17 +53,17 @@ namespace _Game.Scripts.BurnMark {
                     api.AddEntity(Terrain.Create(position));
                 }
 
-                foreach (var baseLocation in _baseLocations) {
-                    api.AddEntity(Base.Create(Player, baseLocation));
+                foreach (var startingBase in _startingBases) {
+                    api.AddEntity(startingBase.Config.Create(Player, startingBase.Position));
                 }
 
-                foreach (var unitLocation in _unitLocations) {
-                    api.AddEntity(ScoutCar.Create(Player, unitLocation));
+                foreach (var startingUnit in _startingUnits) {
+                    api.AddEntity(startingUnit.Config.Create(Player, startingUnit.Position));
                 }
             }
 
             FieldPresenter CreateFieldPresenter(IFieldActionUIPresenter presenter) {
-                return new FieldPresenter(_input, _field, accessor, presenter, _size, _baseLocations, _unitLocations);
+                return new FieldPresenter(_input, _field, accessor, presenter, _size, _uiCamera, _iconsParent);
             }
         }
 
@@ -73,6 +76,18 @@ namespace _Game.Scripts.BurnMark {
             _scheduler.UnregisterFrameProcessor(_input);
             _presenter.Dispose();
             _game.Dispose();
+        }
+
+        [Serializable]
+        private struct StartingUnit {
+            public Vector2Int Position;
+            public UnitConfig Config;
+        }
+
+        [Serializable]
+        private struct StartingBase {
+            public Vector2Int Position;
+            public BaseConfig Config;
         }
     }
 }

@@ -1,12 +1,15 @@
-﻿using _Game.Scripts.ModelV4.ECS;
+﻿using System;
+using _Game.Scripts.ModelV4.ECS;
+using UnityEngine;
 
 namespace _Game.Scripts.BurnMark.Game.Data.Components {
+    [Serializable]
     public struct AttackData : ISame<AttackData> {
         public int Damage;
         public int Attacks;
         public int ArmorPiercing;
         public int Range;
-        public bool CanAttack;
+        [HideInInspector] public bool CanAttack;
 
         public bool IsSame(AttackData other) {
             return Damage == other.Damage

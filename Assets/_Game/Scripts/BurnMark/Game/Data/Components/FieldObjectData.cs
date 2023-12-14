@@ -1,9 +1,12 @@
-﻿using _Game.Scripts.ModelV4.ECS;
+﻿using _Game.Scripts.BurnMark.Game.Data.Configs;
+using _Game.Scripts.ModelV4.ECS;
 
 namespace _Game.Scripts.BurnMark.Game.Data.Components {
     public struct FieldObjectData : ISame<FieldObjectData> {
+        public FieldObjectConfig Config;
+
         public bool IsSame(FieldObjectData other) {
-            return true;
+            return Config == other.Config;
         }
     }
 }

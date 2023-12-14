@@ -15,7 +15,7 @@ namespace _Game.Scripts.BurnMark.Game.Mechanics {
                 ? xSize / 4f
                 : 0f;
             var yOffset = tileSize * 1.5f;
-            return new Vector3((fieldSize.x - 1) * xSize / 2f + xOffset, 0f, (fieldSize.y - 1) * yOffset/ 2f);
+            return new Vector2((fieldSize.x - 1) * xSize / 2f + xOffset, (fieldSize.y - 1) * yOffset/ 2f);
         }
 
         public static int Distance(Vector2Int from, Vector2Int to) {

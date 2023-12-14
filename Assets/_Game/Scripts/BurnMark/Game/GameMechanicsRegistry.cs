@@ -5,6 +5,7 @@ namespace _Game.Scripts.BurnMark.Game {
         public static void RegisterMechanics(ModelV4.Game game) {
             game.RegisterSystem(new ResourceGainSystem());
             game.RegisterSystem(new ActionsResetSystem());
+            game.RegisterSystem(new DeathSystem());
         }
     }
 }

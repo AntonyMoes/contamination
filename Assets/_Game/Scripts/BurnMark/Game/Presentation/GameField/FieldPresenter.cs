@@ -12,6 +12,7 @@ using GeneralUtils.Processes;
 using JetBrains.Annotations;
 using UnityEngine;
 using GameCommand = _Game.Scripts.NetworkModel.Commands.GameCommand;
+using TerrainData = _Game.Scripts.BurnMark.Game.Data.Components.TerrainData;
 
 namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
     public class FieldPresenter : ICommandPresenter, ICommandGenerator, IDisposable {
@@ -26,14 +27,11 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
 
         [CanBeNull] private Tile _selectedTile;
         [CanBeNull] private IReadOnlyEntity _selectedEntity;
-
-
-        // [CanBeNull] private Vector2Int[] _path;
         [CanBeNull] private IFieldAction _currentAction;
 
         public FieldPresenter(Input input, Field field, FieldAccessor fieldAccessor,
-            IFieldActionUIPresenter fieldActionUIPresenter, Vector2Int fieldSize, Vector2Int[] baseLocations,
-            Vector2Int[] unitLocations) {
+            IFieldActionUIPresenter fieldActionUIPresenter, Vector2Int fieldSize, Camera uiCamera,
+            RectTransform iconsParent) {
             OnCommandGenerated = new Event<GameCommand>(out _onCommandGenerated);
 
             _input = input;
@@ -42,12 +40,55 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
             _fieldActionUIPresenter = fieldActionUIPresenter;
             _input.SelectionButton.Subscribe(OnSelection);
             _input.ActionButton.Subscribe(OnAction);
-            field.Initialize(fieldSize, baseLocations, unitLocations);
+            InitializeField(fieldSize, uiCamera, iconsParent);
             field.CurrentTileUpdated.Subscribe(OnCurrentTileUpdated);
         }
 
         public void SetReadAPI(IGameReadAPI api) {
             _readAPI = (GameDataReadAPI) api;
+        }
+
+        private void InitializeField(Vector2Int fieldSize, Camera uiCamera, RectTransform iconsParent) {
+            _field.Initialize(fieldSize, uiCamera, iconsParent);
+
+            _fieldAccessor.OnTerrainEvent.Subscribe(OnTerrainEvent);
+            foreach (var (position, terrain) in _fieldAccessor.Terrain) {
+                OnTerrainEvent(true, position, terrain);
+            }
+
+            _fieldAccessor.OnUnitEvent.Subscribe(OnUnitEvent);
+            foreach (var (position, unit) in _fieldAccessor.Units) {
+                OnUnitEvent(true, position, unit);
+            }
+            
+            _fieldAccessor.OnFieldObjectEvent.Subscribe(OnFieldObjectEvent);
+            foreach (var (position, fieldObject) in _fieldAccessor.FieldObjects) {
+                OnUnitEvent(true, position, fieldObject);
+            }
+        }
+
+        private void OnTerrainEvent(bool created, Vector2Int position, IReadOnlyComponent<TerrainData> terrainComponent) {
+            if (created) {
+                _field.CreateTile(position, terrainComponent);
+            } else {
+                _field.DestroyTile(position);
+            }
+        }
+
+        private void OnUnitEvent(bool created, Vector2Int position, IReadOnlyEntity entity) {
+            if (created) {
+                _field.CreateUnit(position, entity);
+            } else {
+                _field.DestroyUnit(position);
+            }
+        }
+
+        private void OnFieldObjectEvent(bool created, Vector2Int position, IReadOnlyEntity entity) {
+            if (created) {
+                _field.CreateFieldObject(position, entity);
+            } else {
+                _field.DestroyFieldObject(position);
+            }
         }
 
         private void OnCurrentTileUpdated([CanBeNull] Tile oldTile, [CanBeNull] Tile newTile) {
@@ -88,7 +129,8 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
                 return;
             }
 
-            var selectPosition = _field.CurrentTile != null && _fieldAccessor.TryGetUnitAt(_field.TilePosition(_field.CurrentTile), out _)
+            var selectPosition = _field.CurrentTile != null
+                                 && _fieldAccessor.Units.TryGetValue(_field.TilePosition(_field.CurrentTile), out _)
                 ? _field.TilePosition(_field.CurrentTile)
                 : (Vector2Int?) null;
             SelectAtPosition(selectPosition);
@@ -103,7 +145,6 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
                 var selectedTile = _field.TileAtPosition(selectPosition);
                 selectedTile!.SetState(Tile.State.Selected);
                 if (selectedTile != null) {
-                    _fieldAccessor.TryGetUnitAt(selectPosition, out var selectedUnit);
                     _selectedEntity = entity ?? FieldActions.FieldActions.TrySelectTile(_fieldAccessor, selectPosition);
                     _selectedTile = _selectedEntity != null ? selectedTile : null;
                 }
@@ -132,73 +173,6 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
             _currentAction = null;
         }
 
-        // private void TryPlotAndDisplayPath() {
-        //     ClearPath();
-        //
-        //     if (_selectedTile == null || _field.CurrentTile == null || _selectedEntity == null) {
-        //         return;
-        //     }
-        //
-        //     var path = _fieldAccessor.CalculatePath(_field.TilePosition(_selectedTile),
-        //         _field.TilePosition(_field.CurrentTile));
-        //     if (path == null) {
-        //         return;
-        //     }
-        //
-        //     // var skippedOne = false;
-        //     // foreach (var position in path) {
-        //     //     if (!skippedOne) {
-        //     //         skippedOne = true;
-        //     //         continue;
-        //     //     }
-        //     //
-        //     //     _field.TileAtPosition(position).SetState(Tile.State.Selected);
-        //     // }
-        //
-        //     var moveComponent = _selectedEntity!.GetReadOnlyComponent<MoveData>()!;
-        //     var moveDistance = moveComponent.Data.RemainingDistance;
-        //
-        //     for (var i = 1; i < path.Length; i++) {
-        //         var position = path[i];
-        //         _field.TileAtPosition(position).SetState(i > moveDistance ? Tile.State.Forbidden : Tile.State.Selected);
-        //     }
-        // }
-        //
-        // private void ClearPath() {
-        //     if (_path == null) {
-        //         return;
-        //     }
-        //
-        //     for (var i = 1; i < _path.Length; i++) {
-        //         var position = _path[i];
-        //         _field.TileAtPosition(position).SetState(Tile.State.None);
-        //     }
-        //
-        //     _path = null;
-        // }
-        //
-        // private void TryMoveUnit(Vector2Int[] path) {
-        //     if (_selectedEntity == null || path == null) {
-        //         return;
-        //     }
-        //
-        //     var currentPosition = _field.TilePosition(_field.CurrentTile);
-        //     if (_fieldAccessor.TryGetUnitAt(currentPosition, out _) ||
-        //         _fieldAccessor.TryGetFieldObjectAt(currentPosition, out _)) {
-        //         return;
-        //     }
-        //
-        //     var moveData = _selectedEntity.GetReadOnlyComponent<MoveData>()!.Data;
-        //     if (path.Length == 1 || path.Length - 1 > moveData.RemainingDistance) {
-        //         return;
-        //     }
-        //
-        //     _onCommandGenerated(new MoveCommand {
-        //         EntityId = _selectedEntity.Id,
-        //         Position = currentPosition
-        //     });
-        // }
-
         public Process PresentCommand(GameCommand generatedCommand) {
             switch (generatedCommand) {
                 case MoveCommand moveCommand:
@@ -216,6 +190,9 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
         public void Dispose() {
             _input.SelectionButton.Unsubscribe(OnSelection);
             _input.ActionButton.Unsubscribe(OnAction);
+            _fieldAccessor.OnTerrainEvent.Unsubscribe(OnTerrainEvent);
+            _fieldAccessor.OnUnitEvent.Unsubscribe(OnUnitEvent);
+            _fieldAccessor.OnFieldObjectEvent.Unsubscribe(OnFieldObjectEvent);
             _field.CurrentTileUpdated.Unsubscribe(OnCurrentTileUpdated);
             _field.Clear();
         }

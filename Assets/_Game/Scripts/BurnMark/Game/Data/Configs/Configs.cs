@@ -1,0 +1,26 @@
+﻿using UnityEditor;
+using UnityEngine;
+
+namespace _Game.Scripts.BurnMark.Game.Data.Configs {
+    public static class Configs {
+        public const string MenuItem = "Assets/Create/Configs/";
+        private const string DefaultPath = "Assets/_Game/Data/BurnMark/Configs/";
+
+        public static T Create<T>() where T : ScriptableObject {
+            var asset = ScriptableObject.CreateInstance<T>();
+
+            var activePath = AssetDatabase.GetAssetPath(Selection.activeObject);
+            var path = (string.IsNullOrEmpty(activePath) 
+                ? DefaultPath 
+                : activePath + "/")
+                       + $"{typeof(T).Name}.asset";
+            AssetDatabase.CreateAsset(asset, path);
+            AssetDatabase.SaveAssets();
+
+            EditorUtility.FocusProjectWindow();
+            Selection.activeObject = asset;
+
+            return asset;
+        }
+    }
+}
