@@ -1,8 +1,12 @@
 ﻿using System;
 using _Game.Scripts.BurnMark.Game.Commands;
+using _Game.Scripts.BurnMark.Game.Data.Components;
+using _Game.Scripts.BurnMark.Game.Data.Configs;
+using _Game.Scripts.BurnMark.Game.Mechanics;
 using _Game.Scripts.BurnMark.Game.Presentation.GameField;
 using _Game.Scripts.BurnMark.Game.Presentation.GameField.FieldActions;
 using _Game.Scripts.ModelV4;
+using _Game.Scripts.ModelV4.ECS;
 using _Game.Scripts.NetworkModel;
 using GeneralUtils.Processes;
 using UnityEngine;
@@ -60,6 +64,21 @@ namespace _Game.Scripts.BurnMark.Game.Presentation {
                 default:
                     return new DummyProcess();
             }
+        }
+
+        public void ShowAttackPreview(IReadOnlyEntity attacker, IReadOnlyEntity target) {
+            _playerUI.AttackPreview.gameObject.SetActive(true);
+            var attack = attacker.GetReadOnlyComponent<AttackData>()!.Data;
+            var health = target.GetReadOnlyComponent<HealthData>()!.Data;
+            var config = target.GetReadOnlyComponent<UnitData>() is {} unitData
+                ? (FieldEntityConfig) unitData.Data.Config
+                : target.GetReadOnlyComponent<FieldObjectData>()!.Data.Config;
+            var damage = Attacking.CalculateDamage(attack, health);
+            _playerUI.AttackPreview.Initialize(config.Icon, config.Name, health, damage);
+        }
+
+        public void HideAttackPreview() {
+            _playerUI.AttackPreview.gameObject.SetActive(false);
         }
     }
 }

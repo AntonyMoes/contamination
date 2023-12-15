@@ -6,10 +6,7 @@ using UnityEditor;
 using UnityEngine;
 
 namespace _Game.Scripts.BurnMark.Game.Data.Configs {
-    public class UnitConfig : Config {
-        [SerializeField] private Sprite _icon;
-        public Sprite Icon => _icon;
-
+    public class UnitConfig : FieldEntityConfig {
         [SerializeField] private GameObject _prefab;
         public GameObject Prefab => _prefab;
 

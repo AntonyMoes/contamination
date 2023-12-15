@@ -20,6 +20,9 @@ namespace _Game.Scripts.BurnMark.Game.Presentation {
         [SerializeField] private TextMeshProUGUI _gameEndPopupText;
         [SerializeField] private BaseButton _exitGameButton;
 
+        [SerializeField] private AttackPreview _attackPreview;
+        public AttackPreview AttackPreview => _attackPreview;
+
         private int _player;
         private GameDataReadAPI _readAPI;
         private GameDataEventsAPI _eventsAPI;

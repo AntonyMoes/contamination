@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c22a0c444b6427494dde20018c916a3, type: 3}
   m_Name: ScoutCarConfig
   m_EditorClassIdentifier: 
+  _name: Scout car
   _icon: {fileID: 21300000, guid: 4376160b22b058f4dad06f1eae3d81cf, type: 3}
   _prefab: {fileID: 6408812596350239585, guid: 757dd27def4ca5948bb47f5c680d8b48, type: 3}
   _moveData:
