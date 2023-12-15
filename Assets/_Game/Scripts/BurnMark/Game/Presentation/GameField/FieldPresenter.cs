@@ -25,6 +25,10 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
         private readonly Action<GameCommand> _onCommandGenerated;
         public Event<GameCommand> OnCommandGenerated { get; }
 
+        private readonly Action<IReadOnlyEntity> _onEntitySelected;
+        public readonly Event<IReadOnlyEntity> OnEntitySelected;
+        
+
         [CanBeNull] private Tile _selectedTile;
         [CanBeNull] private IReadOnlyEntity _selectedEntity;
         [CanBeNull] private IFieldAction _currentAction;
@@ -33,6 +37,7 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
             IFieldActionUIPresenter fieldActionUIPresenter, Vector2Int fieldSize, Camera uiCamera,
             RectTransform iconsParent) {
             OnCommandGenerated = new Event<GameCommand>(out _onCommandGenerated);
+            OnEntitySelected = new Event<IReadOnlyEntity>(out _onEntitySelected);
 
             _input = input;
             _field = field;
@@ -130,7 +135,7 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
             }
 
             var selectPosition = _field.CurrentTile != null
-                                 && _fieldAccessor.Units.TryGetValue(_field.TilePosition(_field.CurrentTile), out _)
+                                 // && _fieldAccessor.Units.TryGetValue(_field.TilePosition(_field.CurrentTile), out _)
                 ? _field.TilePosition(_field.CurrentTile)
                 : (Vector2Int?) null;
             SelectAtPosition(selectPosition);
@@ -140,17 +145,24 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
             if (_selectedTile != null) {
                 _selectedTile.SetState(Tile.State.None);
             }
-            
+
+            var previousSelectedEntity = _selectedEntity;
             if (position is {} selectPosition) {
                 var selectedTile = _field.TileAtPosition(selectPosition);
-                selectedTile!.SetState(Tile.State.Selected);
                 if (selectedTile != null) {
                     _selectedEntity = entity ?? FieldActions.FieldActions.TrySelectTile(_fieldAccessor, selectPosition);
                     _selectedTile = _selectedEntity != null ? selectedTile : null;
+                    if (_selectedTile != null) {
+                        _selectedTile.SetState(Tile.State.Selected);
+                    }
                 }
             } else {
                 _selectedTile = null;
                 _selectedEntity = null;
+            }
+
+            if (_selectedEntity != previousSelectedEntity) {
+                _onEntitySelected(_selectedEntity);
             }
         }
 

@@ -1,5 +1,5 @@
 ﻿using _Game.Scripts.BurnMark.Game;
-using _Game.Scripts.BurnMark.Game.Presentation;
+using _Game.Scripts.BurnMark.Game.Presentation.GameUI;
 using _Game.Scripts.BurnMark.UI;
 using _Game.Scripts.Lobby;
 using _Game.Scripts.Network;

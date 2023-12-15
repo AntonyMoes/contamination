@@ -1,14 +1,15 @@
 ﻿using System;
 using _Game.Scripts.BurnMark.Game.Commands;
 using _Game.Scripts.BurnMark.Game.Data.Components;
-using _Game.Scripts.BurnMark.Game.Data.Configs;
 using _Game.Scripts.BurnMark.Game.Mechanics;
 using _Game.Scripts.BurnMark.Game.Presentation.GameField;
 using _Game.Scripts.BurnMark.Game.Presentation.GameField.FieldActions;
+using _Game.Scripts.BurnMark.Game.Presentation.GameUI;
 using _Game.Scripts.ModelV4;
 using _Game.Scripts.ModelV4.ECS;
 using _Game.Scripts.NetworkModel;
 using GeneralUtils.Processes;
+using JetBrains.Annotations;
 using UnityEngine;
 using GameCommand = _Game.Scripts.NetworkModel.Commands.GameCommand;
 
@@ -28,11 +29,13 @@ namespace _Game.Scripts.BurnMark.Game.Presentation {
             _playerUI.Initialize(_player, eventsAPI, EndTurn, EndGame, onPlayerClosedGame);
             _playerUI.gameObject.SetActive(true);
             _fieldPresenter.OnCommandGenerated.Subscribe(_proxy.GenerateCommand);
+            _fieldPresenter.OnEntitySelected.Subscribe(OnEntitySelected);
         }
 
         public void Dispose() {
             _playerUI.gameObject.SetActive(false);
             _fieldPresenter.OnCommandGenerated.Unsubscribe(_proxy.GenerateCommand);
+            _fieldPresenter.OnEntitySelected.Unsubscribe(OnEntitySelected);
             _fieldPresenter.Dispose();
         }
 
@@ -66,13 +69,23 @@ namespace _Game.Scripts.BurnMark.Game.Presentation {
             }
         }
 
+        private void OnEntitySelected([CanBeNull] IReadOnlyEntity entity) {
+            if (entity != null) {
+                _playerUI.EntityPanel.Initialize(entity);
+                _playerUI.EntityPanel.gameObject.SetActive(true);
+            } else {
+                _playerUI.EntityPanel.gameObject.SetActive(false);
+            }
+        }
+
         public void ShowAttackPreview(IReadOnlyEntity attacker, IReadOnlyEntity target) {
             _playerUI.AttackPreview.gameObject.SetActive(true);
             var attack = attacker.GetReadOnlyComponent<AttackData>()!.Data;
             var health = target.GetReadOnlyComponent<HealthData>()!.Data;
-            var config = target.GetReadOnlyComponent<UnitData>() is {} unitData
-                ? (FieldEntityConfig) unitData.Data.Config
-                : target.GetReadOnlyComponent<FieldObjectData>()!.Data.Config;
+            var config = target.TryGetFieldEntityConfig()!;
+            // var config = target.GetReadOnlyComponent<UnitData>() is {} unitData
+            //     ? (FieldEntityConfig) unitData.Data.Config
+            //     : target.GetReadOnlyComponent<FieldObjectData>()!.Data.Config;
             var damage = Attacking.CalculateDamage(attack, health);
             _playerUI.AttackPreview.Initialize(config.Icon, config.Name, health, damage);
         }

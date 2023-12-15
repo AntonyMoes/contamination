@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace _Game.Scripts.BurnMark.Game.Presentation {
+namespace _Game.Scripts.BurnMark.Game.Presentation.GameUI {
     public class AttackPreview : MonoBehaviour {
         [SerializeField] private Image _targetIcon;
         [SerializeField] private TextMeshProUGUI _targetName;

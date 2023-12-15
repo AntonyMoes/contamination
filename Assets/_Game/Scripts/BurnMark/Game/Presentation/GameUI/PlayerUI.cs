@@ -8,7 +8,7 @@ using _Game.Scripts.NetworkModel.User;
 using TMPro;
 using UnityEngine;
 
-namespace _Game.Scripts.BurnMark.Game.Presentation {
+namespace _Game.Scripts.BurnMark.Game.Presentation.GameUI {
     public class PlayerUI : MonoBehaviour {
         [SerializeField] private TextMeshProUGUI _moneyCounter;
         [SerializeField] private TextMeshProUGUI _metalCounter;
@@ -22,6 +22,9 @@ namespace _Game.Scripts.BurnMark.Game.Presentation {
 
         [SerializeField] private AttackPreview _attackPreview;
         public AttackPreview AttackPreview => _attackPreview;
+
+        [SerializeField] private EntityPanel _entityPanel;
+        public EntityPanel EntityPanel => _entityPanel;
 
         private int _player;
         private GameDataReadAPI _readAPI;
