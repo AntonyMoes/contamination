@@ -100,5 +100,33 @@ namespace _Game.Scripts {
         }
 
         #endregion
+
+        #region IReadOnlyList
+
+        public static bool ListEquals<T>(this IReadOnlyList<T> list, IReadOnlyList<T> other) {
+            var isNull = list == null;
+            var otherIsNull = other == null;
+            if (isNull != otherIsNull) {
+                return false;
+            }
+
+            if (isNull) {
+                return true;
+            }
+
+            if (list.Count != other.Count) {
+                return false;
+            }
+
+            for (var i = 0; i < list.Count; i++) {
+                if (!list[i].Equals(other[i])) {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+
+        #endregion
     }
 }

@@ -20,7 +20,7 @@ namespace _Game.Scripts.BurnMark.Game.Commands {
         }
 
         protected override void PerformDoOnAPI(GameDataAPI api) {
-            var entity = api.GetModifiableEntity(EntityId)!;
+            var entity = api.ModifiableEntities[EntityId] ;
             entity.GetModifiableComponent<PositionData>()
                 !.Data = new PositionData { Position = Position };
             var moveData = entity.GetModifiableComponent<MoveData>()!;

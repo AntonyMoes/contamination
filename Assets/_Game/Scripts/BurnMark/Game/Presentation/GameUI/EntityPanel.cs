@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using _Game.Scripts.BurnMark.Game.Commands;
 using _Game.Scripts.BurnMark.Game.Data.Components;
 using _Game.Scripts.BurnMark.Game.Data.Configs.EntityActions;
+using _Game.Scripts.BurnMark.Game.Entities;
+using _Game.Scripts.ModelV4;
 using _Game.Scripts.ModelV4.ECS;
 using GeneralUtils;
 using TMPro;
@@ -27,14 +29,27 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameUI {
         [SerializeField] private Transform _actionItemsParent;
         [SerializeField] private EntityActionItem _actionItemPrefab;
 
+        [Header("Build")]
+        [SerializeField] private BuildPanel _buildPanel;
+
+        public Event<int, int> OnBuild => _buildPanel.OnBuild;
+        public Event<int, int> OnCancelBuild => _buildPanel.OnCancelBuild;
+
         private readonly Dictionary<Sprite, EntityInfoItem> _infoItems = new Dictionary<Sprite, EntityInfoItem>();
         private readonly Dictionary<EntityActionConfig, EntityActionItem> _actionItems =
             new Dictionary<EntityActionConfig, EntityActionItem>();
 
+        private GameDataReadAPI _readAPI;
         private IReadOnlyEntity _entity;
         private Action<GameCommand> _onEntityCommandClicked;
 
+        public void SetReadAPI(GameDataReadAPI readAPI) {
+            _readAPI = readAPI;
+        }
+
         public void Initialize(IReadOnlyEntity entity, Action<GameCommand> onEntityCommandClicked) {
+            _buildPanel.Clear();
+
             _entity = entity;
             _onEntityCommandClicked = onEntityCommandClicked;
             var config = entity.TryGetFieldEntityConfig()!;
@@ -42,6 +57,7 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameUI {
 
             SetInfoItems(entity);
             SetActions(entity);
+            SetBuild(entity);
         }
 
         private void SetInfoItems(IReadOnlyEntity entity) {
@@ -83,6 +99,18 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameUI {
             }
         }
 
+        private void SetBuild(IReadOnlyEntity entity) {
+            var builder = entity.GetReadOnlyComponent<UnitBuilderData>();
+            var resources = entity.GetInReadOnlyOwner<ResourceData>(_readAPI);
+            if (builder == null || resources == null) {
+                _buildPanel.gameObject.SetActive(false);
+                return;
+            }
+
+            _buildPanel.gameObject.SetActive(true);
+            _buildPanel.Initialize(resources, builder);
+        }
+
         private void OnActionClick(EntityActionItem item) {
             _onEntityCommandClicked(item.GetCommand(_entity));
         }
@@ -109,6 +137,8 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameUI {
         }
 
         public void Clear() {
+            _buildPanel.Clear();
+
             foreach (var item in _infoItems.Values) {
                 Destroy(item.gameObject);
             }

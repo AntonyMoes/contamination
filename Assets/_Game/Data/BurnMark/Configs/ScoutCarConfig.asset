@@ -30,3 +30,7 @@ MonoBehaviour:
     MaxHealth: 20
     Health: 0
     Armor: 2
+  _cost:
+    _money: 40
+    _metal: 4
+  _workToBuild: 3

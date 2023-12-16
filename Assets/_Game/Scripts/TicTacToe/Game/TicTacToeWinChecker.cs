@@ -25,14 +25,14 @@ namespace _Game.Scripts.TicTacToe.Game {
         private void OnMarkUpdated(MarkData? oldData, IReadOnlyComponent<MarkData> component) {
             var data = component.Data;
             var settings = _readApi.Entities.GetSettings();
-            var position = component.ReadOnlyEntity.GetReadOnlyComponent<PositionData>().Data;
+            var position = component.ReadOnlyEntity.GetReadOnlyComponent<PositionData>()!.Data;
             if (CheckRow(data.Mark, position.Row, settings.Size)
                 || CheckColumn(data.Mark, position.Column, settings.Size)
                 || CheckDiagonal(data.Mark, position.Row, position.Column, settings.Size)) {
                 _onCommandGenerated(new WinCommand {
                     Winner = settings.PlayerPerMark[data.Mark]
                 });
-            } else if (_readApi.Entities
+            } else if (_readApi.Entities.Values
                 .Select(e => e.GetReadOnlyComponent<MarkData>())
                 .Where(c => c != null)
                 .All(c => c.Data.Mark != MarkData.EMark.None)) {

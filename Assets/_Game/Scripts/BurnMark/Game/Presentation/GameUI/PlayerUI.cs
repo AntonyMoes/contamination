@@ -46,6 +46,7 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameUI {
 
         public void SetReadAPI(GameDataReadAPI readAPI) {
             _readAPI = readAPI;
+            _entityPanel.SetReadAPI(readAPI);
         }
 
         public void OnGameEnded(bool victory) {

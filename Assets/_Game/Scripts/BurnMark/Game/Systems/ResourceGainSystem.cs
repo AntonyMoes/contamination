@@ -27,14 +27,14 @@ namespace _Game.Scripts.BurnMark.Game.Systems {
                     continue;
                 }
 
-                var owner = GetOwner(ownerId);
+                var owner = Entities.Utils.GetInOwner<ResourceData>(ownerId, GameAPI)!;
                 var resourceComponent = owner.Entity.GetModifiableComponent<ResourceData>()!;
                 resourceComponent.Data = resourceComponent.Data.Gain(resourceGainComponent.Data);
             }
         }
 
         private IComponent<ResourceData> GetOwner(int owner) {
-            return GameAPI.ModifiableEntities
+            return GameAPI.ModifiableEntities.Values
                 .GetModifiableComponent<ResourceData>()
                 .First(component => component.Entity.GetOwnerId() == owner);
         }

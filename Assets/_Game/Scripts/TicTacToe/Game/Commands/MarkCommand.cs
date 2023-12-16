@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using _Game.Scripts.ModelV4;
 using _Game.Scripts.TicTacToe.Game.Data;
 
@@ -9,8 +8,8 @@ namespace _Game.Scripts.TicTacToe.Game.Commands {
         public int EntityId;
 
         protected override void PerformDoOnAPI(GameDataAPI api) {
-            var entityToMark = api.ModifiableEntities.First(entity => entity.Id == EntityId);
-            entityToMark.GetModifiableComponent<MarkData>().Data = new MarkData {
+            var entityToMark = api.ModifiableEntities[EntityId];
+            entityToMark.GetModifiableComponent<MarkData>()!.Data = new MarkData {
                 Mark = Mark
             };
             api.EndTurn();

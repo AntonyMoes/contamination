@@ -19,6 +19,12 @@ namespace _Game.Scripts.BurnMark.Game.Data.Configs.Entities {
         [SerializeField] private HealthData _healthData;
         public HealthData HealthData => _healthData;
 
+        [SerializeField] private Cost _cost;
+        public Cost Cost => _cost;
+
+        [SerializeField] private int _workToBuild;
+        public int WorkToBuild => _workToBuild;
+
         public Func<int, Entity> Create(int user, Vector2Int position) {
             return Unit.Create(user, position, this);
         }

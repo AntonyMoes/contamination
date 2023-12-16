@@ -19,10 +19,10 @@ namespace _Game.Scripts.BurnMark.Game.Commands {
         }
 
         protected override void PerformDoOnAPI(GameDataAPI api) {
-            var entity = api.GetModifiableEntity(EntityId)!;
+            var entity = api.ModifiableEntities[EntityId];
             var attackComponent = entity.GetModifiableComponent<AttackData>()!;
 
-            var target = api.GetModifiableEntity(TargetId)!;
+            var target = api.ModifiableEntities[TargetId]!;
             var healthComponent = target.GetModifiableComponent<HealthData>()!;
 
             var damage = Attacking.CalculateDamage(attackComponent.Data, healthComponent.Data);

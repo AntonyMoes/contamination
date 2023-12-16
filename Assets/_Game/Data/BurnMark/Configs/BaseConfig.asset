@@ -24,3 +24,9 @@ MonoBehaviour:
   _resourceGainData:
     Money: 10
     Metal: 2
+  _unitBuilderData:
+    BuildableUnits:
+    - {fileID: 11400000, guid: 898bc38f06d48f8439f3f62a540a5f64, type: 2}
+    Queue: []
+    Current: {fileID: 0}
+    WorkLeft: 0

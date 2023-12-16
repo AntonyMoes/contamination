@@ -18,7 +18,8 @@ namespace _Game.Scripts.BurnMark.Game.Entities {
             });
             var healthComponent = Entity.Add(baseConfig.HealthData.WithMaxHealth());
             var resourceGainComponent = Entity.Add(baseConfig.ResourceGainData);
-            return id => new Entity(id, ownerComponent, positionComponent, fieldObjectComponent, healthComponent, resourceGainComponent);
+            var unitBuilderComponent = Entity.Add(baseConfig.UnitBuilderData);
+            return id => new Entity(id, ownerComponent, positionComponent, fieldObjectComponent, healthComponent, resourceGainComponent, unitBuilderComponent);
         } 
     }
 }

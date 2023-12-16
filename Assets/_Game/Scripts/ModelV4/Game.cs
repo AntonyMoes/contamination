@@ -9,7 +9,7 @@ using _Game.Scripts.NetworkModel.Network;
 using _Game.Scripts.NetworkModel.User;
 
 namespace _Game.Scripts.ModelV4 {
-    public class Game : IDisposable {
+    public class Game /*: IDisposable*/ {
         private readonly InitialCommandGenerator _initialCommandGenerator;
         private readonly IUser[] _users;
         private readonly IDisposable[] _otherDisposables;
@@ -52,7 +52,7 @@ namespace _Game.Scripts.ModelV4 {
         }
 
         public void RegisterSystem(ECS.Systems.System system) {
-            system.Initialize(_api, _ecs.Entities);
+            system.Initialize(_api, _ecs.Entities.Values);
 
             EventsAPI.OnEntityCreated.Subscribe(system.TryAddEntity);
             EventsAPI.OnEntityDestroyed.Subscribe(system.TryRemoveEntity);
@@ -72,6 +72,8 @@ namespace _Game.Scripts.ModelV4 {
 
         public void Dispose() {
             _runner?.Dispose();
+
+            _ecs.Clear();
 
             foreach (var user in _users) {
                 user.Dispose();

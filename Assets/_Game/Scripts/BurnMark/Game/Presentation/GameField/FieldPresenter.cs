@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using _Game.Scripts.BurnMark.Game.Commands;
 using _Game.Scripts.BurnMark.Game.Data;
 using _Game.Scripts.BurnMark.Game.Data.Components;
@@ -188,7 +187,7 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
         public Process PresentCommand(GameCommand generatedCommand) {
             switch (generatedCommand) {
                 case MoveCommand moveCommand:
-                    var unit = _readAPI.Entities.First(e => e.Id == moveCommand.EntityId);
+                    var unit = _readAPI.Entities[moveCommand.EntityId];
                     var position = unit.GetReadOnlyComponent<PositionData>()!.Data.Position;
                     return new SyncProcess(() => {
                         _field.MoveUnit(position, moveCommand.Position);

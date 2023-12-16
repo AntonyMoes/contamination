@@ -13,6 +13,9 @@ namespace _Game.Scripts.BurnMark.Game.Data.Configs.Entities {
         [SerializeField] private ResourceGainData _resourceGainData;
         public ResourceGainData ResourceGainData => _resourceGainData;
 
+        [SerializeField] private UnitBuilderData _unitBuilderData;
+        public UnitBuilderData UnitBuilderData => _unitBuilderData;
+
         public Func<int, Entity> Create(int user, Vector2Int position) {
             return Base.Create(user, position, this);
         }

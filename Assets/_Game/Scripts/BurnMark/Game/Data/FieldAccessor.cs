@@ -52,7 +52,7 @@ namespace _Game.Scripts.BurnMark.Game.Data {
             
             _eventsAPI.GetComponentUpdateEvent<PositionData>().Subscribe(OnPositionChanged);
 
-            foreach (var entity in _readAPI.Entities) {
+            foreach (var entity in _readAPI.Entities.Values) {
                 OnEntityCreated(entity);
             }
         }

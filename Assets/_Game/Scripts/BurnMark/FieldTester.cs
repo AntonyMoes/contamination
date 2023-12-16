@@ -39,9 +39,9 @@ namespace _Game.Scripts.BurnMark {
             var proxy = new ProxyCommandGenerator();
             _game = FakeGame.Create(InitialCommand, proxy);
 
-            GameMechanicsRegistry.RegisterMechanics(_game);
 
             var accessor = new FieldAccessor(_game.ReadAPI, _game.EventsAPI, new AStar());
+            GameMechanicsRegistry.RegisterMechanics(_game, accessor);
             _presenter = new GamePresenter(proxy, Player, _playerUI, _game.EventsAPI, OnGameClosed, CreateFieldPresenter);
             _game.RegisterPresenter(_presenter);
 
@@ -75,8 +75,8 @@ namespace _Game.Scripts.BurnMark {
 
         private void OnDisable() {
             _scheduler.UnregisterFrameProcessor(_input);
-            _presenter.Dispose();
             _game.Dispose();
+            _presenter.Dispose();
         }
 
         [Serializable]

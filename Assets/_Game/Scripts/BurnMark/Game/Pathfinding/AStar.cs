@@ -113,16 +113,14 @@ namespace _Game.Scripts.BurnMark.Game.Pathfinding {
         }
 
         private IEnumerable<Pair> GetAdjacent(IReadOnlyEntity entity, Pair node) {
-            return DirectionUtils.Directions
-                .Select(dir => dir.ToVector2Int(node.Key))
-                .Select(OffsetNode)
+            return Movement.GetAdjacent(node.Key)
+                .Select(PairIfCanMoveThrough)
                 .Where(p => p != null)
                 .Select(p => p.Value);
 
-            Pair? OffsetNode(Vector2Int offset) {
-                var targetPosition = node.Key + offset;
-                return Movement.CanMoveThrough(_accessor, entity, targetPosition)
-                    ? new Pair(targetPosition, _accessor.Terrain[targetPosition])
+            Pair? PairIfCanMoveThrough(Vector2Int position) {
+                return Movement.CanMoveThrough(_accessor, entity, position)
+                    ? new Pair(position, _accessor.Terrain[position])
                     : (Pair?) null;
             }
         }

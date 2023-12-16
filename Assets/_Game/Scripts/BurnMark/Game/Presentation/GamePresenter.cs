@@ -28,6 +28,8 @@ namespace _Game.Scripts.BurnMark.Game.Presentation {
             _fieldPresenter = fieldPresenterCreator(this);
             _playerUI.Initialize(_player, eventsAPI, EndTurn, EndGame, onPlayerClosedGame);
             _playerUI.gameObject.SetActive(true);
+            _playerUI.EntityPanel.OnBuild.Subscribe(OnBuild);
+            _playerUI.EntityPanel.OnCancelBuild.Subscribe(OnCancelBuild);
             _fieldPresenter.OnCommandGenerated.Subscribe(_proxy.GenerateCommand);
             _fieldPresenter.OnEntitySelected.Subscribe(OnEntitySelected);
         }
@@ -55,6 +57,20 @@ namespace _Game.Scripts.BurnMark.Game.Presentation {
 
         private void OnEntityCommandClicked(GameCommand command) {
             _proxy.GenerateCommand(command);
+        }
+
+        private void OnBuild(int builderId, int order) {
+            _proxy.GenerateCommand(new BuildUnitCommand {
+                BuilderId = builderId,
+                UnitConfigOrder = order
+            });
+        }
+
+        private void OnCancelBuild(int builderId, int queuePosition) {
+            _proxy.GenerateCommand(new CancelBuildUnitCommand {
+                BuilderId = builderId,
+                QueuePosition = queuePosition
+            });
         }
 
         public Process PresentCommand(GameCommand generatedCommand) {

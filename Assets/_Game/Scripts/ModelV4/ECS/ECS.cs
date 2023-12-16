@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using GeneralUtils;
-using JetBrains.Annotations;
 
 namespace _Game.Scripts.ModelV4.ECS {
     public class ECS : IComponentUpdateProxy {
@@ -10,7 +10,7 @@ namespace _Game.Scripts.ModelV4.ECS {
         private readonly Dictionary<Type, object> _componentUpdateInvokers = new Dictionary<Type, object>();
 
         private readonly Dictionary<int, Entity> _entities = new Dictionary<int, Entity>();
-        public IReadOnlyCollection<Entity> Entities => _entities.Values;
+        public IReadOnlyDictionary<int, Entity> Entities => _entities;
 
         private readonly Action<Entity> _onEntityCreated;
         public readonly Event<Entity> OnEntityCreated;
@@ -54,9 +54,10 @@ namespace _Game.Scripts.ModelV4.ECS {
             _onEntityDestroyed(entity);
         }
 
-        [CanBeNull]
-        public Entity GetEntity(int id) {
-            return _entities.TryGetValue(id, out var entity) ? entity : null;
+        public void Clear() {
+            foreach (var entityId in _entities.Keys.ToArray()) {
+                RemoveEntity(entityId);
+            }
         }
 
         public Event<TComponentData?, IReadOnlyComponent<TComponentData>> GetComponentUpdateEvent<TComponentData>()

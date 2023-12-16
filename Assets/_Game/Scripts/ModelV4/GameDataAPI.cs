@@ -2,17 +2,19 @@
 using System.Collections.Generic;
 using _Game.Scripts.ModelV4.ECS;
 using _Game.Scripts.NetworkModel;
-using JetBrains.Annotations;
+using _Game.Scripts.Utils;
 
 namespace _Game.Scripts.ModelV4 {
     public class GameDataAPI : GameDataReadAPI, IGameAPI {
         private readonly ModelV4.ECS.ECS _ecs;
+        private readonly ProxyDictionary<int, IEntity, Entity> _proxyEntities;
         private readonly TurnController _turnController;
 
-        public IReadOnlyCollection<IEntity> ModifiableEntities => _ecs.Entities;
+        public IReadOnlyDictionary<int, IEntity> ModifiableEntities => _proxyEntities;
 
         public GameDataAPI(ModelV4.ECS.ECS ecs, TurnController turnController) : base(ecs, turnController) {
             _ecs = ecs;
+            _proxyEntities = new ProxyDictionary<int, IEntity, Entity>(_ecs.Entities);
             _turnController = turnController;
         }
 
@@ -22,11 +24,6 @@ namespace _Game.Scripts.ModelV4 {
 
         public void RemoveEntity(int id) {
             _ecs.RemoveEntity(id);
-        }
-
-        [CanBeNull]
-        public IEntity GetModifiableEntity(int id) {
-            return _ecs.GetEntity(id);
         }
 
         public void EndTurn(bool endGame = false) {

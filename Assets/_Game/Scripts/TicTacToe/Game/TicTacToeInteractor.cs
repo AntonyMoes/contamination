@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using _Game.Scripts.ModelV4;
 using _Game.Scripts.NetworkModel;
 using _Game.Scripts.NetworkModel.Commands;
@@ -48,8 +47,8 @@ namespace _Game.Scripts.TicTacToe.Game {
         }
 
         private void MarkTile(MarkCommand markCommand) {
-            var entity = _readApi.Entities.First(e => e.Id == markCommand.EntityId);
-            var position = entity.GetReadOnlyComponent<PositionData>().Data;
+            var entity = _readApi.Entities[markCommand.EntityId];
+            var position = entity.GetReadOnlyComponent<PositionData>()!.Data;
             var settings = _readApi.Entities.GetSettings();
             _tiles[position.Row * settings.Size + position.Column].SetMark(markCommand.Mark);
         }

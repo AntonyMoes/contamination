@@ -25,7 +25,7 @@ namespace _Game.Scripts.BurnMark.Game {
             presenter = new GamePresenter(proxy, message.CurrenUser, playerUI, game.EventsAPI, OnClientClosedGame, null/*TODO*/);
             game.RegisterPresenter(presenter);
 
-            GameMechanicsRegistry.RegisterMechanics(game);
+            GameMechanicsRegistry.RegisterMechanics(game, null);  // TODO
 
             return game;
 
@@ -45,7 +45,7 @@ namespace _Game.Scripts.BurnMark.Game {
 
             var game = ModelV4.Game.StartStandaloneServer(CreateConfigurationForUser(orderedUsers), users.Select(u => u.Peer));
 
-            GameMechanicsRegistry.RegisterMechanics(game);
+            GameMechanicsRegistry.RegisterMechanics(game, null);  // TODO
 
             return game;
         }
