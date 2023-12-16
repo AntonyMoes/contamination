@@ -5,7 +5,7 @@ using _Game.Scripts.ModelV4.ECS;
 using UnityEditor;
 using UnityEngine;
 
-namespace _Game.Scripts.BurnMark.Game.Data.Configs {
+namespace _Game.Scripts.BurnMark.Game.Data.Configs.Entities {
     public class UnitConfig : FieldEntityConfig {
         [SerializeField] private GameObject _prefab;
         public GameObject Prefab => _prefab;
@@ -23,7 +23,7 @@ namespace _Game.Scripts.BurnMark.Game.Data.Configs {
             return Unit.Create(user, position, this);
         }
 
-        [MenuItem(Configs.MenuItem + nameof(UnitConfig), false)]
+        [MenuItem(Configs.EntityMenuItem + nameof(UnitConfig), false)]
         public static void Create() => Configs.Create<UnitConfig>();
     }
 }

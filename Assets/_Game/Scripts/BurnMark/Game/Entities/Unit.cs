@@ -1,6 +1,6 @@
 ﻿using System;
 using _Game.Scripts.BurnMark.Game.Data.Components;
-using _Game.Scripts.BurnMark.Game.Data.Configs;
+using _Game.Scripts.BurnMark.Game.Data.Configs.Entities;
 using _Game.Scripts.ModelV4.ECS;
 using UnityEngine;
 

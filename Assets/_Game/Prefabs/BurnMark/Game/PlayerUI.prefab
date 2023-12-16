@@ -794,6 +794,7 @@ RectTransform:
   - {fileID: 8505736135886082679}
   - {fileID: 8834402612422834019}
   - {fileID: 4325051782247291911}
+  - {fileID: 8290654107166762358}
   m_Father: {fileID: 3978572017174867881}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -819,9 +820,13 @@ MonoBehaviour:
   _infoItemPrefab: {fileID: 3171694165467163589, guid: fa129e06309cd2b41b1e5aca7c6799f2, type: 3}
   _healthIcon: {fileID: 21300000, guid: 740d9467f50e57e4db0aa2b14b2c8f81, type: 3}
   _armorIcon: {fileID: 21300000, guid: 52c0482bab695664985f879852171453, type: 3}
+  _moveIcon: {fileID: 21300000, guid: c80d67679c656fb4c9300efc235615b6, type: 3}
   _attackIcon: {fileID: 21300000, guid: c542807ce3ad8ff4688e7c8ab0d9eb48, type: 3}
   _armorPiercingIcon: {fileID: 21300000, guid: 4a86f6dd57c5a9e41891d5ab2d7cd031, type: 3}
   _attackRangeIcon: {fileID: 21300000, guid: 69880cd425097364f9fc0351a708cf4b, type: 3}
+  _actionItemsGroup: {fileID: 8187520536543740827}
+  _actionItemsParent: {fileID: 8290654107166762358}
+  _actionItemPrefab: {fileID: 5873547615433410095, guid: e467d22f22e46dc4f972ba16a3ff1b1c, type: 3}
 --- !u!222 &3698291937671557380
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2919,6 +2924,106 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 0.7019608}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!1 &8187520536543740827
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8290654107166762358}
+  - component: {fileID: 8877210111715770342}
+  - component: {fileID: 530320590824423515}
+  - component: {fileID: 4857134570318351463}
+  m_Layer: 5
+  m_Name: ActionItems
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &8290654107166762358
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8187520536543740827}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2278215980905980595}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 1, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: -40, y: -40}
+  m_SizeDelta: {x: 250, y: 200}
+  m_Pivot: {x: 1, y: 0.5}
+--- !u!114 &8877210111715770342
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8187520536543740827}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a8695521f0d02e499659fee002a26c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 10
+    m_Right: 10
+    m_Top: 10
+    m_Bottom: 0
+  m_ChildAlignment: 0
+  m_StartCorner: 0
+  m_StartAxis: 0
+  m_CellSize: {x: 50, y: 50}
+  m_Spacing: {x: 10, y: 10}
+  m_Constraint: 0
+  m_ConstraintCount: 2
+--- !u!222 &530320590824423515
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8187520536543740827}
+  m_CullTransparentMesh: 1
+--- !u!114 &4857134570318351463
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8187520536543740827}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.39607844}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

@@ -1,7 +1,7 @@
 ﻿using System;
 using _Game.Scripts.BurnMark.Game;
 using _Game.Scripts.BurnMark.Game.Data;
-using _Game.Scripts.BurnMark.Game.Data.Configs;
+using _Game.Scripts.BurnMark.Game.Data.Configs.Entities;
 using _Game.Scripts.BurnMark.Game.Pathfinding;
 using _Game.Scripts.BurnMark.Game.Presentation;
 using _Game.Scripts.BurnMark.Game.Presentation.GameField;

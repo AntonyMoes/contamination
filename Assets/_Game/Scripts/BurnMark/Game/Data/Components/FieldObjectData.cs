@@ -1,4 +1,4 @@
-﻿using _Game.Scripts.BurnMark.Game.Data.Configs;
+﻿using _Game.Scripts.BurnMark.Game.Data.Configs.Entities;
 using _Game.Scripts.ModelV4.ECS;
 
 namespace _Game.Scripts.BurnMark.Game.Data.Components {

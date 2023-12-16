@@ -34,6 +34,7 @@ namespace _Game.Scripts.BurnMark.Game.Presentation {
 
         public void Dispose() {
             _playerUI.gameObject.SetActive(false);
+            _playerUI.EntityPanel.Clear();
             _fieldPresenter.OnCommandGenerated.Unsubscribe(_proxy.GenerateCommand);
             _fieldPresenter.OnEntitySelected.Unsubscribe(OnEntitySelected);
             _fieldPresenter.Dispose();
@@ -50,6 +51,10 @@ namespace _Game.Scripts.BurnMark.Game.Presentation {
 
         private void EndGame() {
             _proxy.GenerateCommand(new TestEndGameCommand());
+        }
+
+        private void OnEntityCommandClicked(GameCommand command) {
+            _proxy.GenerateCommand(command);
         }
 
         public Process PresentCommand(GameCommand generatedCommand) {
@@ -71,7 +76,7 @@ namespace _Game.Scripts.BurnMark.Game.Presentation {
 
         private void OnEntitySelected([CanBeNull] IReadOnlyEntity entity) {
             if (entity != null) {
-                _playerUI.EntityPanel.Initialize(entity);
+                _playerUI.EntityPanel.Initialize(entity, OnEntityCommandClicked);
                 _playerUI.EntityPanel.gameObject.SetActive(true);
             } else {
                 _playerUI.EntityPanel.gameObject.SetActive(false);

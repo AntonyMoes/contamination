@@ -5,7 +5,7 @@ using _Game.Scripts.ModelV4.ECS;
 using UnityEditor;
 using UnityEngine;
 
-namespace _Game.Scripts.BurnMark.Game.Data.Configs {
+namespace _Game.Scripts.BurnMark.Game.Data.Configs.Entities {
     public class BaseConfig : FieldObjectConfig {
         [SerializeField] private HealthData _healthData;
         public HealthData HealthData => _healthData;
@@ -17,7 +17,7 @@ namespace _Game.Scripts.BurnMark.Game.Data.Configs {
             return Base.Create(user, position, this);
         }
 
-        [MenuItem(Configs.MenuItem + nameof(BaseConfig), false)]
+        [MenuItem(Configs.EntityMenuItem + nameof(BaseConfig), false)]
         public static void Create() => Configs.Create<BaseConfig>();
     }
 }

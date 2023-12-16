@@ -4,6 +4,8 @@ using UnityEngine;
 namespace _Game.Scripts.BurnMark.Game.Data.Configs {
     public static class Configs {
         public const string MenuItem = "Assets/Create/Configs/";
+        public const string EntityMenuItem = MenuItem + "Entities/";
+        public const string ActionMenuItem = MenuItem + "Actions/";
         private const string DefaultPath = "Assets/_Game/Data/BurnMark/Configs/";
 
         public static T Create<T>() where T : ScriptableObject {

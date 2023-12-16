@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _name: Base
   _icon: {fileID: 21300000, guid: cc41ca7bbcacb4f40ba6a3eac1e16987, type: 3}
+  _actions:
+  - {fileID: 11400000, guid: 0fa63875a9107f2479062d1b64be25d4, type: 2}
   _prefab: {fileID: 9190372971909936776, guid: 579b13c53bb512544aa31344c2c718d9, type: 3}
   _healthData:
     MaxHealth: 100
