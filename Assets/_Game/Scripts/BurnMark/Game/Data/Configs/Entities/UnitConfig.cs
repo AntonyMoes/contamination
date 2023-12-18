@@ -1,6 +1,7 @@
 ﻿using System;
 using _Game.Scripts.BurnMark.Game.Data.Components;
 using _Game.Scripts.BurnMark.Game.Entities;
+using _Game.Scripts.BurnMark.Game.Presentation.Entities;
 using _Game.Scripts.ModelV4.ECS;
 using UnityEngine;
 #if UNITY_EDITOR
@@ -9,8 +10,8 @@ using UnityEditor;
 
 namespace _Game.Scripts.BurnMark.Game.Data.Configs.Entities {
     public class UnitConfig : FieldEntityConfig {
-        [SerializeField] private GameObject _prefab;
-        public GameObject Prefab => _prefab;
+        [SerializeField] private FieldEntity _prefab;
+        public FieldEntity Prefab => _prefab;
 
         [SerializeField] private MoveData _moveData;
         public MoveData MoveData => _moveData;

@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using _Game.Scripts.BurnMark.Game.Presentation.Entities;
+using UnityEngine;
 
 namespace _Game.Scripts.BurnMark.Game.Data.Configs.Entities {
     public abstract class FieldObjectConfig : FieldEntityConfig {
-        [SerializeField] private GameObject _prefab;
-        public GameObject Prefab => _prefab;
+        [SerializeField] private FieldEntity _prefab;
+        public FieldEntity Prefab => _prefab;
     }
 }

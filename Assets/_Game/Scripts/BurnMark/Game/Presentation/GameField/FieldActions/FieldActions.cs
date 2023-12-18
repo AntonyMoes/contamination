@@ -18,7 +18,7 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField.FieldActions {
         }
 
         [CanBeNull]
-        public static IFieldAction TryGetAction(FieldAccessor accessor, [CanBeNull] IReadOnlyEntity selectedEntity, Vector2Int targetPosition) {
+        public static IFieldAction TryGetAction(FieldAccessor accessor, int? player, [CanBeNull] IReadOnlyEntity selectedEntity, Vector2Int targetPosition) {
             if (selectedEntity == null) {
                 return null;
             }
@@ -34,11 +34,11 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField.FieldActions {
                 return new DebugShowMoveRangeAction(tiles);
             }
 
-            if (CommandBuilder.TryBuildMoveCommand(accessor, selectedEntity, targetPosition, out var moveCommand, out var path)) {
+            if (CommandBuilder.TryBuildMoveCommand(accessor, player, selectedEntity, targetPosition, out var moveCommand, out var path)) {
                 return new MoveFieldAction(moveCommand, selectedEntity, path);
             }
 
-            if (CommandBuilder.TryBuildAttackCommand(accessor, selectedEntity, targetPosition, out var attackCommand, out var targetEntity)) {
+            if (CommandBuilder.TryBuildAttackCommand(accessor, player, selectedEntity, targetPosition, out var attackCommand, out var targetEntity)) {
                 return new AttackFieldAction(attackCommand, selectedEntity, targetEntity);
             }
 

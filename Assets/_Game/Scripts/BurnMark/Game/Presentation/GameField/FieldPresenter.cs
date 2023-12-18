@@ -2,6 +2,7 @@
 using _Game.Scripts.BurnMark.Game.Commands;
 using _Game.Scripts.BurnMark.Game.Data;
 using _Game.Scripts.BurnMark.Game.Data.Components;
+using _Game.Scripts.BurnMark.Game.Entities;
 using _Game.Scripts.BurnMark.Game.Presentation.GameField.FieldActions;
 using _Game.Scripts.ModelV4;
 using _Game.Scripts.ModelV4.ECS;
@@ -19,6 +20,7 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
         private readonly Field _field;
         private readonly FieldAccessor _fieldAccessor;
         private readonly IFieldActionUIPresenter _fieldActionUIPresenter;
+        private int? _player;
         private GameDataReadAPI _readAPI;
 
         private readonly Action<GameCommand> _onCommandGenerated;
@@ -52,6 +54,10 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
             _readAPI = (GameDataReadAPI) api;
         }
 
+        public void SetPlayer(int? player) {
+            _player = player;
+        }
+
         private void InitializeField(Vector2Int fieldSize, Camera uiCamera, RectTransform iconsParent) {
             _field.Initialize(fieldSize, uiCamera, iconsParent);
 
@@ -81,17 +87,27 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
 
         private void OnUnitEvent(bool created, Vector2Int position, IReadOnlyEntity entity) {
             if (created) {
-                _field.CreateUnit(position, entity);
+                var color = entity.GetInReadOnlyOwner<PlayerData>(_readAPI)?.Data.Color;
+                _field.CreateUnit(position, entity, color);
             } else {
                 _field.DestroyUnit(position);
+                OnEntityDestroyed(entity);
             }
         }
 
         private void OnFieldObjectEvent(bool created, Vector2Int position, IReadOnlyEntity entity) {
             if (created) {
-                _field.CreateFieldObject(position, entity);
+                var color = entity.GetInReadOnlyOwner<PlayerData>(_readAPI)?.Data.Color;
+                _field.CreateFieldObject(position, entity, color);
             } else {
                 _field.DestroyFieldObject(position);
+                OnEntityDestroyed(entity);
+            }
+        }
+
+        private void OnEntityDestroyed(IReadOnlyEntity entity) {
+            if (_selectedEntity == entity) {
+                SelectAtPosition(null);
             }
         }
 
@@ -169,7 +185,7 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
             ClearCurrentAction();
 
             if (_field.CurrentTile != null) {
-                _currentAction = FieldActions.FieldActions.TryGetAction(_fieldAccessor, _selectedEntity, _field.TilePosition(_field.CurrentTile));
+                _currentAction = FieldActions.FieldActions.TryGetAction(_fieldAccessor, _player, _selectedEntity, _field.TilePosition(_field.CurrentTile));
                 _currentAction?.DrawPreview(_field, _fieldActionUIPresenter);
             }
         }

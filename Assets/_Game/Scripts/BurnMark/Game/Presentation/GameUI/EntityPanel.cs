@@ -41,13 +41,13 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameUI {
 
         private GameDataReadAPI _readAPI;
         private IReadOnlyEntity _entity;
-        private Action<GameCommand> _onEntityCommandClicked;
+        private Action<IReadOnlyEntity, GameCommand> _onEntityCommandClicked;
 
         public void SetReadAPI(GameDataReadAPI readAPI) {
             _readAPI = readAPI;
         }
 
-        public void Initialize(IReadOnlyEntity entity, Action<GameCommand> onEntityCommandClicked) {
+        public void Initialize(IReadOnlyEntity entity, Action<IReadOnlyEntity, GameCommand> onEntityCommandClicked) {
             _buildPanel.Clear();
 
             _entity = entity;
@@ -112,7 +112,7 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameUI {
         }
 
         private void OnActionClick(EntityActionItem item) {
-            _onEntityCommandClicked(item.GetCommand(_entity));
+            _onEntityCommandClicked(_entity, item.GetCommand(_entity));
         }
 
         private EntityInfoItem GetInfoItem(Sprite icon) {

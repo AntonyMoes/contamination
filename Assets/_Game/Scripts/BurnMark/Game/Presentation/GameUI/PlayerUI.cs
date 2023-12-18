@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using _Game.Scripts.BaseUI;
 using _Game.Scripts.BurnMark.Game.Data.Components;
 using _Game.Scripts.BurnMark.Game.Entities;
@@ -26,13 +27,14 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameUI {
         [SerializeField] private EntityPanel _entityPanel;
         public EntityPanel EntityPanel => _entityPanel;
 
-        private int _player;
+        private ISet<int> _supportedPlayers;
         private GameDataReadAPI _readAPI;
         private GameDataEventsAPI _eventsAPI;
         private Action _onPlayerClosedGame;
+        private int _currentPlayerId;
 
-        public void Initialize(int player, GameDataEventsAPI eventsAPI, Action endTurn, Action testEndGame, Action onPlayerClosedGame) {
-            _player = player;
+        public void Initialize(ISet<int> supportedPlayers, GameDataEventsAPI eventsAPI, Action endTurn, Action testEndGame, Action onPlayerClosedGame) {
+            _supportedPlayers = supportedPlayers;
             _eventsAPI = eventsAPI;
             _eventsAPI.GetComponentUpdateEvent<ResourceData>().Subscribe(OnResourceUpdate);
             _eventsAPI.OnTurnChanged.Subscribe(OnTurnChanged);
@@ -67,17 +69,20 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameUI {
             _onPlayerClosedGame?.Invoke();
         }
 
-        private void OnTurnChanged(IReadOnlyUser oldUser, IReadOnlyUser newUser) {
-            _currentPlayer.text = newUser.Name;
+        private void OnTurnChanged(IReadOnlyUser _, IReadOnlyUser newPlayer) {
+            _currentPlayer.text = newPlayer.Name;
             _turn.text = _readAPI.CurrentTurn.ToString();
-            _endTurn.Enabled = newUser.Id == _player;
-            _testEndGame.Enabled = newUser.Id == _player;
+            _endTurn.Enabled = _supportedPlayers.Contains(newPlayer.Id);
+            _testEndGame.Enabled = _supportedPlayers.Contains(newPlayer.Id);
+            _currentPlayerId = newPlayer.Id;
+
+            var resourceComponent = Game.Entities.Utils.GetInReadOnlyOwner<ResourceData>(newPlayer.Id, _readAPI);
+            OnResourceUpdate(null, resourceComponent);
         }
 
-        private void OnResourceUpdate(ResourceData? oldData, IReadOnlyComponent<ResourceData> newData) {
+        private void OnResourceUpdate(ResourceData? _, IReadOnlyComponent<ResourceData> newData) {
             var owner = newData.ReadOnlyEntity.GetOwnerId();
-            Debug.LogWarning($"UPDATE for {owner} in {_player}");
-            if (owner != _player) {
+            if (owner != _currentPlayerId) {
                 return;
             }
 

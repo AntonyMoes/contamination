@@ -12,6 +12,9 @@ namespace _Game.Scripts.BurnMark.Game.Data.Configs {
         [SerializeField] private FactionConfig[] _factions;
         public FactionConfig[] Factions => _factions;
 
+        [SerializeField] private Color[] _colors;
+        public Color[] Colors => _colors;
+
 #if UNITY_EDITOR
         [MenuItem(Configs.MenuItem + nameof(GameConfig), false)]
         public static void Create() => Configs.Create<GameConfig>();

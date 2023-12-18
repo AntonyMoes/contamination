@@ -16,3 +16,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3d88cf3f6dda2104281a9daba91000c6, type: 2}
   _factions:
   - {fileID: 11400000, guid: 8e579ca2004befb42899c36fd62c557f, type: 2}
+  _colors:
+  - {r: 0, g: 0, b: 1, a: 1}
+  - {r: 1, g: 0, b: 0, a: 1}
+  - {r: 0, g: 0, b: 0, a: 1}
+  - {r: 1, g: 1, b: 1, a: 1}
+  - {r: 0, g: 1, b: 0, a: 1}
+  - {r: 1, g: 1, b: 0, a: 1}

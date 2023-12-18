@@ -84,8 +84,8 @@ namespace _Game.Scripts.ModelV4 {
             }
         }
 
-        public static Game CreateLocal(GameCommand initialCommand, IEnumerable<string> userNames, ICommandGenerator userCommandGenerator) {
-            var users = userNames.Select((name, idx) => new LocalUser(idx, name, userCommandGenerator));
+        public static Game CreateLocal(GameCommand initialCommand, IEnumerable<(int, string, ICommandGenerator)> usersData) {
+            var users = usersData.Select(tuple => new LocalUser(tuple.Item1, tuple.Item2, tuple.Item3));
             return new Game(initialCommand, users);
         }
 

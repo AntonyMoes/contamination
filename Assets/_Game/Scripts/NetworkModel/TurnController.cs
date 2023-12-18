@@ -67,7 +67,7 @@ namespace _Game.Scripts.NetworkModel {
             endTurnProcess.Add(new AsyncProcess(_commandSynchronizer.WaitForAllCommandsFinished));
             endTurnProcess.Add(new SyncProcess(() => Debug.Log("Synchronized commands")));
             endTurnProcess.Add(new SyncProcess(() => {
-                // TODO: account for possible different synchronization times; command can already start pouring into the system
+                // TODO: account for possible different synchronization times; commands can already start pouring into the system
                 currentUser?.OnCommandGenerated.Unsubscribe(OnUserCommandGenerated);
                 newCurrentUser?.OnCommandGenerated.Subscribe(OnUserCommandGenerated);
                 _onTurnChanged.Invoke(currentUser, newCurrentUser);

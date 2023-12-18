@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using _Game.Scripts.BurnMark.Game.Data.Components;
 using _Game.Scripts.BurnMark.Game.Mechanics;
+using _Game.Scripts.BurnMark.Game.Presentation.Entities;
 using _Game.Scripts.ModelV4.ECS;
 using GeneralUtils;
 using JetBrains.Annotations;
@@ -33,11 +34,11 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
 
         private readonly Dictionary<Vector2Int, Tile> _tiles = new Dictionary<Vector2Int, Tile>();
         private readonly Dictionary<Tile, Vector2Int> _tilePositions = new Dictionary<Tile, Vector2Int>();
-        private readonly Dictionary<Vector2Int, GameObject> _objects = new Dictionary<Vector2Int, GameObject>();
-        private readonly Dictionary<GameObject, Vector2Int> _objectPositions = new Dictionary<GameObject, Vector2Int>();
-        private readonly Dictionary<Vector2Int, GameObject> _units = new Dictionary<Vector2Int, GameObject>();
-        private readonly Dictionary<GameObject, Vector2Int> _unitPositions = new Dictionary<GameObject, Vector2Int>();
-        private readonly Dictionary<GameObject, EntityIcon> _icons = new Dictionary<GameObject, EntityIcon>();
+        private readonly Dictionary<Vector2Int, FieldEntity> _objects = new Dictionary<Vector2Int, FieldEntity>();
+        private readonly Dictionary<FieldEntity, Vector2Int> _objectPositions = new Dictionary<FieldEntity, Vector2Int>();
+        private readonly Dictionary<Vector2Int, FieldEntity> _units = new Dictionary<Vector2Int, FieldEntity>();
+        private readonly Dictionary<FieldEntity, Vector2Int> _unitPositions = new Dictionary<FieldEntity, Vector2Int>();
+        private readonly Dictionary<FieldEntity, EntityIcon> _icons = new Dictionary<FieldEntity, EntityIcon>();
 
         private readonly Action<Tile, Tile> _currentTileUpdated;
         public readonly Event<Tile, Tile> CurrentTileUpdated;
@@ -58,7 +59,6 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
         }
 
         public void CreateTile(Vector2Int position, IReadOnlyComponent<TerrainData> terrain) {
-            // TODO config
             var tile = Instantiate(_tilePrefab, _tilesParent);
             tile.Initialize(terrain.Data.Height);
             tile.MouseEnter.Subscribe(OnTileEnter);
@@ -82,9 +82,12 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
             _tilePositions.Remove(tile);
         }
 
-        public void CreateUnit(Vector2Int position, IReadOnlyEntity entity) {
+        public void CreateUnit(Vector2Int position, IReadOnlyEntity entity, Color? color) {
             var config = entity.GetReadOnlyComponent<UnitData>()!.Data.Config;
             var unit = Instantiate(config.Prefab, _objectsParent);
+            if (color is { } c) {
+                unit.SetColor(c);
+            }
             unit.transform.position = _tiles[position].Center;
             _units.Add(position, unit);
             _unitPositions.Add(unit, position);
@@ -99,9 +102,12 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
             _unitPositions.Remove(unit);
         }
 
-        public void CreateFieldObject(Vector2Int position, IReadOnlyEntity entity) {
+        public void CreateFieldObject(Vector2Int position, IReadOnlyEntity entity, Color? color) {
             var config = entity.GetReadOnlyComponent<FieldObjectData>()!.Data.Config;
             var fieldObject = Instantiate(config.Prefab, _objectsParent);
+            if (color is { } c) {
+                fieldObject.SetColor(c);
+            }
             fieldObject.transform.position = _tiles[position].Center;
             _objects.Add(position, fieldObject);
             _objectPositions.Add(fieldObject, position);
@@ -116,14 +122,14 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
             _objectPositions.Remove(fieldObject);
         }
 
-        private void CreateIcon(IReadOnlyEntity entity, GameObject entityObject, Transform target,
+        private void CreateIcon(IReadOnlyEntity entity, FieldEntity entityObject, Transform target,
             Sprite iconSprite) {
             var icon = Instantiate(_iconPrefab, _iconsParent);
             icon.Initialize(target, iconSprite, _fieldCamera, _uiCamera, entity.GetReadOnlyComponent<HealthData>());
             _icons.Add(entityObject, icon);
         }
 
-        private void DestroyIcon(GameObject entity) {
+        private void DestroyIcon(FieldEntity entity) {
             var icon = _icons[entity];
             icon.Clear();
             Destroy(icon.gameObject);

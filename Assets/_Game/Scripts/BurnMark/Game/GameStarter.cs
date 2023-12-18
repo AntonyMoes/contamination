@@ -22,7 +22,7 @@ namespace _Game.Scripts.BurnMark.Game {
             var proxy = new ProxyCommandGenerator();
             var game = ModelV4.Game.StartClient(message, serverPeer, proxy);
             GamePresenter presenter = null;
-            presenter = new GamePresenter(proxy, message.CurrenUser, playerUI, game.EventsAPI, OnClientClosedGame, null/*TODO*/);
+            presenter = new GamePresenter(proxy, playerUI, game.EventsAPI, OnClientClosedGame, null, null/*TODO*/);
             game.RegisterPresenter(presenter);
 
             GameMechanicsRegistry.RegisterMechanics(game, null);  // TODO
