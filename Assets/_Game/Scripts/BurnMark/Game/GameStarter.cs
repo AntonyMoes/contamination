@@ -53,7 +53,7 @@ namespace _Game.Scripts.BurnMark.Game {
         private static GameConfigurationMessage CreateConfigurationForUser(IEnumerable<LobbyUser> orderedUsers, int id = 0) {
             var userIds = Enumerable.Range(0, RoomSettings.MaxUsers).Select(IdFromIndex).ToArray();
             return new GameConfigurationMessage {
-                InitialCommand = new StartGameCommand {
+                InitialCommand = new OldStartGameCommand {
                     Players = userIds,
                     MapData = new MapData {
                         PlayerBases = new [] {

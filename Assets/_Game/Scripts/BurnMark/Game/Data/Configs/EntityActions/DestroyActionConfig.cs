@@ -1,6 +1,8 @@
 ﻿using _Game.Scripts.BurnMark.Game.Commands;
 using _Game.Scripts.ModelV4.ECS;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 
 namespace _Game.Scripts.BurnMark.Game.Data.Configs.EntityActions {
     public class DestroyActionConfig : EntityActionConfig {
@@ -10,7 +12,9 @@ namespace _Game.Scripts.BurnMark.Game.Data.Configs.EntityActions {
             };
         }
 
+#if UNITY_EDITOR
         [MenuItem(Configs.ActionMenuItem + nameof(DestroyActionConfig), false)]
         public static void Create() => Configs.Create<DestroyActionConfig>();
+#endif
     }
 }

@@ -42,7 +42,6 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
         private readonly Action<Tile, Tile> _currentTileUpdated;
         public readonly Event<Tile, Tile> CurrentTileUpdated;
 
-        private Rng _rng;
         private Camera _uiCamera;
         private RectTransform _iconsParent;
 
@@ -53,17 +52,15 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
         }
 
         public void Initialize(Vector2Int fieldSize, Camera uiCamera, RectTransform iconsParent) {
-            _rng = new Rng(Rng.RandomSeed);
             _cameraContainer.transform.position = GetFieldCenter(fieldSize);
             _uiCamera = uiCamera;
             _iconsParent = iconsParent;
         }
 
-        public void CreateTile(Vector2Int position, IReadOnlyComponent<TerrainData> _) {
+        public void CreateTile(Vector2Int position, IReadOnlyComponent<TerrainData> terrain) {
             // TODO config
-            var height = GetRandomHeight(_rng);
             var tile = Instantiate(_tilePrefab, _tilesParent);
-            tile.Initialize(height);
+            tile.Initialize(terrain.Data.Height);
             tile.MouseEnter.Subscribe(OnTileEnter);
             tile.MouseExit.Subscribe(OnTileExit);
 

@@ -527,19 +527,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _scheduler: {fileID: 1123269891}
   _field: {fileID: 1435440192}
-  _size: {x: 18, y: 11}
-  _startingBases:
-  - Position: {x: 1, y: 2}
-    Config: {fileID: 11400000, guid: 81042c51b6f95b749b7ac6913848a366, type: 2}
-  - Position: {x: 8, y: 3}
-    Config: {fileID: 11400000, guid: 81042c51b6f95b749b7ac6913848a366, type: 2}
-  - Position: {x: 15, y: 0}
-    Config: {fileID: 11400000, guid: 81042c51b6f95b749b7ac6913848a366, type: 2}
-  _startingUnits:
-  - Position: {x: 5, y: 1}
-    Config: {fileID: 11400000, guid: 898bc38f06d48f8439f3f62a540a5f64, type: 2}
-  - Position: {x: 14, y: 2}
-    Config: {fileID: 11400000, guid: 898bc38f06d48f8439f3f62a540a5f64, type: 2}
+  _gameConfig: {fileID: 11400000, guid: 647565cf2e01c314088af13d66634ae2, type: 2}
+  _map: test
+  _faction: test
   _playerUI: {fileID: 110224001}
   _uiCamera: {fileID: 213494166}
   _iconsParent: {fileID: 1608032953}

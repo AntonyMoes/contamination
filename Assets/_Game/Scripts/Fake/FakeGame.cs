@@ -7,8 +7,8 @@ using LiteNetLib.Utils;
 
 namespace _Game.Scripts.Fake {
     public static class FakeGame {
-        public static Game Create(Action<GameDataAPI> initialCommand, ICommandGenerator userCommandGenerator, IEnumerable<string> userNames = null) {
-            return Game.CreateLocal(new InitialCommand(initialCommand), userNames ?? new[] { "" }, userCommandGenerator);
+        public static Game Create(GameCommand initialCommand, ICommandGenerator userCommandGenerator, IEnumerable<string> userNames = null) {
+            return Game.CreateLocal(initialCommand, userNames ?? new[] { "" }, userCommandGenerator);
         }
 
         private class InitialCommand : GameCommand {

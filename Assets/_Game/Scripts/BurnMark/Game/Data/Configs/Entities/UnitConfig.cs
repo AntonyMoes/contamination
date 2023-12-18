@@ -2,8 +2,10 @@
 using _Game.Scripts.BurnMark.Game.Data.Components;
 using _Game.Scripts.BurnMark.Game.Entities;
 using _Game.Scripts.ModelV4.ECS;
-using UnityEditor;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace _Game.Scripts.BurnMark.Game.Data.Configs.Entities {
     public class UnitConfig : FieldEntityConfig {
@@ -29,7 +31,9 @@ namespace _Game.Scripts.BurnMark.Game.Data.Configs.Entities {
             return Unit.Create(user, position, this);
         }
 
+#if UNITY_EDITOR
         [MenuItem(Configs.EntityMenuItem + nameof(UnitConfig), false)]
         public static void Create() => Configs.Create<UnitConfig>();
+#endif
     }
 }

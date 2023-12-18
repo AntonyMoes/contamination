@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿#if UNITY_EDITOR
+using UnityEditor;
 using UnityEngine;
 
 namespace _Game.Scripts.BurnMark.Game.Data.Configs {
@@ -6,6 +7,7 @@ namespace _Game.Scripts.BurnMark.Game.Data.Configs {
         public const string MenuItem = "Assets/Create/Configs/";
         public const string EntityMenuItem = MenuItem + "Entities/";
         public const string ActionMenuItem = MenuItem + "Actions/";
+        public const string MapMenuItem = MenuItem + "Map/";
         private const string DefaultPath = "Assets/_Game/Data/BurnMark/Configs/";
 
         public static T Create<T>() where T : ScriptableObject {
@@ -26,3 +28,4 @@ namespace _Game.Scripts.BurnMark.Game.Data.Configs {
         }
     }
 }
+#endif
