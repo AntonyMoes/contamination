@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Linq;
-using _Game.Scripts.FeatureRequestPrototype.Utils;
 using GeneralUtils;
-using Unity.Plastic.Newtonsoft.Json;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace _Game.Scripts.FeatureRequestPrototype.Data {

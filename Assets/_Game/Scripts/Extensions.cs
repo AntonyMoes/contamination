@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using LiteNetLib.Utils;
 using UnityEngine;
 using UnityEngine.Events;
@@ -29,7 +30,7 @@ namespace _Game.Scripts {
         #endregion
 
         #region NetDataWriter
-        
+
         public static void PutNullable<T>(this NetDataWriter writer, T nullable)
             where T : INetSerializable, new() {
             var notNull = nullable != null;
@@ -45,14 +46,30 @@ namespace _Game.Scripts {
                 writer.Put(item);
             }
         }
-        
-        
+
+        public static void Put<T>(this NetDataWriter writer, T @enum)
+            where T : struct, Enum {
+            writer.Put(@enum.ToString());
+        }
+
         public static void PutEnumArray<T>(this NetDataWriter writer, T[] array)
             where T : struct, Enum {
             writer.Put(array.Length);
             foreach (var item in array) {
                 writer.Put(item.ToString());
             }
+        }
+
+        public static void PutArray(this NetDataWriter writer, Color[] array) {
+            writer.PutArray(array.Select(Serialize).ToArray());
+        }
+
+        public static void Put(this NetDataWriter writer, Color color) {
+            writer.Put(color.Serialize());
+        }
+
+        private static string Serialize(this Color color) {
+            return "#" + ColorUtility.ToHtmlStringRGBA(color);
         }
 
         #endregion
@@ -77,6 +94,10 @@ namespace _Game.Scripts {
             return array;
         }
 
+        public static T GetEnum<T>(this NetDataReader reader) {
+            return (T) Enum.Parse(typeof(T), reader.GetString());
+        }
+
         public static T[] GetEnumArray<T>(this NetDataReader reader)
             where T : struct, Enum {
             var array = new T[reader.GetInt()];
@@ -85,6 +106,18 @@ namespace _Game.Scripts {
             }
 
             return array;
+        }
+
+        public static Color GetColor(this NetDataReader reader) {
+            ColorUtility.TryParseHtmlString(reader.GetString(), out var color);
+            return color;
+        }
+
+        public static Color[] GetColorArray(this NetDataReader reader) {
+            return reader.GetStringArray().Select(str => {
+                ColorUtility.TryParseHtmlString(str, out var color);
+                return color;
+            }).ToArray();
         }
 
         #endregion

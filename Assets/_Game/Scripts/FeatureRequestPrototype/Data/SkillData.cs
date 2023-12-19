@@ -4,7 +4,7 @@ using System.Linq;
 using _Game.Scripts.FeatureRequestPrototype.Logic;
 using GeneralUtils;
 using JetBrains.Annotations;
-using Unity.Plastic.Newtonsoft.Json;
+using Newtonsoft.Json;
 
 namespace _Game.Scripts.FeatureRequestPrototype.Data {
     [Serializable]

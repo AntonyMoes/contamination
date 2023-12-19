@@ -17,17 +17,14 @@ namespace _Game.Scripts.BurnMark.Game.Commands {
         protected override void SerializeContents(NetDataWriter writer) {
             writer.PutArray(Players);
             writer.PutArray(Factions);
-            writer.PutArray(Colors.Select(ColorUtility.ToHtmlStringRGBA).ToArray());
+            writer.PutArray(Colors);
             writer.Put(Map);
         }
 
         protected override void DeserializeContents(NetDataReader reader) {
             Players = reader.GetIntArray();
             Factions = reader.GetStringArray();
-            Colors = reader.GetStringArray().Select(str => {
-                ColorUtility.TryParseHtmlString(str, out var color);
-                return color;
-            }).ToArray();
+            Colors = reader.GetColorArray();
             Map = reader.GetString();
         }
 
@@ -41,6 +38,8 @@ namespace _Game.Scripts.BurnMark.Game.Commands {
             }
 
             var map = _gameConfig.Maps.First(m => m.Id == Map);
+            api.AddEntity(Entities.Map.Create(map.Terrain.Size()));
+
             var terrain = map.Terrain;
             foreach (var position in terrain.Size().EnumeratePositions()) {
                 api.AddEntity(terrain[position.x, position.y].Create(position));

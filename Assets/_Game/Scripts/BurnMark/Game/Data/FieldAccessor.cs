@@ -37,6 +37,9 @@ namespace _Game.Scripts.BurnMark.Game.Data {
         private readonly Action<bool, Vector2Int, IReadOnlyEntity> _onUnitEvent;
         public readonly Event<bool, Vector2Int, IReadOnlyEntity> OnUnitEvent;
 
+        private readonly UpdatedValue<Vector2Int> _fieldSize = new UpdatedValue<Vector2Int>();
+        public IUpdatedValue<Vector2Int> FieldSize => _fieldSize;
+
         public FieldAccessor(GameDataReadAPI readAPI, GameDataEventsAPI eventsAPI, IPathFindingAlgorithm algorithm) {
             OnTerrainEvent = new Event<bool, Vector2Int, IReadOnlyComponent<TerrainData>>(out _onTerrainEvent);
             OnFieldObjectEvent = new Event<bool, Vector2Int, IReadOnlyEntity>(out _onFieldObjectEvent);
@@ -72,6 +75,11 @@ namespace _Game.Scripts.BurnMark.Game.Data {
         }
 
         private void OnEntityCreated(IReadOnlyEntity entity) {
+            if (entity.GetReadOnlyComponent<Components.MapData>() is { } mapData) {
+                _fieldSize.Value = mapData.Data.Size;
+                return;
+            }
+
             if (!(entity.GetReadOnlyComponent<PositionData>() is { } positionData)) {
                 return;
             }

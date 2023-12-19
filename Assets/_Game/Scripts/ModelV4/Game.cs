@@ -91,10 +91,10 @@ namespace _Game.Scripts.ModelV4 {
 
         public static Game StartClient(GameConfigurationMessage message, IPeer serverPeer, ICommandGenerator userCommandGenerator) {
             var gameClient = new GameClient(serverPeer);
-            var users = Enumerable.Range(0, message.UserSequence.Length)
+            var users = Enumerable.Range(0, message.Players.Length)
                 .Select(idx => {
-                    var id = message.UserSequence[idx];
-                    var name = message.UserNames[idx];
+                    var id = message.Players[idx];
+                    var name = message.PlayerNames[idx];
                     return id == message.CurrenUser
                         ? new LocalNetworkUser(new LocalUser(id, name, userCommandGenerator), gameClient)
                         : (IUser) new RemoteNetworkUser(id, name, gameClient);
@@ -104,10 +104,10 @@ namespace _Game.Scripts.ModelV4 {
 
         public static Game StartServer(GameConfigurationMessage message, IEnumerable<IPeer> clientPeers, ICommandGenerator userCommandGenerator) {
             var gameServer = new GameServer(clientPeers);
-            var users = Enumerable.Range(0, message.UserSequence.Length)
+            var users = Enumerable.Range(0, message.Players.Length)
                 .Select(idx => {
-                    var id = message.UserSequence[idx];
-                    var name = message.UserNames[idx];
+                    var id = message.Players[idx];
+                    var name = message.PlayerNames[idx];
                     return id == message.CurrenUser
                         ? new LocalNetworkUser(new LocalUser(id, name, userCommandGenerator), gameServer)
                         : (IUser) new RemoteNetworkUser(id, name, gameServer);
@@ -117,8 +117,8 @@ namespace _Game.Scripts.ModelV4 {
 
         public static Game StartStandaloneServer(GameConfigurationMessage message, IEnumerable<IPeer> clientPeers) {
             var gameServer = new GameServer(clientPeers);
-            var users = Enumerable.Range(0, message.UserSequence.Length)
-                .Select(idx => new RemoteNetworkUser(message.UserSequence[idx], message.UserNames[idx], gameServer));
+            var users = Enumerable.Range(0, message.Players.Length)
+                .Select(idx => new RemoteNetworkUser(message.Players[idx], message.PlayerNames[idx], gameServer));
             return new Game(message.InitialCommand, users, gameServer);
         }
     }

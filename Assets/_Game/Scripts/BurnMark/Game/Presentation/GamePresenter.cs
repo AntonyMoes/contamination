@@ -74,11 +74,16 @@ namespace _Game.Scripts.BurnMark.Game.Presentation {
             _fieldPresenter.SetReadAPI(api);
         }
 
-        private void OnTurnChanged(IReadOnlyUser _, IReadOnlyUser player) {
+        private void OnTurnChanged([CanBeNull] IReadOnlyUser _, [CanBeNull] IReadOnlyUser player) {
+            if (player == null) {
+                return;
+            }
+
             _currentPlayer = player.Id;
             if (_localProxy != null) {
                 _proxy = _localProxy.Get(player.Id);
             }
+
             _fieldPresenter.SetPlayer(_supportedPlayers.Contains(player.Id) ? player.Id : (int?) null);
         }
 

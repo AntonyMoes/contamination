@@ -52,10 +52,13 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
             CurrentTileUpdated = new Event<Tile, Tile>(out _currentTileUpdated);
         }
 
-        public void Initialize(Vector2Int fieldSize, Camera uiCamera, RectTransform iconsParent) {
-            _cameraContainer.transform.position = GetFieldCenter(fieldSize);
+        public void Initialize(Camera uiCamera, RectTransform iconsParent) {
             _uiCamera = uiCamera;
             _iconsParent = iconsParent;
+        }
+
+        public void SetFieldSize(Vector2Int fieldSize) {
+            _cameraContainer.transform.position = GetFieldCenter(fieldSize);
         }
 
         public void CreateTile(Vector2Int position, IReadOnlyComponent<TerrainData> terrain) {

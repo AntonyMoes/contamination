@@ -1,13 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using _Game.Scripts.BurnMark.Game.Data;
+using _Game.Scripts.BurnMark.Game.Entities;
 using _Game.Scripts.ModelV4.ECS;
 using UnityEngine;
 
 namespace _Game.Scripts.BurnMark.Game.Mechanics {
     public static class Movement {
         public static bool CanMoveThrough(FieldAccessor accessor, IReadOnlyEntity entity, Vector2Int position) {
-            return accessor.Terrain.ContainsKey(position);
+            if (!accessor.Terrain.ContainsKey(position)) {
+                return false;
+            }
+
+            var owner = entity.GetOwnerId();
+            return accessor.TryGetEntitiesAt(position)
+                .Select(e => e.GetOwnerId())
+                .All(o => o == owner);
         }
 
         public static bool CanSpawnOn(FieldAccessor accessor, Vector2Int position) {

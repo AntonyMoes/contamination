@@ -29,7 +29,7 @@ namespace _Game.Scripts.BurnMark.Network {
 
         private void StartGame(RoomSettings settings, IReadOnlyCollection<LobbyUser> users) {
             var startProcess = new ParallelProcess();
-            _game = GameStarter.StartServerGame(users, QueueMessage);
+            _game = GameStarter.StartServerGame(settings, users, QueueMessage);
             _game.EventsAPI.OnGameEnded.Subscribe(OnGameEnded);
             startProcess.Run(_game.Start);
 

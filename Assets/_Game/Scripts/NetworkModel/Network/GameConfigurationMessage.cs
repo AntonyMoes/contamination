@@ -5,21 +5,21 @@ using LiteNetLib.Utils;
 namespace _Game.Scripts.NetworkModel.Network {
     public class GameConfigurationMessage : Message {
         public GameCommand InitialCommand;
-        public int[] UserSequence;
-        public string[] UserNames;
+        public int[] Players;
+        public string[] PlayerNames;
         public int CurrenUser;
         
         public override void SerializeContents(NetDataWriter writer) {
             InitialCommand.Serialize(writer);
-            writer.PutArray(UserSequence);
-            writer.PutArray(UserNames);
+            writer.PutArray(Players);
+            writer.PutArray(PlayerNames);
             writer.Put(CurrenUser);
         }
 
         public override void DeserializeContents(NetDataReader reader) {
             InitialCommand = GameCommand.Deserialize(reader);
-            UserSequence = reader.GetIntArray();
-            UserNames = reader.GetStringArray();
+            Players = reader.GetIntArray();
+            PlayerNames = reader.GetStringArray();
             CurrenUser = reader.GetInt();
         }
     }

@@ -64,8 +64,8 @@ namespace _Game.Scripts.TicTacToe.Network {
                         Marks = orderedMarks
                     },
                     CurrenUser = id,
-                    UserSequence = userIds,
-                    UserNames = orderedUsers.Select(u => u.Name).ToArray(),
+                    Players = userIds,
+                    PlayerNames = orderedUsers.Select(u => u.Name).ToArray(),
                 };
             }
         }

@@ -57,8 +57,7 @@ namespace _Game.Scripts.BurnMark {
             _game.Start();
 
             FieldPresenter CreateFieldPresenter(IFieldActionUIPresenter presenter) {
-                var size = _gameConfig.Maps.First(m => m.Id == initialCommand.Map).Terrain.Size();
-                return new FieldPresenter(_input, _field, accessor, presenter, size, _uiCamera, _iconsParent);
+                return new FieldPresenter(_input, _field, accessor, presenter, _uiCamera, _iconsParent);
             }
         }
 

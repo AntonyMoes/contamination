@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using _Game.Scripts.BurnMark.Game.Commands;
 using _Game.Scripts.BurnMark.Game.Data;
+using _Game.Scripts.BurnMark.Game.Data.Configs;
+using _Game.Scripts.BurnMark.Game.Pathfinding;
 using _Game.Scripts.BurnMark.Game.Presentation;
 using _Game.Scripts.BurnMark.Game.Presentation.GameField;
+using _Game.Scripts.BurnMark.Game.Presentation.GameField.FieldActions;
 using _Game.Scripts.BurnMark.Game.Presentation.GameUI;
 using _Game.Scripts.BurnMark.Network;
 using _Game.Scripts.Lobby;
@@ -15,19 +18,24 @@ using UnityEngine;
 
 namespace _Game.Scripts.BurnMark.Game {
     public static class GameStarter {
-        private static FieldPresenter _fieldPresenter;
+        public static ModelV4.Game StartClientGame(GameConfig gameConfig, GameConfigurationMessage message, IPeer serverPeer,
+            PlayerUI playerUI, Input input, Field field, Camera uiCamera, RectTransform iconsParent, Action onClientClosedGame) {
+            ((StartGameCommand) message.InitialCommand).SetConfig(gameConfig);
 
-        public static ModelV4.Game StartClientGame(GameConfigurationMessage message, IPeer serverPeer,
-            PlayerUI playerUI, Action onClientClosedGame) {
             var proxy = new ProxyCommandGenerator();
             var game = ModelV4.Game.StartClient(message, serverPeer, proxy);
+            var accessor = new FieldAccessor(game.ReadAPI, game.EventsAPI, new AStar());
+            GameMechanicsRegistry.RegisterMechanics(game, accessor);
+
             GamePresenter presenter = null;
-            presenter = new GamePresenter(proxy, playerUI, game.EventsAPI, OnClientClosedGame, null, null/*TODO*/);
+            presenter = new GamePresenter(proxy, playerUI, game.EventsAPI, OnClientClosedGame, CreateFieldPresenter, message.Players);
             game.RegisterPresenter(presenter);
 
-            GameMechanicsRegistry.RegisterMechanics(game, null);  // TODO
-
             return game;
+
+            FieldPresenter CreateFieldPresenter(IFieldActionUIPresenter presenter) {
+                return new FieldPresenter(input, field, accessor, presenter, uiCamera, iconsParent);
+            }
 
             void OnClientClosedGame() {
                 presenter.Dispose();
@@ -35,36 +43,36 @@ namespace _Game.Scripts.BurnMark.Game {
             }
         }
 
-        public static ModelV4.Game StartServerGame(IReadOnlyCollection<LobbyUser> users, Action<LobbyUser, GameConfigurationMessage> sendMessage) {
+        public static ModelV4.Game StartServerGame(RoomSettings roomSettings, IReadOnlyCollection<LobbyUser> users,
+            Action<LobbyUser, GameConfigurationMessage> sendMessage) {
             var orderedUsers = users.ToArray(); //
+            var userIds = Enumerable.Range(0, orderedUsers.Length).Select(IdFromIndex).ToArray();
 
-            for (var i = 0; i < RoomSettings.MaxUsers; i++) {
+            for (var i = 0; i < orderedUsers.Length; i++) {
                 var user = orderedUsers[i];
-                sendMessage(user, CreateConfigurationForUser(orderedUsers, IdFromIndex(i)));
+                var userId = userIds[i];
+                sendMessage(user, CreateConfigurationForUser(roomSettings, orderedUsers, userIds, userId));
             }
 
-            var game = ModelV4.Game.StartStandaloneServer(CreateConfigurationForUser(orderedUsers), users.Select(u => u.Peer));
-
-            GameMechanicsRegistry.RegisterMechanics(game, null);  // TODO
+            var game = ModelV4.Game.StartStandaloneServer(CreateConfigurationForUser(roomSettings, orderedUsers, userIds), users.Select(u => u.Peer));
+            var accessor = new FieldAccessor(game.ReadAPI, game.EventsAPI, new AStar());
+            GameMechanicsRegistry.RegisterMechanics(game, accessor);
 
             return game;
         }
 
-        private static GameConfigurationMessage CreateConfigurationForUser(IEnumerable<LobbyUser> orderedUsers, int id = 0) {
-            var userIds = Enumerable.Range(0, RoomSettings.MaxUsers).Select(IdFromIndex).ToArray();
+        private static GameConfigurationMessage CreateConfigurationForUser(RoomSettings roomSettings,
+            IEnumerable<LobbyUser> orderedUsers, int[] userIds, int userId = 0) {
             return new GameConfigurationMessage {
-                InitialCommand = new OldStartGameCommand {
+                InitialCommand = new StartGameCommand {
                     Players = userIds,
-                    MapData = new MapData {
-                        PlayerBases = new [] {
-                            Vector2Int.zero,
-                            Vector2Int.one
-                        }
-                    }
+                    Colors = roomSettings.Users.Select(s => s.Color).ToArray(),
+                    Factions = roomSettings.Users.Select(s => s.FactionId).ToArray(),
+                    Map = roomSettings.Map
                 },
-                CurrenUser = id,
-                UserSequence = userIds,
-                UserNames = orderedUsers.Select(u => u.Name).ToArray(),
+                CurrenUser = userId,
+                Players = userIds,
+                PlayerNames = orderedUsers.Select(u => u.Name).ToArray(),
             };
         }
 

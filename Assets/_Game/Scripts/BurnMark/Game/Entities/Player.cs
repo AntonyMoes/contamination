@@ -9,11 +9,11 @@ namespace _Game.Scripts.BurnMark.Game.Entities {
             var ownerComponent = Entity.Add(new OwnerData {
                 Owner = user
             });
-            var colorData = Entity.Add(new PlayerData {
+            var playerComponent = Entity.Add(new PlayerData {
                 Color = color
             });
             var resourceComponent = Entity.Add(new ResourceData());
-            return id => new Entity(id, ownerComponent, colorData, resourceComponent);
+            return id => new Entity(id, ownerComponent, playerComponent, resourceComponent);
         }
 
         public static bool IsPlayer(IReadOnlyEntity entity) {

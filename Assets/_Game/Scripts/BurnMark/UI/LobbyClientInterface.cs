@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using _Game.Scripts.BurnMark.Game.Data.Configs;
 using _Game.Scripts.BurnMark.Network;
 using _Game.Scripts.Lobby;
 using TMPro;
@@ -30,6 +31,7 @@ namespace _Game.Scripts.BurnMark.UI {
         private LobbyClient<RoomSettings> _lobbyClient;
         private readonly List<UserItem> _users = new List<UserItem>();
         private readonly List<RoomItem> _rooms = new List<RoomItem>();
+        private GameConfig _gameConfig;
         private Action _gameStarter;
 
         private void Awake() {
@@ -39,11 +41,12 @@ namespace _Game.Scripts.BurnMark.UI {
             gameObject.SetActive(false);
         }
 
-        public void StartLobby(LobbyClient<RoomSettings> lobbyClient, Action gameStarter) {
+        public void StartLobby(LobbyClient<RoomSettings> lobbyClient, GameConfig gameConfig, Action gameStarter) {
             gameObject.SetActive(true);
 
             _lobbyClient = lobbyClient;
             _lobbyClient.OnLobbyUpdate.Subscribe(OnLobbyUpdate);
+            _gameConfig = gameConfig;
             _gameStarter = gameStarter;
             _lobbyClient.OnServerGameStart.Subscribe(_gameStarter);
             SetCurrentState();
@@ -95,7 +98,7 @@ namespace _Game.Scripts.BurnMark.UI {
             _roomPasswordInput.text = string.Empty;
 
             EnableOverlay(true);
-            _lobbyClient.TryUpdateRoom(null, password, new RoomSettings(), created => {
+            _lobbyClient.TryUpdateRoom(null, password, RoomSettings.CreateDefault(_gameConfig), created => {
                 EnableOverlay(false);
                 if (created) {
                     SetCurrentState();

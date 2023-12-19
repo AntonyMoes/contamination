@@ -20,6 +20,10 @@ namespace _Game.Scripts.BurnMark.Game.Entities {
             var resourceGainComponent = Entity.Add(baseConfig.ResourceGainData);
             var unitBuilderComponent = Entity.Add(baseConfig.UnitBuilderData);
             return id => new Entity(id, ownerComponent, positionComponent, fieldObjectComponent, healthComponent, resourceGainComponent, unitBuilderComponent);
-        } 
+        }
+
+        public static bool IsBase(IReadOnlyEntity entity) {
+            return entity.GetReadOnlyComponent<FieldObjectData>() is { Data: { Config: BaseConfig _ } };
+        }
     }
 }

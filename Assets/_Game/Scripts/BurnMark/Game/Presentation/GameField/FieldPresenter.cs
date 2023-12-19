@@ -35,8 +35,7 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
         [CanBeNull] private IFieldAction _currentAction;
 
         public FieldPresenter(Input input, Field field, FieldAccessor fieldAccessor,
-            IFieldActionUIPresenter fieldActionUIPresenter, Vector2Int fieldSize, Camera uiCamera,
-            RectTransform iconsParent) {
+            IFieldActionUIPresenter fieldActionUIPresenter, Camera uiCamera, RectTransform iconsParent) {
             OnCommandGenerated = new Event<GameCommand>(out _onCommandGenerated);
             OnEntitySelected = new Event<IReadOnlyEntity>(out _onEntitySelected);
 
@@ -46,7 +45,7 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
             _fieldActionUIPresenter = fieldActionUIPresenter;
             _input.SelectionButton.Subscribe(OnSelection);
             _input.ActionButton.Subscribe(OnAction);
-            InitializeField(fieldSize, uiCamera, iconsParent);
+            InitializeField(uiCamera, iconsParent);
             field.CurrentTileUpdated.Subscribe(OnCurrentTileUpdated);
         }
 
@@ -58,8 +57,9 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
             _player = player;
         }
 
-        private void InitializeField(Vector2Int fieldSize, Camera uiCamera, RectTransform iconsParent) {
-            _field.Initialize(fieldSize, uiCamera, iconsParent);
+        private void InitializeField(Camera uiCamera, RectTransform iconsParent) {
+            _field.Initialize(uiCamera, iconsParent);
+            _fieldAccessor.FieldSize.Subscribe(_field.SetFieldSize, true);
 
             _fieldAccessor.OnTerrainEvent.Subscribe(OnTerrainEvent);
             foreach (var (position, terrain) in _fieldAccessor.Terrain) {
@@ -217,6 +217,7 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
         public void Dispose() {
             _input.SelectionButton.Unsubscribe(OnSelection);
             _input.ActionButton.Unsubscribe(OnAction);
+            _fieldAccessor.FieldSize.Unsubscribe(_field.SetFieldSize);
             _fieldAccessor.OnTerrainEvent.Unsubscribe(OnTerrainEvent);
             _fieldAccessor.OnUnitEvent.Unsubscribe(OnUnitEvent);
             _fieldAccessor.OnFieldObjectEvent.Unsubscribe(OnFieldObjectEvent);

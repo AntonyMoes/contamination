@@ -8,10 +8,16 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/_Game/Scenes/NetworkingExample.unity
     guid: 2cda990e2423bbf4892e6590ba056729
-  - enabled: 1
+  - enabled: 0
     path: Assets/_Game/Scenes/TicTacToe/NetworkTicTacToeClient.unity
     guid: 3ea7ab2e923bd5c429ff72d00e4b35d6
   - enabled: 0
     path: Assets/_Game/Scenes/TicTacToe/NetworkTicTacToeServer.unity
     guid: 68c4aa8690717b344a97e292e807bdaf
+  - enabled: 1
+    path: Assets/_Game/Scenes/BurnMark/TestStandaloneServer.unity
+    guid: 4e70f1d28af08c24092b44edc0f5678e
+  - enabled: 0
+    path: Assets/_Game/Scenes/BurnMark/TestClient.unity
+    guid: d2064363457207f48b308d6e5c6a9c1e
   m_configObjects: {}

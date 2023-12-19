@@ -63,8 +63,8 @@ namespace _Game.Scripts.TicTacToe.Network {
                         Marks = new [] {MarkData.EMark.X, MarkData.EMark.O}
                     },
                     CurrenUser = id,
-                    UserSequence = users,
-                    UserNames = new []{ "server", "client"}
+                    Players = users,
+                    PlayerNames = new []{ "server", "client"}
                 };
             }
         }

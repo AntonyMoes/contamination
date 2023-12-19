@@ -18,15 +18,16 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0fa63875a9107f2479062d1b64be25d4, type: 2}
   _prefab: {fileID: 3692567091330228256, guid: 579b13c53bb512544aa31344c2c718d9, type: 3}
   _healthData:
-    MaxHealth: 100
+    MaxHealth: 40
     Health: 0
-    Armor: 10
+    Armor: 8
   _resourceGainData:
     Money: 10
     Metal: 2
   _unitBuilderData:
     BuildableUnits:
     - {fileID: 11400000, guid: 898bc38f06d48f8439f3f62a540a5f64, type: 2}
+    - {fileID: 11400000, guid: 1fcf6d8c0d2010845912ad1c4fb1c4aa, type: 2}
     Queue: []
     Current: {fileID: 0}
     WorkLeft: 0
