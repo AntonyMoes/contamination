@@ -1,20 +1,14 @@
 ﻿using _Game.Scripts.BurnMark.Game.Commands;
 using _Game.Scripts.ModelV4.ECS;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
+using UnityEngine;
 
 namespace _Game.Scripts.BurnMark.Game.Data.Configs.EntityActions {
+    [CreateAssetMenu(menuName = Configs.ActionMenuItem + nameof(DestroyActionConfig), fileName = nameof(DestroyActionConfig))]
     public class DestroyActionConfig : EntityActionConfig {
         public override GameCommand GetCommand(IReadOnlyEntity entity) {
             return new DestroyCommand {
                 EntityId = entity.Id
             };
         }
-
-#if UNITY_EDITOR
-        [MenuItem(Configs.ActionMenuItem + nameof(DestroyActionConfig), false)]
-        public static void Create() => Configs.Create<DestroyActionConfig>();
-#endif
     }
 }

@@ -3,11 +3,9 @@ using _Game.Scripts.BurnMark.Game.Data.Components;
 using _Game.Scripts.BurnMark.Game.Entities;
 using _Game.Scripts.ModelV4.ECS;
 using UnityEngine;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 namespace _Game.Scripts.BurnMark.Game.Data.Configs.Entities {
+    [CreateAssetMenu(menuName = Configs.EntityMenuItem + nameof(BaseConfig), fileName = nameof(BaseConfig))]
     public class BaseConfig : FieldObjectConfig {
         [SerializeField] private HealthData _healthData;
         public HealthData HealthData => _healthData;
@@ -21,10 +19,5 @@ namespace _Game.Scripts.BurnMark.Game.Data.Configs.Entities {
         public Func<int, Entity> Create(int user, Vector2Int position) {
             return Base.Create(user, position, this);
         }
-
-#if UNITY_EDITOR
-        [MenuItem(Configs.EntityMenuItem + nameof(BaseConfig), false)]
-        public static void Create() => Configs.Create<BaseConfig>();
-#endif
     }
 }

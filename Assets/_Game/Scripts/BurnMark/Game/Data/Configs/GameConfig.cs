@@ -1,10 +1,8 @@
 ﻿using _Game.Scripts.BurnMark.Game.Data.Configs.Map;
 using UnityEngine;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 namespace _Game.Scripts.BurnMark.Game.Data.Configs {
+    [CreateAssetMenu(menuName = Configs.MenuItem + nameof(GameConfig), fileName = nameof(GameConfig))]
     public class GameConfig : Config {
         [SerializeField] private MapConfig[] _maps;
         public MapConfig[] Maps => _maps;
@@ -14,10 +12,5 @@ namespace _Game.Scripts.BurnMark.Game.Data.Configs {
 
         [SerializeField] private Color[] _colors;
         public Color[] Colors => _colors;
-
-#if UNITY_EDITOR
-        [MenuItem(Configs.MenuItem + nameof(GameConfig), false)]
-        public static void Create() => Configs.Create<GameConfig>();
-#endif
     }
 }

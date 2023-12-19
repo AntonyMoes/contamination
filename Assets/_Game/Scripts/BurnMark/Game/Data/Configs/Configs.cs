@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace _Game.Scripts.BurnMark.Game.Data.Configs {
     public static class Configs {
-        public const string MenuItem = "Assets/Create/Configs/";
+        public const string MenuItem = "Configs/";
         public const string EntityMenuItem = MenuItem + "Entities/";
         public const string ActionMenuItem = MenuItem + "Actions/";
         public const string MapMenuItem = MenuItem + "Map/";

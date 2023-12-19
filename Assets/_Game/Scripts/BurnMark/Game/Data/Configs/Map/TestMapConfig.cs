@@ -1,10 +1,8 @@
 ﻿using _Game.Scripts.BurnMark.Game.Data.Configs.Entities;
 using UnityEngine;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 namespace _Game.Scripts.BurnMark.Game.Data.Configs.Map {
+    [CreateAssetMenu(menuName = Configs.MapMenuItem + nameof(TestMapConfig), fileName = nameof(TestMapConfig))]
     public class TestMapConfig : MapConfig {
         [SerializeField] private TerrainConfig _terrain;
         [SerializeField] private Vector2Int _mapSize;
@@ -22,10 +20,5 @@ namespace _Game.Scripts.BurnMark.Game.Data.Configs.Map {
                 return result;
             }
         }
-
-#if UNITY_EDITOR
-        [MenuItem(Configs.MapMenuItem + nameof(TestMapConfig), false)]
-        public static void Create() => Configs.Create<TestMapConfig>();
-#endif
     }
 }

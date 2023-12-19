@@ -4,11 +4,9 @@ using _Game.Scripts.BurnMark.Game.Entities;
 using _Game.Scripts.BurnMark.Game.Presentation.Entities;
 using _Game.Scripts.ModelV4.ECS;
 using UnityEngine;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 namespace _Game.Scripts.BurnMark.Game.Data.Configs.Entities {
+    [CreateAssetMenu(menuName = Configs.EntityMenuItem + nameof(UnitConfig), fileName = nameof(UnitConfig))]
     public class UnitConfig : FieldEntityConfig {
         [SerializeField] private FieldEntity _prefab;
         public FieldEntity Prefab => _prefab;
@@ -31,10 +29,5 @@ namespace _Game.Scripts.BurnMark.Game.Data.Configs.Entities {
         public Func<int, Entity> Create(int user, Vector2Int position) {
             return Unit.Create(user, position, this);
         }
-
-#if UNITY_EDITOR
-        [MenuItem(Configs.EntityMenuItem + nameof(UnitConfig), false)]
-        public static void Create() => Configs.Create<UnitConfig>();
-#endif
     }
 }
