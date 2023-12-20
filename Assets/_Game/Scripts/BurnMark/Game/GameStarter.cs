@@ -14,12 +14,15 @@ using _Game.Scripts.Lobby;
 using _Game.Scripts.Network;
 using _Game.Scripts.NetworkModel;
 using _Game.Scripts.NetworkModel.Network;
+using _Game.Scripts.Scheduling;
 using UnityEngine;
 
 namespace _Game.Scripts.BurnMark.Game {
     public static class GameStarter {
-        public static ModelV4.Game StartClientGame(GameConfig gameConfig, GameConfigurationMessage message, IPeer serverPeer,
-            PlayerUI playerUI, Input input, Field field, Camera uiCamera, RectTransform iconsParent, Action onClientClosedGame) {
+        public static ModelV4.Game StartClientGame(GameConfig gameConfig, GameConfigurationMessage message,
+            IPeer serverPeer,
+            PlayerUI playerUI, Input input, Field field, Camera uiCamera, RectTransform iconsParent,
+            IScheduler scheduler, Action onClientClosedGame) {
             ((StartGameCommand) message.InitialCommand).SetConfig(gameConfig);
 
             var proxy = new ProxyCommandGenerator();
@@ -34,7 +37,7 @@ namespace _Game.Scripts.BurnMark.Game {
             return game;
 
             FieldPresenter CreateFieldPresenter(IFieldActionUIPresenter presenter) {
-                return new FieldPresenter(input, field, accessor, presenter, uiCamera, iconsParent);
+                return new FieldPresenter(input, field, accessor, presenter, uiCamera, iconsParent, scheduler);
             }
 
             void OnClientClosedGame() {

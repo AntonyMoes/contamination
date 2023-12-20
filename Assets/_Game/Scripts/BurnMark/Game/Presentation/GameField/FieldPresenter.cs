@@ -7,6 +7,7 @@ using _Game.Scripts.BurnMark.Game.Presentation.GameField.FieldActions;
 using _Game.Scripts.ModelV4;
 using _Game.Scripts.ModelV4.ECS;
 using _Game.Scripts.NetworkModel;
+using _Game.Scripts.Scheduling;
 using GeneralUtils;
 using GeneralUtils.Processes;
 using JetBrains.Annotations;
@@ -20,22 +21,22 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
         private readonly Field _field;
         private readonly FieldAccessor _fieldAccessor;
         private readonly IFieldActionUIPresenter _fieldActionUIPresenter;
-        private int? _player;
-        private GameDataReadAPI _readAPI;
+        private readonly IScheduler _scheduler;
 
         private readonly Action<GameCommand> _onCommandGenerated;
         public Event<GameCommand> OnCommandGenerated { get; }
 
         private readonly Action<IReadOnlyEntity> _onEntitySelected;
         public readonly Event<IReadOnlyEntity> OnEntitySelected;
-        
 
+        private int? _player;
+        private GameDataReadAPI _readAPI;
         [CanBeNull] private Tile _selectedTile;
         [CanBeNull] private IReadOnlyEntity _selectedEntity;
         [CanBeNull] private IFieldAction _currentAction;
 
         public FieldPresenter(Input input, Field field, FieldAccessor fieldAccessor,
-            IFieldActionUIPresenter fieldActionUIPresenter, Camera uiCamera, RectTransform iconsParent) {
+            IFieldActionUIPresenter fieldActionUIPresenter, Camera uiCamera, RectTransform iconsParent, IScheduler scheduler) {
             OnCommandGenerated = new Event<GameCommand>(out _onCommandGenerated);
             OnEntitySelected = new Event<IReadOnlyEntity>(out _onEntitySelected);
 
@@ -43,8 +44,12 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
             _field = field;
             _fieldAccessor = fieldAccessor;
             _fieldActionUIPresenter = fieldActionUIPresenter;
+            _scheduler = scheduler;
+            _scheduler.RegisterFrameProcessor(_field.FieldCamera);
+            _input.Zoom.Subscribe(OnScroll);
             _input.SelectionButton.Subscribe(OnSelection);
             _input.ActionButton.Subscribe(OnAction);
+            _field.FieldCamera.Initialize(_input.EdgeVector, _input.MouseMovement);
             InitializeField(uiCamera, iconsParent);
             field.CurrentTileUpdated.Subscribe(OnCurrentTileUpdated);
         }
@@ -129,9 +134,16 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
             }
         }
 
+        private void OnScroll(bool scrollUp) {
+            _field.FieldCamera.OnZoom(scrollUp);
+        }
+
         private void OnSelection(bool buttonDown) {
             if (!buttonDown) {
                 OnSelectClick();
+                OnStopDrag();
+            } else {
+                OnStartDrag();
             }
         }
 
@@ -143,6 +155,14 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
             }
         }
 
+        private void OnStartDrag() {
+            _field.FieldCamera.ToggleDrag(true);
+        }
+
+        private void OnStopDrag() {
+            _field.FieldCamera.ToggleDrag(false);
+        }
+
         private void OnSelectClick() {
             if (_selectedTile == _field.CurrentTile) {
                 // TODO rework to allow selecting field objects on the same tile as units
@@ -150,7 +170,6 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
             }
 
             var selectPosition = _field.CurrentTile != null
-                                 // && _fieldAccessor.Units.TryGetValue(_field.TilePosition(_field.CurrentTile), out _)
                 ? _field.TilePosition(_field.CurrentTile)
                 : (Vector2Int?) null;
             SelectAtPosition(selectPosition);
@@ -215,6 +234,8 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
         }
 
         public void Dispose() {
+            _scheduler.UnregisterFrameProcessor(_field.FieldCamera);
+            _input.Zoom.Unsubscribe(OnScroll);
             _input.SelectionButton.Unsubscribe(OnSelection);
             _input.ActionButton.Unsubscribe(OnAction);
             _fieldAccessor.FieldSize.Unsubscribe(_field.SetFieldSize);

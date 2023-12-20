@@ -57,7 +57,7 @@ namespace _Game.Scripts.BurnMark {
             _game.Start();
 
             FieldPresenter CreateFieldPresenter(IFieldActionUIPresenter presenter) {
-                return new FieldPresenter(_input, _field, accessor, presenter, _uiCamera, _iconsParent);
+                return new FieldPresenter(_input, _field, accessor, presenter, _uiCamera, _iconsParent, _scheduler);
             }
         }
 

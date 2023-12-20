@@ -7,7 +7,6 @@ using _Game.Scripts.ModelV4.ECS;
 using GeneralUtils;
 using JetBrains.Annotations;
 using UnityEngine;
-using UnityEngine.Serialization;
 using TerrainData = _Game.Scripts.BurnMark.Game.Data.Components.TerrainData;
 
 namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
@@ -23,14 +22,9 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
         [Header("Icons")]
         [SerializeField] private EntityIcon _iconPrefab;
 
-        [Header("RandomTest")]
-        [FormerlySerializedAs("_tileWeights")]
-        [SerializeField] private float[] _heightWeights;
-        [SerializeField] private int[] _heights;
-
         [Header("Camera")]
-        [SerializeField] private GameObject _cameraContainer;
-        [SerializeField] private Camera _fieldCamera;
+        [SerializeField] private FieldCamera _fieldCamera;
+        public FieldCamera FieldCamera => _fieldCamera;
 
         private readonly Dictionary<Vector2Int, Tile> _tiles = new Dictionary<Vector2Int, Tile>();
         private readonly Dictionary<Tile, Vector2Int> _tilePositions = new Dictionary<Tile, Vector2Int>();
@@ -58,7 +52,8 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
         }
 
         public void SetFieldSize(Vector2Int fieldSize) {
-            _cameraContainer.transform.position = GetFieldCenter(fieldSize);
+            _fieldCamera.SetBounds(Vector3.zero, GetFieldMax(fieldSize));
+            _fieldCamera.SetPosition(GetFieldCenter(fieldSize));
         }
 
         public void CreateTile(Vector2Int position, IReadOnlyComponent<TerrainData> terrain) {
@@ -94,7 +89,7 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
             unit.transform.position = _tiles[position].Center;
             _units.Add(position, unit);
             _unitPositions.Add(unit, position);
-            CreateIcon(entity, unit, unit.transform, config.Icon);
+            CreateIcon(entity, unit, unit.IconTarget, config.Icon);
         }
 
         public void DestroyUnit(Vector2Int position) {
@@ -114,7 +109,7 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
             fieldObject.transform.position = _tiles[position].Center;
             _objects.Add(position, fieldObject);
             _objectPositions.Add(fieldObject, position);
-            CreateIcon(entity, fieldObject, fieldObject.transform, config.Icon);
+            CreateIcon(entity, fieldObject, fieldObject.IconTarget, config.Icon);
         }
 
         public void DestroyFieldObject(Vector2Int position) {
@@ -128,7 +123,7 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
         private void CreateIcon(IReadOnlyEntity entity, FieldEntity entityObject, Transform target,
             Sprite iconSprite) {
             var icon = Instantiate(_iconPrefab, _iconsParent);
-            icon.Initialize(target, iconSprite, _fieldCamera, _uiCamera, entity.GetReadOnlyComponent<HealthData>());
+            icon.Initialize(target, iconSprite, _fieldCamera.Camera, _uiCamera, entity.GetReadOnlyComponent<HealthData>());
             _icons.Add(entityObject, icon);
         }
 
@@ -144,14 +139,15 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
             return new Vector3(fieldCenter2D.x, 0f, fieldCenter2D.y);
         }
 
+        private Vector3 GetFieldMax(Vector2Int fieldSize) {
+            var fieldMax2D = Position.GetFieldMax(fieldSize, _tileSize);
+            return new Vector3(fieldMax2D.x, 0f, fieldMax2D.y);
+        }
+
         private void OnCurrentTileUpdated(Tile newCurrent) {
             var current = CurrentTile;
             CurrentTile = newCurrent;
             _currentTileUpdated(current, newCurrent);
-        }
-
-        private int GetRandomHeight(Rng rng) {
-            return  rng.NextWeightedChoice(_heights, _heightWeights, out _);
         }
 
         public Vector2Int TilePosition(Tile tile) {

@@ -59,7 +59,7 @@ namespace _Game.Scripts.BurnMark.Network {
 
         private void OnGameConfigurationMessageReceived(GameConfigurationMessage message, IPeer serverPeer) {
             _client.ServerConnection.GetReceiveEvent<GameConfigurationMessage>().Unsubscribe(OnGameConfigurationMessageReceived);
-            _game = GameStarter.StartClientGame(_gameConfig, message, serverPeer, _playerUI, _input, _field, _uiCamera, _iconsParent, OnClientClosedGame);
+            _game = GameStarter.StartClientGame(_gameConfig, message, serverPeer, _playerUI, _input, _field, _uiCamera, _iconsParent, _scheduler, OnClientClosedGame);
             _game.EventsAPI.OnGameEnded.Subscribe(OnGameEnded);
             _game.Start();
         }
