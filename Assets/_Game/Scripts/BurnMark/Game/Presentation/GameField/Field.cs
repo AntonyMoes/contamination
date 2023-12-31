@@ -58,7 +58,7 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
 
         public void CreateTile(Vector2Int position, IReadOnlyComponent<TerrainData> terrain) {
             var tile = Instantiate(_tilePrefab, _tilesParent);
-            tile.Initialize(terrain.Data.Height);
+            tile.Initialize(position, terrain.Data.Height);
             tile.MouseEnter.Subscribe(OnTileEnter);
             tile.MouseExit.Subscribe(OnTileExit);
 

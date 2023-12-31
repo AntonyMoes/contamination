@@ -26,13 +26,16 @@ namespace _Game.Scripts.BurnMark {
 
         private GamePresenter _presenter;
         private ModelV4.Game _game;
+        private PointerRaycastProvider _pointerRaycastProvider;
         private Input _input;
 
         private const int Player = 12;
         private const int Player2 = 30;
 
         private void OnEnable() {
-            _input = new Input();
+            _pointerRaycastProvider = new PointerRaycastProvider();
+            _scheduler.RegisterFrameProcessor(_pointerRaycastProvider);
+            _input = new Input(_pointerRaycastProvider);
             _scheduler.RegisterFrameProcessor(_input);
 
             var initialCommand = new StartGameCommand {
@@ -51,7 +54,7 @@ namespace _Game.Scripts.BurnMark {
 
             var accessor = new FieldAccessor(_game.ReadAPI, _game.EventsAPI, new AStar());
             GameMechanicsRegistry.RegisterMechanics(_game, accessor);
-            _presenter = new GamePresenter(proxy, _playerUI, _game.EventsAPI, OnGameClosed, CreateFieldPresenter, initialCommand.Players);
+            _presenter = new GamePresenter(proxy, _playerUI, _uiCamera, _game.EventsAPI, _scheduler, _pointerRaycastProvider, OnGameClosed, CreateFieldPresenter, initialCommand.Players);
             _game.RegisterPresenter(_presenter);
 
             _game.Start();

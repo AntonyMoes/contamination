@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using Event = GeneralUtils.Event;
 
 namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
-    public class Tile : MonoBehaviour {
+    public class Tile : MonoBehaviour, ITooltipProvider {
         [SerializeField] private Preset[] _presets;
 
         [SerializeField] private Color _highlightedColor;
@@ -22,12 +22,20 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
         private readonly Action _mouseExit;
         public readonly Event MouseExit;
 
+        private Vector2Int _position;
+        private int _height;
+
+        public string Tooltip => $"Flats ({_position.x}, {_position.y}, {_height})";
+
         public Tile() {
             MouseEnter = new Event(out _mouseEnter);
             MouseExit = new Event(out _mouseExit);
         }
 
-        public void Initialize(int height) {
+        public void Initialize(Vector2Int position, int height) {
+            _position = position;
+            _height = height;
+
             if (_preset is { } lastPreset) {
                 Unsubscribe(lastPreset);
             }

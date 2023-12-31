@@ -6,10 +6,12 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace _Game.Scripts.BurnMark.Game.Presentation.GameUI {
-    public class EntityActionItem : MonoBehaviour {
+    public class EntityActionItem : MonoBehaviour, ITooltipProvider {
         [SerializeField] private Image _icon;
         [SerializeField] private BaseButton _button;
         public GeneralUtils.Event OnClick => _button.OnClick;
+
+        public string Tooltip => _config.Name;
 
         private EntityActionConfig _config;
 

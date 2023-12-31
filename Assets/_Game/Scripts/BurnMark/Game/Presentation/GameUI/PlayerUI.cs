@@ -27,6 +27,9 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameUI {
         [SerializeField] private EntityPanel _entityPanel;
         public EntityPanel EntityPanel => _entityPanel;
 
+        [SerializeField] private Tooltip _tooltip;
+        public Tooltip Tooltip => _tooltip;
+
         private ISet<int> _supportedPlayers;
         private GameDataReadAPI _readAPI;
         private GameDataEventsAPI _eventsAPI;
@@ -70,7 +73,9 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameUI {
         }
 
         private void OnTurnChanged(IReadOnlyUser _, IReadOnlyUser newPlayer) {
-            _currentPlayer.text = newPlayer.Name;
+            var color = Game.Entities.Utils.GetInReadOnlyOwner<PlayerData>(newPlayer.Id, _readAPI)!.Data.Color;
+            _currentPlayer.text = $"<color=#{ColorUtility.ToHtmlStringRGB(color)}>{newPlayer.Name}</color>";
+
             _turn.text = _readAPI.CurrentTurn.ToString();
             _endTurn.Enabled = _supportedPlayers.Contains(newPlayer.Id);
             _testEndGame.Enabled = _supportedPlayers.Contains(newPlayer.Id);

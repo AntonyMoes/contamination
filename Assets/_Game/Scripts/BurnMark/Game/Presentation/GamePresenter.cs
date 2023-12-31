@@ -11,6 +11,7 @@ using _Game.Scripts.ModelV4;
 using _Game.Scripts.ModelV4.ECS;
 using _Game.Scripts.NetworkModel;
 using _Game.Scripts.NetworkModel.User;
+using _Game.Scripts.Scheduling;
 using GeneralUtils;
 using GeneralUtils.Processes;
 using JetBrains.Annotations;
@@ -18,10 +19,13 @@ using UnityEngine;
 using GameCommand = _Game.Scripts.NetworkModel.Commands.GameCommand;
 
 namespace _Game.Scripts.BurnMark.Game.Presentation {
-    public class GamePresenter : ICommandPresenter, IDisposable, IFieldActionUIPresenter {
+    public class GamePresenter : ICommandPresenter, IDisposable, IFieldActionUIPresenter, IFrameProcessor {
         private readonly LocalProxyCommandGenerator _localProxy;
         private readonly PlayerUI _playerUI;
         private readonly GameDataEventsAPI _eventsAPI;
+        private readonly IScheduler _scheduler;
+        private readonly PointerRaycastProvider _pointerRaycastProvider;
+        private readonly TooltipProviderTracker _tooltipProviderTracker;
         private readonly ISet<int> _supportedPlayers;
         private readonly FieldPresenter _fieldPresenter;
 
@@ -29,25 +33,33 @@ namespace _Game.Scripts.BurnMark.Game.Presentation {
         private int _currentPlayer;
         private ProxyCommandGenerator _proxy;
 
-        public GamePresenter(LocalProxyCommandGenerator localProxy, PlayerUI playerUI, GameDataEventsAPI eventsAPI,
+        public GamePresenter(LocalProxyCommandGenerator localProxy, PlayerUI playerUI, Camera uiCamera,
+            GameDataEventsAPI eventsAPI, IScheduler scheduler, PointerRaycastProvider pointerRaycastProvider,
             Action onPlayerClosedGame, Func<IFieldActionUIPresenter, FieldPresenter> fieldPresenterCreator,
-            IEnumerable<int> supportedPlayers) : this(playerUI, eventsAPI, onPlayerClosedGame, fieldPresenterCreator,
-            supportedPlayers) {
+            IEnumerable<int> supportedPlayers) : this(playerUI, uiCamera, eventsAPI, scheduler, pointerRaycastProvider,
+            onPlayerClosedGame, fieldPresenterCreator, supportedPlayers) {
             _localProxy = localProxy;
         }
 
-        public GamePresenter(ProxyCommandGenerator proxy, PlayerUI playerUI, GameDataEventsAPI eventsAPI,
+        public GamePresenter(ProxyCommandGenerator proxy, PlayerUI playerUI, Camera uiCamera,
+            GameDataEventsAPI eventsAPI, IScheduler scheduler, PointerRaycastProvider pointerRaycastProvider,
             Action onPlayerClosedGame, Func<IFieldActionUIPresenter, FieldPresenter> fieldPresenterCreator,
-            IEnumerable<int> supportedPlayers) : this(playerUI, eventsAPI, onPlayerClosedGame, fieldPresenterCreator,
-            supportedPlayers) {
+            IEnumerable<int> supportedPlayers) : this(playerUI, uiCamera, eventsAPI, scheduler, pointerRaycastProvider,
+            onPlayerClosedGame, fieldPresenterCreator, supportedPlayers) {
             _proxy = proxy;
         }
 
-        private GamePresenter(PlayerUI playerUI, GameDataEventsAPI eventsAPI,
-            Action onPlayerClosedGame, Func<IFieldActionUIPresenter, FieldPresenter> fieldPresenterCreator,
-            IEnumerable<int> supportedPlayers) {
+        private GamePresenter(PlayerUI playerUI, Camera uiCamera, GameDataEventsAPI eventsAPI, IScheduler scheduler,
+            PointerRaycastProvider pointerRaycastProvider, Action onPlayerClosedGame,
+            Func<IFieldActionUIPresenter, FieldPresenter> fieldPresenterCreator, IEnumerable<int> supportedPlayers) {
             _playerUI = playerUI;
             _eventsAPI = eventsAPI;
+            _scheduler = scheduler;
+            _scheduler.RegisterFrameProcessor(this);
+            _pointerRaycastProvider = pointerRaycastProvider;
+            _tooltipProviderTracker = new TooltipProviderTracker(pointerRaycastProvider);
+            _scheduler.RegisterFrameProcessor(_tooltipProviderTracker);
+            _tooltipProviderTracker.TooltipProvider.Subscribe(OnTooltipProviderChange);
             _supportedPlayers = supportedPlayers.ToHashSet();
             _eventsAPI.OnTurnChanged.Subscribe(OnTurnChanged);
             _fieldPresenter = fieldPresenterCreator(this);
@@ -57,15 +69,28 @@ namespace _Game.Scripts.BurnMark.Game.Presentation {
             _playerUI.EntityPanel.OnCancelBuild.Subscribe(OnCancelBuild);
             _fieldPresenter.OnCommandGenerated.Subscribe(OnFieldCommandGenerated);
             _fieldPresenter.OnEntitySelected.Subscribe(OnEntitySelected);
+            _playerUI.Tooltip.Initialize(uiCamera);
         }
 
         public void Dispose() {
+            _scheduler.UnregisterFrameProcessor(this);
+            _scheduler.UnregisterFrameProcessor(_tooltipProviderTracker);
             _eventsAPI.OnTurnChanged.Unsubscribe(OnTurnChanged);
             _playerUI.gameObject.SetActive(false);
             _playerUI.EntityPanel.Clear();
             _fieldPresenter.OnCommandGenerated.Unsubscribe(OnFieldCommandGenerated);
             _fieldPresenter.OnEntitySelected.Unsubscribe(OnEntitySelected);
             _fieldPresenter.Dispose();
+        }
+
+        public void ProcessFrame(float deltaTime) {
+            // var res = string.Join(",", _pointerRaycastProvider.RaycastResults.Select(res => {
+            //     var tooltip = res.gameObject.GetComponentInParent<ITooltipProvider>() != null;
+            //     return tooltip ? $"<color=greeen>{res.gameObject.name}</color>" : res.gameObject.name;
+            // }));
+            // if (!string.IsNullOrEmpty(res)) {
+            //     Debug.Log(res);
+            // }
         }
 
         public void SetReadAPI(IGameReadAPI api) {
@@ -164,6 +189,15 @@ namespace _Game.Scripts.BurnMark.Game.Presentation {
 
         private bool CurrentSupported(int? player) {
             return player == _currentPlayer && _supportedPlayers.Contains(_currentPlayer);
+        }
+
+        private void OnTooltipProviderChange((ITooltipProvider, Vector2) pair) {
+            var (tooltipProvider, screenPosition) = pair;
+            if (tooltipProvider == null) {
+                _playerUI.Tooltip.Hide();
+            } else {
+                _playerUI.Tooltip.Show(tooltipProvider, screenPosition);
+            }
         }
     }
 }

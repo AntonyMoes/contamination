@@ -22,5 +22,13 @@ namespace _Game.Scripts.BurnMark.Game.Data {
                 _metal = -_metal
             };
         }
+
+        public override string ToString() {
+            var parts = new[] {
+                Money != 0 ? $"Money: {Money}" : "",
+                Metal != 0 ? $"Metal: {Metal}" : ""
+            };
+            return string.Join(", ", parts);
+        }
     }
 }

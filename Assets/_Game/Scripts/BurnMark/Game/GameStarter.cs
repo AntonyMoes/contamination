@@ -20,9 +20,8 @@ using UnityEngine;
 namespace _Game.Scripts.BurnMark.Game {
     public static class GameStarter {
         public static ModelV4.Game StartClientGame(GameConfig gameConfig, GameConfigurationMessage message,
-            IPeer serverPeer,
-            PlayerUI playerUI, Input input, Field field, Camera uiCamera, RectTransform iconsParent,
-            IScheduler scheduler, Action onClientClosedGame) {
+            IPeer serverPeer, PlayerUI playerUI, Input input, Field field, Camera uiCamera, RectTransform iconsParent,
+            IScheduler scheduler, PointerRaycastProvider pointerRaycastProvider, Action onClientClosedGame) {
             ((StartGameCommand) message.InitialCommand).SetConfig(gameConfig);
 
             var proxy = new ProxyCommandGenerator();
@@ -31,7 +30,7 @@ namespace _Game.Scripts.BurnMark.Game {
             GameMechanicsRegistry.RegisterMechanics(game, accessor);
 
             GamePresenter presenter = null;
-            presenter = new GamePresenter(proxy, playerUI, game.EventsAPI, OnClientClosedGame, CreateFieldPresenter, message.Players);
+            presenter = new GamePresenter(proxy, playerUI, uiCamera, game.EventsAPI, scheduler, pointerRaycastProvider, OnClientClosedGame, CreateFieldPresenter, message.Players);
             game.RegisterPresenter(presenter);
 
             return game;

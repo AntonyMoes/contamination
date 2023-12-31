@@ -7,6 +7,8 @@ using UnityEngine.EventSystems;
 
 namespace _Game.Scripts.BurnMark.Game {
     public class Input : IFrameProcessor {
+        private readonly PointerRaycastProvider _pointerRaycastProvider;
+
         private readonly UpdatedValue<bool> _selectionButton = new UpdatedValue<bool>();
         public IUpdatedValue<bool> SelectionButton => _selectionButton;
         private readonly UpdatedValue<bool> _actionButton = new UpdatedValue<bool>();
@@ -18,6 +20,9 @@ namespace _Game.Scripts.BurnMark.Game {
         private readonly UpdatedValue<Vector2> _mouseMovement = new UpdatedValue<Vector2>();
         public IUpdatedValue<Vector2> MouseMovement => _mouseMovement;
 
+        private readonly UpdatedValue<bool> _mouseOverUI = new UpdatedValue<bool>();
+        public IUpdatedValue<bool> MouseOverUI => _mouseOverUI;
+
         private readonly System.Action<bool> _zoom;
         public readonly Event<bool> Zoom;
 
@@ -28,7 +33,8 @@ namespace _Game.Scripts.BurnMark.Game {
 
         private Vector3 _lastMousePosition;
 
-        public Input() {
+        public Input(PointerRaycastProvider pointerRaycastProvider) {
+            _pointerRaycastProvider = pointerRaycastProvider;
             Zoom = new Event<bool>(out _zoom);
         }
 
@@ -38,10 +44,8 @@ namespace _Game.Scripts.BurnMark.Game {
             _lastMousePosition = mousePosition;
 
             UpdateEdgeVector();
-            
-            if (IsPointerOverUIElement(GetEventSystemRaycastResults())) {
-                return;
-            }
+
+            _mouseOverUI.Value = IsPointerOverUIElement(_pointerRaycastProvider.RaycastResults);
 
             if (UnityEngine.Input.mouseScrollDelta == Vector2.up) {
                 _zoom(true);
@@ -86,15 +90,6 @@ namespace _Game.Scripts.BurnMark.Game {
 
         private static bool IsPointerOverUIElement(IEnumerable<RaycastResult> raycastResults) {
             return raycastResults.Any(result => result.gameObject.layer == UILayer);
-        }
- 
-        private static List<RaycastResult> GetEventSystemRaycastResults() {
-            var eventData = new PointerEventData(EventSystem.current) {
-                position = UnityEngine.Input.mousePosition
-            };
-            var raycastResults = new List<RaycastResult>();
-            EventSystem.current.RaycastAll(eventData, raycastResults);
-            return raycastResults;
         }
     }
 }

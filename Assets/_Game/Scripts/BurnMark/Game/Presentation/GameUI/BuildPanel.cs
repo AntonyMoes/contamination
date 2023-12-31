@@ -55,7 +55,7 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameUI {
                 var idx = index;
                 var unit = data.BuildableUnits[idx];
                 var item = Instantiate(_buildItemPrefab, _buildItemsParent);
-                item.Initialize(unit.Icon, unit.Cost);
+                item.Initialize(unit.Icon, unit.Name, unit.Cost, unit.WorkToBuild);
                 item.SetState(_resources.Data);
                 item.OnBuild.Subscribe(() => _onBuild(component.ReadOnlyEntity.Id, idx));
                 _buildItems.Add(item);
@@ -70,7 +70,7 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameUI {
                 var idx = i;
                 var unit = queue[idx];
                 var item = Instantiate(_buildQueueItemPrefab, _buildQueueItemsParent);
-                item.Initialize(unit.Icon, unit.WorkToBuild);
+                item.Initialize(unit.Icon, unit.Name, unit.WorkToBuild);
                 item.SetState(idx == 0, data.WorkLeft);
                 item.OnCancel.Subscribe(() => _onCancelBuild(component.ReadOnlyEntity.Id, idx - 1));
                 _buildQueueItems.Add(item);

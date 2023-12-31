@@ -17,12 +17,12 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameUI {
         [Header("Info items")]
         [SerializeField] private Transform _infoItemsParent;
         [SerializeField] private EntityInfoItem _infoItemPrefab;
-        [SerializeField] private Sprite _healthIcon;
-        [SerializeField] private Sprite _armorIcon;
-        [SerializeField] private Sprite _moveIcon;
-        [SerializeField] private Sprite _attackIcon;
-        [SerializeField] private Sprite _armorPiercingIcon;
-        [SerializeField] private Sprite _attackRangeIcon;
+        [SerializeField] private InfoItem _health;
+        [SerializeField] private InfoItem _armor;
+        [SerializeField] private InfoItem _move;
+        [SerializeField] private InfoItem _attack;
+        [SerializeField] private InfoItem _armorPiercing;
+        [SerializeField] private InfoItem _attackRange;
 
         [Header("Action items")]
         [SerializeField] private GameObject _actionItemsGroup;
@@ -66,22 +66,22 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameUI {
             }
 
             var healthData = entity.GetReadOnlyComponent<HealthData>()!.Data;
-            var healthItem = GetInfoItem(_healthIcon);
-            var armorItem = GetInfoItem(_armorIcon);
+            var healthItem = GetInfoItem(_health);
+            var armorItem = GetInfoItem(_armor);
             healthItem.SetDivisive(healthData.Health, healthData.MaxHealth);
             armorItem.Set(healthData.Armor);
 
             if (entity.GetReadOnlyComponent<MoveData>()?.Data is { } moveData) {
-                var moveItem = GetInfoItem(_moveIcon);
+                var moveItem = GetInfoItem(_move);
                 moveItem.Set(moveData.Distance);
             }
 
             if (entity.GetReadOnlyComponent<AttackData>()?.Data is { } attackData) {
-                var attackItem = GetInfoItem(_attackIcon);
+                var attackItem = GetInfoItem(_attack);
                 attackItem.SetMultiplicative(attackData.Damage, attackData.Attacks);
-                var armorPiercingItem = GetInfoItem(_armorPiercingIcon);
+                var armorPiercingItem = GetInfoItem(_armorPiercing);
                 armorPiercingItem.Set(attackData.ArmorPiercing);
-                var attackRangeItem = GetInfoItem(_attackRangeIcon);
+                var attackRangeItem = GetInfoItem(_attackRange);
                 attackRangeItem.Set(attackData.Range);
             }
         }
@@ -115,10 +115,10 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameUI {
             _onEntityCommandClicked(_entity, item.GetCommand(_entity));
         }
 
-        private EntityInfoItem GetInfoItem(Sprite icon) {
-            var item = _infoItems.GetValue(icon, () => {
+        private EntityInfoItem GetInfoItem(InfoItem infoItem) {
+            var item = _infoItems.GetValue(infoItem.Icon, () => {
                 var item = Instantiate(_infoItemPrefab, _infoItemsParent);
-                item.Initialize(icon);
+                item.Initialize(infoItem.Icon, infoItem.Name);
                 return item;
             });
             item.gameObject.SetActive(true);
@@ -148,6 +148,12 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameUI {
                 Destroy(item.gameObject);
             }
             _actionItems.Clear();
+        }
+
+        [Serializable]
+        private struct InfoItem {
+            public Sprite Icon;
+            public string Name;
         }
     }
 }

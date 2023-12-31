@@ -24,6 +24,7 @@ namespace _Game.Scripts.BurnMark.Network {
         [Header("Lobby")]
         [SerializeField] private LobbyClientInterface _lobbyClientInterface;
 
+        private PointerRaycastProvider _pointerRaycastProvider;
         private Input _input;
 
         private Client _client;
@@ -31,7 +32,9 @@ namespace _Game.Scripts.BurnMark.Network {
         private ModelV4.Game _game;
 
         private void Awake() {
-            _input = new Input();
+            _pointerRaycastProvider = new PointerRaycastProvider();
+            _scheduler.RegisterFrameProcessor(_pointerRaycastProvider);
+            _input = new Input(_pointerRaycastProvider);
             _scheduler.RegisterFrameProcessor(_input);
         }
 
@@ -59,7 +62,7 @@ namespace _Game.Scripts.BurnMark.Network {
 
         private void OnGameConfigurationMessageReceived(GameConfigurationMessage message, IPeer serverPeer) {
             _client.ServerConnection.GetReceiveEvent<GameConfigurationMessage>().Unsubscribe(OnGameConfigurationMessageReceived);
-            _game = GameStarter.StartClientGame(_gameConfig, message, serverPeer, _playerUI, _input, _field, _uiCamera, _iconsParent, _scheduler, OnClientClosedGame);
+            _game = GameStarter.StartClientGame(_gameConfig, message, serverPeer, _playerUI, _input, _field, _uiCamera, _iconsParent, _scheduler, _pointerRaycastProvider, OnClientClosedGame);
             _game.EventsAPI.OnGameEnded.Subscribe(OnGameEnded);
             _game.Start();
         }

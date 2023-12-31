@@ -16,7 +16,7 @@ using GameCommand = _Game.Scripts.NetworkModel.Commands.GameCommand;
 using TerrainData = _Game.Scripts.BurnMark.Game.Data.Components.TerrainData;
 
 namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
-    public class FieldPresenter : ICommandPresenter, ICommandGenerator, IDisposable {
+    public class FieldPresenter : ICommandPresenter, ICommandGenerator, IDisposable, IFrameProcessor {
         private readonly Input _input;
         private readonly Field _field;
         private readonly FieldAccessor _fieldAccessor;
@@ -34,6 +34,8 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
         [CanBeNull] private Tile _selectedTile;
         [CanBeNull] private IReadOnlyEntity _selectedEntity;
         [CanBeNull] private IFieldAction _currentAction;
+        private bool _dragging;
+        private float _dragged;
 
         public FieldPresenter(Input input, Field field, FieldAccessor fieldAccessor,
             IFieldActionUIPresenter fieldActionUIPresenter, Camera uiCamera, RectTransform iconsParent, IScheduler scheduler) {
@@ -46,6 +48,7 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
             _fieldActionUIPresenter = fieldActionUIPresenter;
             _scheduler = scheduler;
             _scheduler.RegisterFrameProcessor(_field.FieldCamera);
+            _scheduler.RegisterFrameProcessor(this);
             _input.Zoom.Subscribe(OnScroll);
             _input.SelectionButton.Subscribe(OnSelection);
             _input.ActionButton.Subscribe(OnAction);
@@ -140,26 +143,34 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
 
         private void OnSelection(bool buttonDown) {
             if (!buttonDown) {
-                OnSelectClick();
+                if (!_input.MouseOverUI.Value && _dragged == 0f) {
+                    OnSelectClick();
+                }
                 OnStopDrag();
             } else {
-                OnStartDrag();
+                _dragging = !_input.MouseOverUI.Value;
+                if (!_input.MouseOverUI.Value) {
+                    OnStartDrag();
+                }
             }
         }
 
         private void OnAction(bool buttonDown) {
-            if (buttonDown) {
+            if (buttonDown && !_input.MouseOverUI.Value) {
                 UpdateCurrentAction();
-            } else {
+            } else if (!buttonDown) {
                 ClearCurrentAction(true);
             }
         }
 
         private void OnStartDrag() {
+            _dragging = true;
+            _dragged = 0f;
             _field.FieldCamera.ToggleDrag(true);
         }
 
         private void OnStopDrag() {
+            _dragging = false;
             _field.FieldCamera.ToggleDrag(false);
         }
 
@@ -233,8 +244,17 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
             }
         }
 
+        public void ProcessFrame(float deltaTime) {
+            if (!_dragging) {
+                return;
+            }
+
+            _dragged += _input.MouseMovement.Value.magnitude;
+        }
+
         public void Dispose() {
             _scheduler.UnregisterFrameProcessor(_field.FieldCamera);
+            _scheduler.UnregisterFrameProcessor(this);
             _input.Zoom.Unsubscribe(OnScroll);
             _input.SelectionButton.Unsubscribe(OnSelection);
             _input.ActionButton.Unsubscribe(OnAction);

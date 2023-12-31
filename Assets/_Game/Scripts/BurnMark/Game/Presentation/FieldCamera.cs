@@ -55,11 +55,12 @@ namespace _Game.Scripts.BurnMark.Game.Presentation {
             transform.position = Vector3.Lerp(transform.position, _targetPosition, 0.2f);
 
             if (_drag) {
-                Debug.Log(_mouseDelta.Value);
+                // Debug.Log(_mouseDelta.Value);
 
                 var currentPosition = transform.position;
                 var dragPosition = _camera.ScreenToWorldPoint(_camera.WorldToScreenPoint(currentPosition) + (Vector3) _mouseDelta.Value);
                 SetTargetPosition(_targetPosition - (dragPosition - currentPosition));
+                return;
             }
             
             if (_edgeVector.Value == Vector2Int.zero) {
