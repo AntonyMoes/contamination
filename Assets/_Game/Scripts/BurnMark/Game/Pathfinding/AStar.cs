@@ -16,7 +16,7 @@ namespace _Game.Scripts.BurnMark.Game.Pathfinding {
             _accessor = fieldAccessor;
         }
 
-        public Vector2Int[] CalculatePath(IReadOnlyEntity entity, Vector2Int from, Vector2Int to) {
+        public (Vector2Int, int)[] CalculatePath(IReadOnlyEntity entity, Vector2Int from, Vector2Int to) {
             var source = Pair(from);
             var destination = Pair(to);
 
@@ -51,15 +51,17 @@ namespace _Game.Scripts.BurnMark.Game.Pathfinding {
                 return null;
             }
 
-            var path = new List<Vector2Int>();
+            var path = new List<(Vector2Int, int)>();
             Pair? pathNode = destination;
             while (pathNode is {} node) {
-                path.Add(node.Key);
-
                 var currentStep = pathMap[node];
-                pathNode = currentStep.PreviousPoint is { } point
-                    ? Pair(point)
-                    : (Pair?) null;
+                if (currentStep.PreviousPoint is { } point) {
+                    path.Add((node.Key, node.Value.Data.MoveDifficulty));
+                    pathNode = Pair(point);
+                } else {
+                    pathNode = null;
+                    path.Add((node.Key, 0));
+                }
             }
 
             path.Reverse();
@@ -109,7 +111,7 @@ namespace _Game.Scripts.BurnMark.Game.Pathfinding {
         }
 
         private static float GetPathWeight(Pair from, Pair to) {
-            return GetHeuristicWeight(from, to);
+            return GetHeuristicWeight(from, to) + to.Value.Data.MoveDifficulty;
         }
 
         private IEnumerable<Pair> GetAdjacent(IReadOnlyEntity entity, Pair node) {
@@ -119,7 +121,7 @@ namespace _Game.Scripts.BurnMark.Game.Pathfinding {
                 .Select(p => p.Value);
 
             Pair? PairIfCanMoveThrough(Vector2Int position) {
-                return Movement.CanMoveThrough(_accessor, entity, position)
+                return Movement.CanMoveThrough(_accessor, entity, node.Key, position)
                     ? new Pair(position, _accessor.Terrain[position])
                     : (Pair?) null;
             }

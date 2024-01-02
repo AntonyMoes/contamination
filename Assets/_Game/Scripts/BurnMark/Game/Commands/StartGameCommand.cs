@@ -42,7 +42,9 @@ namespace _Game.Scripts.BurnMark.Game.Commands {
 
             var terrain = map.Terrain;
             foreach (var position in terrain.Size().EnumeratePositions()) {
-                api.AddEntity(terrain[position.x, position.y].Create(position));
+                if (terrain[position.x, position.y] is {} terrainData) {
+                    api.AddEntity(Entities.Terrain.Create(position, terrainData));
+                }
             }
 
             for (var i = 0; i < Players.Length; i++) {

@@ -8,6 +8,7 @@ namespace _Game.Scripts.BurnMark.Game.Data.Configs {
         public const string EntityMenuItem = MenuItem + "Entities/";
         public const string ActionMenuItem = MenuItem + "Actions/";
         public const string MapMenuItem = MenuItem + "Map/";
+        public const string TerrainMenuItem = MenuItem + "Terrain/";
         private const string DefaultPath = "Assets/_Game/Data/BurnMark/Configs/";
 
         public static T Create<T>() where T : ScriptableObject {

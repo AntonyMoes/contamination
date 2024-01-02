@@ -1,0 +1,100 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebd4cb17b39e426a82566bb42c105b49, type: 3}
+  m_Name: FirstMap
+  m_EditorClassIdentifier: 
+  _id: first
+  _startingPoints:
+  - {x: 0, y: 0}
+  - {x: 4, y: 4}
+  _terrain:
+  - Position: {x: 0, y: 0}
+    Data:
+      Height: 1
+      Features: []
+  - Position: {x: 0, y: 1}
+    Data:
+      Height: 1
+      Features: []
+  - Position: {x: 1, y: 0}
+    Data:
+      Height: 1
+      Features: []
+  - Position: {x: 1, y: 1}
+    Data:
+      Height: 1
+      Features:
+      - {fileID: 11400000, guid: 76a762973e3b8e640a2e086e5ca9ff92, type: 2}
+  - Position: {x: 1, y: 2}
+    Data:
+      Height: 1
+      Features: []
+  - Position: {x: 1, y: 3}
+    Data:
+      Height: 1
+      Features: []
+  - Position: {x: 2, y: 2}
+    Data:
+      Height: 1
+      Features:
+      - {fileID: 11400000, guid: 76a762973e3b8e640a2e086e5ca9ff92, type: 2}
+  - Position: {x: 2, y: 3}
+    Data:
+      Height: 1
+      Features: []
+  - Position: {x: 3, y: 3}
+    Data:
+      Height: 1
+      Features:
+      - {fileID: 11400000, guid: 76a762973e3b8e640a2e086e5ca9ff92, type: 2}
+  - Position: {x: 3, y: 4}
+    Data:
+      Height: 1
+      Features: []
+  - Position: {x: 4, y: 4}
+    Data:
+      Height: 1
+      Features: []
+  - Position: {x: 2, y: 0}
+    Data:
+      Height: 1
+      Features:
+      - {fileID: 11400000, guid: 76a762973e3b8e640a2e086e5ca9ff92, type: 2}
+  - Position: {x: 2, y: 1}
+    Data:
+      Height: 1
+      Features:
+      - {fileID: 11400000, guid: 76a762973e3b8e640a2e086e5ca9ff92, type: 2}
+  - Position: {x: 3, y: 0}
+    Data:
+      Height: 1
+      Features:
+      - {fileID: 11400000, guid: 76a762973e3b8e640a2e086e5ca9ff92, type: 2}
+  - Position: {x: 3, y: 1}
+    Data:
+      Height: 1
+      Features:
+      - {fileID: 11400000, guid: 76a762973e3b8e640a2e086e5ca9ff92, type: 2}
+  - Position: {x: 2, y: 2}
+    Data:
+      Height: 1
+      Features:
+      - {fileID: 11400000, guid: 76a762973e3b8e640a2e086e5ca9ff92, type: 2}
+  - Position: {x: 2, y: 4}
+    Data:
+      Height: 1
+      Features: []
+  - Position: {x: 3, y: 2}
+    Data:
+      Height: 1
+      Features:
+      - {fileID: 11400000, guid: 76a762973e3b8e640a2e086e5ca9ff92, type: 2}

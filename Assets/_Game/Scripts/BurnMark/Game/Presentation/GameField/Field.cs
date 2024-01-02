@@ -56,18 +56,21 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
             _fieldCamera.SetPosition(GetFieldCenter(fieldSize));
         }
 
-        public void CreateTile(Vector2Int position, IReadOnlyComponent<TerrainData> terrain) {
-            var tile = Instantiate(_tilePrefab, _tilesParent);
-            tile.Initialize(position, terrain.Data.Height);
-            tile.MouseEnter.Subscribe(OnTileEnter);
-            tile.MouseExit.Subscribe(OnTileExit);
+        public void CreateOrUpdateTile(Vector2Int position, IReadOnlyComponent<TerrainData> terrain) {
+            if (!_tiles.TryGetValue(position, out var tile)) {
+                tile = Instantiate(_tilePrefab, _tilesParent);
+                tile.MouseEnter.Subscribe(OnTileEnter);
+                tile.MouseExit.Subscribe(OnTileExit);
 
-            var localPosition2D = Position.Map(position, _tileSize);
-            var localPosition = new Vector3(localPosition2D.x, 0f, localPosition2D.y);
-            tile.transform.localPosition = localPosition;
+                _tiles.Add(position, tile);
+                _tilePositions.Add(tile, position);
 
-            _tiles.Add(position, tile);
-            _tilePositions.Add(tile, position);
+                var localPosition2D = Position.Map(position, _tileSize);
+                var localPosition = new Vector3(localPosition2D.x, 0f, localPosition2D.y);
+                tile.transform.localPosition = localPosition;
+            }
+            
+            tile.Initialize(position, terrain.Data);
 
             void OnTileEnter() => OnCurrentTileUpdated(tile);
             void OnTileExit() => OnCurrentTileUpdated(null);

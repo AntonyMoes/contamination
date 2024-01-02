@@ -1,7 +1,6 @@
 ﻿using System;
 using _Game.Scripts.ModelV4.ECS;
 using UnityEngine;
-using Terrain = _Game.Scripts.BurnMark.Game.Entities.Terrain;
 using TerrainData = _Game.Scripts.BurnMark.Game.Data.Components.TerrainData;
 
 namespace _Game.Scripts.BurnMark.Game.Data.Configs.Entities {
@@ -11,7 +10,7 @@ namespace _Game.Scripts.BurnMark.Game.Data.Configs.Entities {
         public TerrainData TerrainData => _terrainData;
         
         public Func<int, Entity> Create(Vector2Int position) {
-            return Terrain.Create(position, this);
+            return Game.Entities.Terrain.Create(position, TerrainData);
         }
     }
 }

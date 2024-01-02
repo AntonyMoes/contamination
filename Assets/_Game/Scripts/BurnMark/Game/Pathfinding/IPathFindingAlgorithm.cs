@@ -7,6 +7,6 @@ namespace _Game.Scripts.BurnMark.Game.Pathfinding {
     public interface IPathFindingAlgorithm {
         public void SetAccessor(FieldAccessor fieldAccessor);
         [CanBeNull]
-        public Vector2Int[] CalculatePath(IReadOnlyEntity entity, Vector2Int from, Vector2Int to);
+        public (Vector2Int, int)[] CalculatePath(IReadOnlyEntity entity, Vector2Int from, Vector2Int to);
     }
 }

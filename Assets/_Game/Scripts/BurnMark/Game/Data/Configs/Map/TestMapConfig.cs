@@ -10,11 +10,11 @@ namespace _Game.Scripts.BurnMark.Game.Data.Configs.Map {
         [SerializeField] private Vector2Int[] _startingPoints;
         public override Vector2Int[] StartingPoints => _startingPoints;
 
-        public override TerrainConfig[,] Terrain {
+        public override Components.TerrainData?[,] Terrain {
             get {
-                var result = new TerrainConfig[_mapSize.x, _mapSize.y];
+                var result = new Components.TerrainData?[_mapSize.x, _mapSize.y];
                 foreach (var position in _mapSize.EnumeratePositions()) {
-                    result[position.x, position.y] = _terrain;
+                    result[position.x, position.y] = _terrain.TerrainData;
                 }
 
                 return result;

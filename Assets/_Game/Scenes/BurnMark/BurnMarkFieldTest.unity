@@ -524,7 +524,7 @@ MonoBehaviour:
   _scheduler: {fileID: 1123269891}
   _field: {fileID: 1435440192}
   _gameConfig: {fileID: 11400000, guid: 647565cf2e01c314088af13d66634ae2, type: 2}
-  _map: test
+  _map: first
   _faction: test
   _playerUI: {fileID: 110224001}
   _uiCamera: {fileID: 213494166}

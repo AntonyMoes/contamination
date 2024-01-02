@@ -85,9 +85,9 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
             }
         }
 
-        private void OnTerrainEvent(bool created, Vector2Int position, IReadOnlyComponent<TerrainData> terrainComponent) {
-            if (created) {
-                _field.CreateTile(position, terrainComponent);
+        private void OnTerrainEvent(bool createdOrUpdated, Vector2Int position, IReadOnlyComponent<TerrainData> terrainComponent) {
+            if (createdOrUpdated) {
+                _field.CreateOrUpdateTile(position, terrainComponent);
             } else {
                 _field.DestroyTile(position);
             }

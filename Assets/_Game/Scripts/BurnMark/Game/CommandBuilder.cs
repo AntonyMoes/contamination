@@ -11,7 +11,7 @@ using UnityEngine;
 namespace _Game.Scripts.BurnMark.Game {
     public static class CommandBuilder {
         public static bool TryBuildMoveCommand(FieldAccessor accessor, int? player, IReadOnlyEntity entity,
-            Vector2Int destination, [CanBeNull] out GameCommand command, out Vector2Int[] path) {
+            Vector2Int destination, [CanBeNull] out GameCommand command, out (Vector2Int, int)[] path) {
             var positionComponent = entity.GetReadOnlyComponent<PositionData>();
             var moveComponent = entity.GetReadOnlyComponent<MoveData>();
             var owner = entity.GetOwnerId();
@@ -29,7 +29,7 @@ namespace _Game.Scripts.BurnMark.Game {
                 return false;
             }
 
-            command = calculatedPath.Length - 1 > moveComponent.Data.RemainingDistance || !correctPlayer
+            command = !correctPlayer || Movement.StepsOfPathCanTraverse(moveComponent.Data, calculatedPath) < calculatedPath.Length
                 ? null
                 : new MoveCommand {
                     EntityId = entity.Id,

@@ -129,7 +129,7 @@ namespace _Game.Scripts.BurnMark.Game.Data {
         }
 
         [CanBeNull]
-        public Vector2Int[] CalculatePath(IReadOnlyEntity entity, Vector2Int from, Vector2Int to) {
+        public (Vector2Int, int)[] CalculatePath(IReadOnlyEntity entity, Vector2Int from, Vector2Int to) {
             return _algorithm.CalculatePath(entity, from, to);
         }
     }
