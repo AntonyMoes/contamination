@@ -27,7 +27,7 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameUI {
         }
 
         public void SetState(ResourceData resources) {
-            _disabledGroup.SetActive(!_cost.CanPay(resources));
+            _disabledGroup.SetActive(!resources.CanPay(_cost));
         }
         
     }

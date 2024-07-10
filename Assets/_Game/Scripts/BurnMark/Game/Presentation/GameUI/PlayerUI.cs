@@ -91,8 +91,8 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameUI {
                 return;
             }
 
-            _moneyCounter.text = newData.Data.Money.ToString();
-            _metalCounter.text = newData.Data.Metal.ToString();
+            _moneyCounter.text = newData.Data.Resources.Money.ToString();
+            _metalCounter.text = newData.Data.Resources.Metal.ToString();
         }
     }
 }

@@ -4,12 +4,10 @@ using _Game.Scripts.ModelV4.ECS;
 namespace _Game.Scripts.BurnMark.Game.Data.Components {
     [Serializable]
     public struct ResourceGainData : ISame<ResourceGainData> {
-        public int Money;
-        public int Metal;
+        public Resources Resources;
 
         public bool IsSame(ResourceGainData other) {
-            return Money == other.Money
-                   && Metal == other.Metal;
+            return Resources.IsSame(other.Resources);
         }
     }
 }

@@ -8,6 +8,7 @@ namespace _Game.Scripts.BurnMark.Game {
             game.RegisterSystem(new UnitBuildingSystem(fieldAccessor));
             game.RegisterSystem(new ActionsResetSystem());
             game.RegisterSystem(new DeathSystem());
+            game.RegisterSystem(new CaptureSystem(fieldAccessor));
             game.RegisterGenerator(new GameEndChecker(game.EventsAPI));
         }
     }

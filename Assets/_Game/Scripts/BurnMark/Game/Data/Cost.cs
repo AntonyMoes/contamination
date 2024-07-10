@@ -1,34 +1,18 @@
 ﻿using System;
-using _Game.Scripts.BurnMark.Game.Data.Components;
 using UnityEngine;
 
 namespace _Game.Scripts.BurnMark.Game.Data {
     [Serializable]
     public class Cost {
-        [SerializeField] private int _money;
-        public int Money => _money;
-
-        [SerializeField] private int _metal;
-        public int Metal => _metal;
-
-        public bool CanPay(ResourceData resourceData) {
-            return resourceData.Money >= _money
-                   && resourceData.Metal >= _metal;
-        }
+        [SerializeField] private Resources _resources;
+        public Resources Resources => _resources;
 
         public Cost Refund() {
             return new Cost {
-                _money = -_money,
-                _metal = -_metal
+                _resources = _resources.Inverted()
             };
         }
 
-        public override string ToString() {
-            var parts = new[] {
-                Money != 0 ? $"Money: {Money}" : "",
-                Metal != 0 ? $"Metal: {Metal}" : ""
-            };
-            return string.Join(", ", parts);
-        }
+        public override string ToString() => _resources.ToString();
     }
 }

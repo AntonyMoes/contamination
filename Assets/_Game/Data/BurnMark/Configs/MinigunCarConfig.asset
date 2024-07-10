@@ -33,4 +33,7 @@ MonoBehaviour:
   _cost:
     _money: 40
     _metal: 4
+    _resources:
+      Money: 40
+      Metal: 4
   _workToBuild: 3

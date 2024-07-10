@@ -7,5 +7,11 @@ namespace _Game.Scripts.BurnMark.Game.Data.Components {
         public bool IsSame(OwnerData other) {
             return Owner == other.Owner;
         }
+
+        public OwnerData WithOwner(int? owner) {
+            return new OwnerData {
+                Owner = owner
+            };
+        }
     }
 }

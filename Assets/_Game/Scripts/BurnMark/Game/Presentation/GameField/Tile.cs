@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Linq;
 using _Game.Scripts.BurnMark.Game.Data.Configs.Terrain;
+using _Game.Scripts.BurnMark.Game.Presentation.GameField.TerrainFeatures;
+using _Game.Scripts.ModelV4;
+using _Game.Scripts.ModelV4.ECS;
 using _Game.Scripts.Utils;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,6 +14,8 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
     public class Tile : MonoBehaviour, ITooltipProvider {
         [SerializeField] private Preset[] _presets;
         [SerializeField] private FeaturePreset[] _featurePresets;
+        [SerializeField] private GameObject _canvas;
+        [SerializeField] private Image _border;
 
         [SerializeField] private Color _highlightedColor;
         [SerializeField] private Color _selectedColor;
@@ -19,7 +24,7 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
 
         private Preset _preset;
         public Vector3 Center => _preset.Center.position;
-        private Image Border => _preset.Border;
+        private Image Border => _border;
 
         private readonly Action _mouseEnter;
         public readonly Event MouseEnter;
@@ -27,11 +32,11 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
         public readonly Event MouseExit;
 
         private Vector2Int _position;
-        private TerrainData _data;
+        private IReadOnlyComponent<TerrainData> _terrain;
 
         public string Tooltip =>
-            $"({_position.x}, {_position.y}, {_data.Height})" + (_data.Features.Length != 0
-                ? "\n" + string.Join("\n", _data.Features.Select(f => f.Name))
+            $"({_position.x}, {_position.y}, {_terrain.Data.Height})" + (_terrain.Data.Features.Length != 0
+                ? "\n" + string.Join("\n", _terrain.Data.Features.Select(f => f.Tooltip))
                 : "");
 
         public Tile() {
@@ -39,29 +44,31 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
             MouseExit = new Event(out _mouseExit);
         }
 
-        public void Initialize(Vector2Int position, TerrainData data) {
+        public void Initialize(Vector2Int position, IReadOnlyComponent<TerrainData> terrain, GameDataReadAPI readAPI) {
             _position = position;
-            _data = data;
+            _terrain = terrain;
 
             if (_preset is { } lastPreset) {
                 Unsubscribe(lastPreset);
             }
 
             foreach (var preset in _presets) {
-                var correct = preset.Height == _data.Height;
+                var correct = preset.Height == _terrain.Data.Height;
                 preset.Object.SetActive(correct);
                 if (correct) {
                     _preset = preset;
+                    _canvas.transform.position = Center;
                     Subscribe(preset);
                 }
             }
 
             foreach (var featurePreset in _featurePresets) {
-                if (_data.Features.Contains(featurePreset.Feature)) {
-                    featurePreset.Object.gameObject.SetActive(true);
-                    featurePreset.Object.transform.position = Center;
-                } else {
-                    featurePreset.Object.gameObject.SetActive(false);
+                featurePreset.Preset.Clear();
+            }
+
+            foreach (var featurePreset in _featurePresets) {
+                if (_terrain.Data.Features.Contains(featurePreset.Feature)) {
+                    featurePreset.Preset.Init(Center, terrain, readAPI);
                 }
             }
         }
@@ -102,12 +109,11 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
             public GameObject Object;
             public MouseDetector MouseDetector;
             public Transform Center;
-            public Image Border;
         }
 
         [Serializable]
         private class FeaturePreset {
-            public Transform Object;
+            public TerrainFeaturePreset Preset;
             public TerrainFeatureConfig Feature;
         }
     }

@@ -8,7 +8,7 @@ using _Game.Scripts.ModelV4.ECS.Systems;
 using UnityEngine;
 
 namespace _Game.Scripts.BurnMark.Game.Systems {
-    public class UnitBuildingSystem : ModelV4.ECS.Systems.System, IStartTurnSystem{
+    public class UnitBuildingSystem : ModelV4.ECS.Systems.System, IStartTurnSystem {
         private readonly FieldAccessor _accessor;
 
         public UnitBuildingSystem(FieldAccessor fieldAccessor) {

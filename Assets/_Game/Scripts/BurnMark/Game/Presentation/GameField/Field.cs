@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using _Game.Scripts.BurnMark.Game.Data.Components;
 using _Game.Scripts.BurnMark.Game.Mechanics;
 using _Game.Scripts.BurnMark.Game.Presentation.Entities;
+using _Game.Scripts.ModelV4;
 using _Game.Scripts.ModelV4.ECS;
 using GeneralUtils;
 using JetBrains.Annotations;
@@ -56,7 +57,7 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
             _fieldCamera.SetPosition(GetFieldCenter(fieldSize));
         }
 
-        public void CreateOrUpdateTile(Vector2Int position, IReadOnlyComponent<TerrainData> terrain) {
+        public void CreateOrUpdateTile(Vector2Int position, IReadOnlyComponent<TerrainData> terrain, GameDataReadAPI readAPI) {
             if (!_tiles.TryGetValue(position, out var tile)) {
                 tile = Instantiate(_tilePrefab, _tilesParent);
                 tile.MouseEnter.Subscribe(OnTileEnter);
@@ -70,7 +71,7 @@ namespace _Game.Scripts.BurnMark.Game.Presentation.GameField {
                 tile.transform.localPosition = localPosition;
             }
             
-            tile.Initialize(position, terrain.Data);
+            tile.Initialize(position, terrain, readAPI);
 
             void OnTileEnter() => OnCurrentTileUpdated(tile);
             void OnTileExit() => OnCurrentTileUpdated(null);

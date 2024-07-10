@@ -2,24 +2,22 @@
 
 namespace _Game.Scripts.BurnMark.Game.Data.Components {
     public struct ResourceData : ISame<ResourceData> {
-        public int Money;
-        public int Metal;
+        // public int Money;
+        // public int Metal;
+        public Resources Resources;
 
         public bool IsSame(ResourceData other) {
-            return Money == other.Money
-                   && Metal == other.Metal;
+            return Resources.IsSame(other.Resources);
         }
 
         public ResourceData Gain(ResourceGainData gainData) {
             return new ResourceData {
-                Money = Money + gainData.Money,
-                Metal = Metal + gainData.Metal
+                Resources = Resources.Add(gainData.Resources)
             };
         }
 
         public bool CanPay(Cost cost) {
-            return Money >= cost.Money
-                   && Metal >= cost.Metal;
+            return Resources.EnoughFor(cost.Resources);
         }
 
         public bool TryPay(Cost cost, out ResourceData data) {
@@ -29,8 +27,7 @@ namespace _Game.Scripts.BurnMark.Game.Data.Components {
             }
 
             data = new ResourceData {
-                Money = Money - cost.Money,
-                Metal = Metal - cost.Metal
+                Resources = Resources.Subtract(cost.Resources)
             };
             return true;
         }
